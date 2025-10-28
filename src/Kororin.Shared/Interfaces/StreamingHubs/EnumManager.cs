@@ -50,15 +50,14 @@ namespace Kororin.Shared.Interfaces.StreamingHubs
 
         /// <summary>
         /// ステージ種類
-        /// Author:Nishiura
         /// </summary>
         public enum STAGE_TYPE
         {
-            Rust,
-            Industry,
-            Town,
-            FinalBoss,
+            Rndom = 0,
+            Stage01,
+            Stage02,
         }
+        public const int STAGE_TYPE_MAX = 2;
 
         /// <summary>
         /// アイテムの種類
