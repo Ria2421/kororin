@@ -16,20 +16,9 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        //シーだーに呼び出し
-        $this->call(AccountsTableSeeder::class);
+        // seederに呼び出し
         $this->call(UsersTableSeeder::class);
-        $this->call(WeaponsTableSeeder::class);
-        $this->call(EnemiesTableSeeder::class);
         $this->call(StagesTableSeeder::class);
-        $this->call(ResultsTableSeeder::class);
-        $this->call(RelicsTableSeeder::class);
-        $this->call(UserRelicsTableSeeder::class);
-        $this->call(AchievementsTableSeeder::class);
-        $this->call(AchievementStatusTableSeeder::class);
-        $this->call(StatusEnhancementTableSeeder::class);
-        $this->call(DifficultyTableSeeder::class);
-        $this->call(ContributionTableSeeder::class);
-
+        $this->call(RoomTableSeeder::class);
     }
 }
