@@ -21,26 +21,11 @@ namespace StreamingHubs
         //コンテキスト定義
         private RoomContext roomContext;
         RoomContextRepository roomContextRepos;
-        Room room = new Room();
         RoomService roomService = new RoomService();
         Dictionary<Guid, JoinedUser> JoinedUsers { get; set; }
 
         // 参加可能人数
         private const int MAX_JOINABLE_PLAYERS = 3;
-
-        // ステータス上限定数
-        private const float LVUP_HP = 0.06f;
-        private const float LVUP_POW = 0.05f;
-        private const float LVUP_DEF = 0.01f;
-        private const float MAX_ATTACKSPEED = 1.15f;
-        private const float MAX_REGENERATE = 0.065f;
-
-        // ターミナル関連定数 (MAXの値はRandで用いるため、上限+1の数)
-        private const int MIN_TERMINAL_ID = 1;
-        private const int MAX_TERMINAL_ID = 6;
-
-        // レリック関連定数
-        private const int MAX_DAMAGE = 99999; 
 
         #region 接続・切断処理
         //接続した場合
@@ -66,105 +51,48 @@ namespace StreamingHubs
         /// <param name="roomName"></param>
         /// <param name="userId"></param>
         /// <returns></returns>
-        public async Task<Dictionary<Guid, JoinedUser>> JoinedAsync(string roomName, int userId,string userName, string pass,int gameMode)
+        public async Task<Dictionary<Guid, JoinedUser>> JoinedAsync(string roomName,int userId ,string userName)
         {
             lock (roomContextRepository)
             { //同時に生成しないように排他制御
 
-                GameDbContext dbContext = new GameDbContext();
-
-                //DBからユーザー情報取得
-                //var user = dbContext.Users.Where(user => user.Id == userId).First();
-
-                //ユーザーデータを設定(Steam対応デバッグ用)
-                User userSteam = new User();
-                userSteam.Id = userId;
-                userSteam.Name = userName;
-
-
                 // ルームに参加＆ルームを保持
                 this.roomContext = roomContextRepository.GetContext(roomName);
+
                 if (this.roomContext == null)
-                { //無かったら生成
-                    this.roomContext = roomContextRepository.CreateContext(roomName,pass);
-
-                    if(gameMode != 0)
-                    {
-                        //DBに生成
-                        room.roomName = roomName;
-                        room.userName = userName;
-                        room.password = pass;
-                        room.is_started = false;
-                        roomService.RegistRoom(room.roomName, room.userName, room.password, gameMode);
-                    }
-                    this.roomContext.IsStartGame = false;
+                {   // 無い時は新規作成
+                    this.roomContext = roomContextRepository.CreateContext(roomName,"");
                 }
-                else if (this.roomContext.JoinedUserList.Count == 0)
-                { //ルーム情報が入ってかつ参加人数が0人の場合
-                    roomContextRepository.RemoveContext(roomName);                          //ルーム情報を削除
-                    this.roomContext = roomContextRepository.CreateContext(roomName,pass);  //ルームを生成
 
-                    if(gameMode != 0)
-                    {
-                        //DBに生成
-                        room.roomName = roomName;
-                        room.userName = userName;
-                        room.password = pass;
-                        room.is_started = false;
-                        roomService.RegistRoom(room.roomName, room.userName, room.password, gameMode);
-                    }
-
-                    this.roomContext.IsStartGame = false;
-                }
+                // ルームにユーザーを追加
                 this.roomContext.Group.Add(this.ConnectionId, Client);
 
-                if (this.roomContext.JoinedUserList.Count >= MAX_JOINABLE_PLAYERS || this.roomContext.IsStartGame)
-                {//参加人数が満員の場合 or 既にゲーム開始している場合 は参加できないようにする
-                    this.roomContext.Group.Only([this.ConnectionId]).OnFailedJoin(0);
-                    this.roomContext.Group.Remove(this.ConnectionId);
-                    return JoinedUsers;
-                }
-                if (this.roomContext.PassWord != "")
-                {//パスワードが設定されている場合
-                    if (this.roomContext.PassWord != pass)
-                    {
-                        //パスワードが違うという通知
-                        this.roomContext.Group.Only([this.ConnectionId]).OnFailedJoin(1);
-                        this.roomContext.Group.Remove(this.ConnectionId);
-                        return JoinedUsers;
-                    }
-                }
-
-
-
                 // グループストレージにユーザーデータを格納
-                var joinedUser = new JoinedUser() { ConnectionId = this.ConnectionId, UserData = userSteam };
+                var joinedUser = new JoinedUser() { ConnectionId = this.ConnectionId, UserId = userId , UserName = userName };
 
                 if (roomContext.JoinedUserList.Count == 0)
-                {//roomContext内の参加人数が0である場合
+                {   // 最初の1人目の時
 
-                    //参加順番の初期化
+                    // 参加順番の初期化
                     joinedUser.JoinOrder = 1;
 
-                    //1人目をマスタークライアントにする
+                    // 1人目をマスタークライアントにする
                     joinedUser.IsMaster = true;
                 }
                 else
                 {
-                    //参加順番の設定
+                    // 参加順番の設定
                     joinedUser.JoinOrder = roomContext.JoinedUserList.Count + 1;
                 }
 
                 // ルームコンテキストに参加ユーザーを保存
                 this.roomContext.JoinedUserList[this.ConnectionId] = joinedUser;
 
+                // 多分、自身に入室できたことを通知してる
                 this.roomContext.Group.Only([this.ConnectionId]).OnRoom();
                 
-                //　ルームに参加
+                // 自身以外に参加者を通知
                 this.roomContext.Group.Except([this.ConnectionId]).Onjoin(roomContext.JoinedUserList[this.ConnectionId]);
-
-                this.roomContext.NowStage = EnumManager.STAGE_TYPE.Rust;
-
 
                 // 参加中のユーザー情報を返す
                 return this.roomContext.JoinedUserList;
@@ -245,20 +173,6 @@ namespace StreamingHubs
         }
 
         /// <summary>
-        /// キャラクター変更
-        ///  Author:木田晃輔
-        /// </summary>
-        /// <returns></returns>
-        public async Task ChangeCharacterAsync(int characterId)
-        {
-            lock(roomContextRepository) //排他制御
-            {
-                this.roomContext.JoinedUserList[this.ConnectionId].CharacterID = characterId;
-                this.roomContext.Group.All.OnChangeCharacter(this.ConnectionId , characterId);
-            }
-        }
-
-        /// <summary>
         /// 準備完了
         /// Author:Nishiura
         /// </summary>
@@ -272,7 +186,6 @@ namespace StreamingHubs
                 // 自身のデータを取得
                 var joinedUser = roomContext.JoinedUserList[this.ConnectionId];
                 joinedUser.IsReady = true; // 準備完了にする
-                joinedUser.CharacterID = characterId; //キャラクターIDを保存
 
                 // ルーム参加者全員に、自分が準備完了した通知を送信
                 this.roomContext.Group.All.OnReady(joinedUser);
@@ -294,6 +207,31 @@ namespace StreamingHubs
         #endregion
 
         #region ゲーム内での処理
+
+        /// <summary>
+        /// マスタークライアント譲渡処理
+        /// Author:Nishiura
+        /// </summary>
+        /// <param name="conID"></param>
+        /// <returns></returns>
+        void MasterLostAsync(Guid conID)
+        {
+            // 参加者リストをループ
+            foreach (var user in this.roomContext.JoinedUserList)
+            {
+                // 対象がマスタークライアントでない場合
+                if (user.Value.IsMaster == false)
+                {
+                    // その対象をマスタークライアントとし、通知を送る。ループを抜ける
+                    user.Value.IsMaster = true;
+                    //this.roomContext.Group.Only([user.Key]).OnChangeMasterClient();
+                    break;
+                }
+            }
+
+            // マスタークライアントを剥奪
+            this.roomContext.JoinedUserList[conID].IsMaster = false;
+        }
 
         ///// <summary>
         ///// プレイヤーの更新
@@ -435,30 +373,5 @@ namespace StreamingHubs
         //}
 
         #endregion
-
-        /// <summary>
-        /// マスタークライアント譲渡処理
-        /// Author:Nishiura
-        /// </summary>
-        /// <param name="conID"></param>
-        /// <returns></returns>
-        void MasterLostAsync(Guid conID)
-        {
-            // 参加者リストをループ
-            foreach (var user in this.roomContext.JoinedUserList)
-            {
-                // 対象がマスタークライアントでない場合
-                if (user.Value.IsMaster == false)
-                {
-                    // その対象をマスタークライアントとし、通知を送る。ループを抜ける
-                    user.Value.IsMaster = true;
-                    //this.roomContext.Group.Only([user.Key]).OnChangeMasterClient();
-                    break;
-                }
-            }
-
-            // マスタークライアントを剥奪
-            this.roomContext.JoinedUserList[conID].IsMaster = false;
-        }
     }
 }

@@ -14,14 +14,13 @@ namespace Korirn.Server.Model.Context
     {
 
         #region データベース設定一覧
-        //ユーザーのデータベース設定
+
+        // ユーザーのデータベース設定
         public DbSet<User> Users { get; set; }
 
-        //ステージのデータベース設定
-        public DbSet<Stage> Stages { get; set; }
+        // ランキングのデータベース設定
+        public DbSet<Ranking> Rankings { get; set; }
 
-        //ルーム
-        public DbSet<Room> Rooms { get; set; }
         #endregion
 
 #if DEBUG

@@ -1,16 +1,9 @@
-﻿////////////////////////////////////////////////////////////////
-///
-/// ユーザーのインターフェースを管理するスクリプト
-/// 
-/// Aughter:木田晃輔
-///
-////////////////////////////////////////////////////////////////
-
+﻿//------------------------------------------------------------------------
+// ユーザーインターフェース [ IUserService.cs ]
+// Author：Kenta Nakamoto
+//------------------------------------------------------------------------
 using MagicOnion;
 using Kororin.Shared.Interfaces.Model.Entity;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace Kororin.Shared.Interfaces.Services
 {

@@ -1,83 +1,78 @@
-////////////////////////////////////////////////////////////////
-///
-/// RoomHubへの接続を管理するスクリプト
-/// 
-/// Aughter:木田晃輔
-///
-////////////////////////////////////////////////////////////////
-
+//-------------------------------------------------------------
+// RoomHubへの接続管理
+// Aughter:中本健太
+//-------------------------------------------------------------
 #region using一覧
 using Cysharp.Net.Http;
 using Cysharp.Threading.Tasks;
 using Grpc.Net.Client;
 using MagicOnion;
 using MagicOnion.Client;
-using Kororin.Shared.Interfaces.Model.Entity;
-using Kororin.Shared.Interfaces.Services;
 using Kororin.Shared.Interfaces.StreamingHubs;
 using Shared.Interfaces.StreamingHubs;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using UnityEngine;
 using static Kororin.Shared.Interfaces.StreamingHubs.EnumManager;
-using static Kororin.Shared.Interfaces.StreamingHubs.IRoomHubReceiver;
 using Vector2 = UnityEngine.Vector2;
 #endregion
 
 public class RoomModel : BaseModel, IRoomHubReceiver
 {
-    private GrpcChannel channel;  //サーバーURL
-    private IRoomHub roomHub;     //roomHubの関数を呼び出す時に使う
+    private GrpcChannel channel;  // サーバーURL
+    private IRoomHub roomHub;     // roomHubの関数を呼び出す時に使う
 
-    //マスタークライアントかどうか
+    // マスタークライアントかどうか
     public bool IsMaster { get; set; }
 
-    //接続ID
+    // 接続ID
     public Guid ConnectionId { get; private set; }
+
+    // ユーザーID
+    public int userId { get; set; }
 
     // 現在の参加者情報
     public Dictionary<Guid, JoinedUser> joinedUserList { get; private set; } = new Dictionary<Guid, JoinedUser>();
 
-    //現在のルーム情報
+    // 現在のルーム情報
     public RoomData[] roomDataList { get; set; }
 
     #region 通知定義一覧
 
     #region システム
 
-    //ルーム検索通知
+    // ルーム検索通知
     public Action<List<string>, List<string>, List<string>> OnSearchedRoom { get; set; }
 
-    //ルーム生成通知
+    // ルーム生成通知
     public Action OnCreatedRoom { get; set; }
 
-    //ユーザー接続通知
+    // ユーザー接続通知
     public Action<JoinedUser> OnJoinedUser { get; set; }
 
-    //入室失敗通知
+    // 入室失敗通知
     public Action<int> OnFailedJoinSyn { get; set; }
 
-    //ユーザー退室通知
+    // ユーザー退室通知
     public Action<JoinedUser> OnLeavedUser { get; set; }
 
-    //キャラクター変更通知
+    // キャラクター変更通知
     public Action<Guid, int> OnChangedCharacter { get; set; }
 
-    //準備完了通知
+    // 準備完了通知
     public Action<Guid> OnReadySyn { get; set; }
 
-    //ゲーム開始通知
+    // ゲーム開始通知
     public Action OnStartedGame { get; set; }
 
-    //難易度上昇通知
+    // 易度上昇通知
     public Action<int> OnAscendDifficultySyn { get; set; }
 
-    //次ステージ進行通知
+    // 次ステージ進行通知
     public Action<STAGE_TYPE> OnAdanceNextStageSyn { get; set; }
 
-    //ステージ進行通知
+    // ステージ進行通知
     public Action OnAdvancedStageSyn { get; set; }
 
     ////ゲーム終了通知
@@ -107,9 +102,6 @@ public class RoomModel : BaseModel, IRoomHubReceiver
 
     //ギミックの起動通知
     public Action<string, bool> OnBootedGimmick { get; set; }
-
-    // オブジェクト生成通知
-    public Action<OBJECT_TYPE, Vector2, string> OnSpawnedObjectSyn { get; set; }
 
     #endregion
 
@@ -249,14 +241,12 @@ public class RoomModel : BaseModel, IRoomHubReceiver
     /// <param name="joinedUser"></param>
     public void Onjoin(JoinedUser joinedUser)
     {
-        //OnJoinedUser?.Invoke(joinedUser);
-
+        // データ被りを回避
         if (!joinedUserList.ContainsKey(joinedUser.ConnectionId))
             joinedUserList.Add(joinedUser.ConnectionId, joinedUser);
 
         //入室通知
         OnJoinedUser(joinedUser);
-
     }
 
     public void OnFailedJoin(int errorId)
@@ -282,16 +272,6 @@ public class RoomModel : BaseModel, IRoomHubReceiver
         }
 
         OnLeavedUser(leaveUser);
-    }
-
-    /// <summary>
-    /// キャラクター変更通知
-    /// Aughter:木田晃輔
-    /// </summary>
-    public void OnChangeCharacter(Guid guid, int characterId)
-    {
-        joinedUserList[guid].CharacterID = characterId;
-        OnChangedCharacter(guid, characterId);
     }
 
     /// <summary>
@@ -372,11 +352,6 @@ public class RoomModel : BaseModel, IRoomHubReceiver
         //OnGetItemSyn(conId, itemID, nowLevel, nowExp, nextLevelExp);
     }
 
-    public void OnSpawnObject(OBJECT_TYPE type, Vector2 spawnPos, string uniqueId)
-    {
-        OnSpawnedObjectSyn(type, spawnPos, uniqueId);
-    }
-
     #endregion
 
     #endregion
@@ -386,51 +361,24 @@ public class RoomModel : BaseModel, IRoomHubReceiver
     #region 入室からゲーム開始まで
 
     /// <summary>
-    /// 部屋の検索
+    /// 入室同期
     /// Aughter:木田晃輔
     /// </summary>
     /// <returns></returns>
-    public async Task SearchRoomAsync()
+    public async UniTask JoinedAsync(string roomName, int userId, string userName)
     {
-        var handler = new YetAnotherHttpHandler() { Http2Only = true };
-        var channel = GrpcChannel.ForAddress(ServerURL, new GrpcChannelOptions() { HttpHandler = handler });
-        var client = MagicOnionClient.Create<IRoomService>(channel);
-
-        var roomDatas = await client.GetAllRoom();
-
-        roomDataList = new RoomData[roomDatas.Length];
-
-        for (int i = 0; i < roomDatas.Length; i++)
+        joinedUserList = await roomHub.JoinedAsync(roomName,userId,userName);
+        if (joinedUserList == null) return;
+        foreach (var user in joinedUserList)
         {
-            roomDataList[i] = new RoomData();
-            roomDataList[i].roomName = roomDatas[i].roomName;
-            roomDataList[i].userName = roomDatas[i].userName;
-            roomDataList[i].passWord = roomDatas[i].password;
-            roomDataList[i].isStarted = roomDatas[i].is_started;
+            if (user.Value.UserId == userId)
+            {
+                this.ConnectionId = user.Value.ConnectionId;
+                this.IsMaster = user.Value.IsMaster;
+                Debug.Log("入室完了");
+            }
         }
-
-        OnSearchRoom(roomDataList);
     }
-
-    ///// <summary>
-    ///// 入室同期
-    ///// Aughter:木田晃輔
-    ///// </summary>
-    ///// <returns></returns>
-    //public async UniTask JoinedAsync(string roomName, int userId, string userName, string pass,int gameMode)
-    //{
-    //    joinedUserList = await roomHub.JoinedAsync(roomName, userId, userName, pass,gameMode);
-    //    if (joinedUserList == null) return;
-    //    foreach (var user in joinedUserList)
-    //    {
-    //        if (user.Value.UserData.Id == userId)
-    //        {
-    //            this.ConnectionId = user.Value.ConnectionId;
-    //            this.IsMaster = user.Value.IsMaster;
-    //            Debug.Log("モデル：" + RoomModel.Instance.ConnectionId);
-    //        }
-    //    }
-    //}
 
     /// <summary>
     /// 退室の同期
@@ -443,16 +391,6 @@ public class RoomModel : BaseModel, IRoomHubReceiver
         this.IsMaster = false;
         //自分をリストから消す
         joinedUserList.Clear();
-    }
-
-    /// <summary>
-    /// キャラクター変更
-    /// Aughter:木田晃輔
-    /// </summary>
-    /// <returns></returns>
-    public async UniTask ChangeCharacterAsync(int characterId)
-    {
-        await roomHub.ChangeCharacterAsync(characterId);
     }
 
     /// <summary>

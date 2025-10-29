@@ -1,10 +1,7 @@
-﻿////////////////////////////////////////////////////////////////
-///
-/// ユーザーのカラム設定エンティティ
-/// 
-/// Aughter:木田晃輔
-///
-////////////////////////////////////////////////////////////////
+﻿//------------------------------------------------------------------------
+// ユーザーデータ [ User.cs ]
+// Author：Kenta Nakamoto
+//------------------------------------------------------------------------
 
 using MessagePack;
 using System;
@@ -18,13 +15,12 @@ namespace Kororin.Shared.Interfaces.Model.Entity
     public class User
     {
         [Key(0)]
-        public int Id { get; set; }                         // ユーザーのid
+        public int Id { get; set; }                 // ユーザーID
         [Key(1)]
-        public string Name { get; set; }                    // 名前
+        public string Name { get; set; }            // 名前
         [Key(2)]
-        public DateTime Created_at { get; set; }            // 生成日時
+        public DateTime Created_at { get; set; }    // 生成日時
         [Key(3)]
-        public DateTime Updated_at { get; set; }            // 更新日時
-
+        public DateTime Updated_at { get; set; }    // 更新日時
     }
 }
