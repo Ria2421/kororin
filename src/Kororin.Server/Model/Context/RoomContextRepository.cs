@@ -9,7 +9,8 @@ namespace Korirn.Server.Model.Context
         private readonly ConcurrentDictionary<string, RoomContext> contexts = new();
 
         #region ゲームコンテキストを使用するための関数一覧
-        //ゲームコンテキストの作成
+
+        // ゲームコンテキストの作成
         public RoomContext CreateContext(string roomName , string pass)
         {
             var context = new RoomContext(groupProvider, roomName,pass);
@@ -17,7 +18,7 @@ namespace Korirn.Server.Model.Context
             return context;
         }
 
-        //ゲームコンテキストの取得
+        // ゲームコンテキストの取得
         public RoomContext GetContext(string roomName)
         {
             if(contexts.ContainsKey(roomName))
@@ -31,7 +32,7 @@ namespace Korirn.Server.Model.Context
             
         }
 
-        //ゲームコンテキストの全取得
+        // ゲームコンテキストの全取得
         public ConcurrentDictionary<string, RoomContext> GetALLContext()
         {
             if(contexts != null)
@@ -44,7 +45,7 @@ namespace Korirn.Server.Model.Context
             }
         }
 
-        //ゲームコンテキストの削除
+        // ゲームコンテキストの削除
         public void RemoveContext(string roomName)
         {
             if(contexts.Remove(roomName, out var roomContext))
@@ -52,6 +53,7 @@ namespace Korirn.Server.Model.Context
                 roomContext?.Dispose();
             }
         }
+
         #endregion
     }
 }

@@ -1,13 +1,12 @@
-﻿//=============================
-// クライアントからサーバーへの通信を管理するスクリプト
-// Author:木田晃輔
-//=============================
-
+﻿//------------------------------------------------------------------------
+// クライアントからサーバーへの通信を管理するスクリプト [ IRoomHub.cs ]
+// Author：Kenta Nakamoto
+//------------------------------------------------------------------------
 using MagicOnion;
+using Shared.Interfaces.StreamingHubs;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using UnityEngine;
 
 namespace Kororin.Shared.Interfaces.StreamingHubs
 {
@@ -17,21 +16,19 @@ namespace Kororin.Shared.Interfaces.StreamingHubs
 
         #region 入室からゲーム開始まで
         /// <summary>
+        /// ユーザー入室
+        /// </summary>
+        /// <returns></returns>
+        Task<Dictionary<Guid, JoinedUser>> JoinedAsync(string roomName, int userId, string userName);
+
+        /// <summary>
         /// ユーザー退室
-        /// Author:Kida
         /// </summary>
         /// <returns></returns>
         Task LeavedAsync(bool isEnd);
 
         /// <summary>
-        /// キャラクター変更
-        /// </summary>
-        /// <returns></returns>
-        Task ChangeCharacterAsync(int CharacterId);
-
-        /// <summary>
         /// 準備完了
-        /// Author:Nishiura
         /// </summary>
         /// <returns></returns>
         Task ReadyAsync(int characterID);
