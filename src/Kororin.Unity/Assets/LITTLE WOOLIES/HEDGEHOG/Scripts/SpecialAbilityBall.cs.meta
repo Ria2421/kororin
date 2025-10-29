@@ -1,0 +1,18 @@
+fileFormatVersion: 2
+guid: 3f5016c2ca752394f85c57e8f89003ee
+MonoImporter:
+  externalObjects: {}
+  serializedVersion: 2
+  defaultReferences: []
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 173670
+  packageName: Little Woolies - Hedgehog
+  packageVersion: 1.0
+  assetPath: Assets/LITTLE WOOLIES/HEDGEHOG/Scripts/SpecialAbilityBall.cs
+  uploadId: 382430

@@ -1,0 +1,11 @@
+fileFormatVersion: 2
+guid: 003377fc2620a44939dadde6fe3f8190
+ShaderImporter:
+  userData: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 173670
+  packageName: Little Woolies - Hedgehog
+  packageVersion: 1.0
+  assetPath: Assets/LITTLE WOOLIES/BG/Rocks/Standard Assets/Effects/ImageEffects/Shaders/Tonemapper.shader
+  uploadId: 382430

@@ -1,0 +1,18 @@
+fileFormatVersion: 2
+guid: d9c810404355f2e4ba4ca7b7335ddede
+MonoImporter:
+  externalObjects: {}
+  serializedVersion: 2
+  defaultReferences: []
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 173670
+  packageName: Little Woolies - Hedgehog
+  packageVersion: 1.0
+  assetPath: Assets/LITTLE WOOLIES/SCRIPTS/cursorClick.cs
+  uploadId: 382430
