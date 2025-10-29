@@ -375,8 +375,8 @@ public class RoomModel : BaseModel, IRoomHubReceiver
             {
                 this.ConnectionId = user.Value.ConnectionId;
                 this.IsMaster = user.Value.IsMaster;
-                Debug.Log("“üŽºŠ®—¹");
             }
+            Debug.Log(user.Value.UserName + "‚ªŽQ‰Á");
         }
     }
 

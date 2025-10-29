@@ -10,7 +10,6 @@ using Kororin.Shared.Interfaces.Model.Entity;
 using Kororin.Shared.Interfaces.StreamingHubs;
 using UnityEngine;
 using Korirn.Server.Model.Context;
-using NIGHTRAVEL.Server.Services;
 using Shared.Interfaces.StreamingHubs;
 #endregion
 
@@ -21,7 +20,6 @@ namespace StreamingHubs
         //コンテキスト定義
         private RoomContext roomContext;
         RoomContextRepository roomContextRepos;
-        RoomService roomService = new RoomService();
         Dictionary<Guid, JoinedUser> JoinedUsers { get; set; }
 
         // 参加可能人数
@@ -132,12 +130,6 @@ namespace StreamingHubs
                         }
                     }
 
-                }
-
-                //最後の1人の場合ルームを削除
-                if (this.roomContext.JoinedUserList.Count == 1)
-                {
-                    roomService.RemoveRoom(this.roomContext.Name);
                 }
 
                 //// ルーム参加者全員に、ユーザーの退室通知を送信

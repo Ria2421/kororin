@@ -25,7 +25,7 @@ namespace Korirn.Server.Model.Context
 
 #if DEBUG
         //server名;ユーザー名;パスワード指定
-        readonly string connectionString = "server=localhost;database=admin_console;user=jobi;password=jobi;";
+        readonly string connectionString = "server=db-ge-07.mysql.database.azure.com;database=nightraveldb;user=student;password=Yoshidajobi2023;";
 #else
         readonly string connectionString = "server=db-ge-07.mysql.database.azure.com;database=nightraveldb;user=student;password=Yoshidajobi2023;";
 #endif

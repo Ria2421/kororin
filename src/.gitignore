@@ -1,0 +1,10 @@
+SharedOutput/
+*_clone_*
+Kororin.Shared/Interfaces.meta
+Kororin.Shared/Interfaces/Model.meta
+Kororin.Shared/Interfaces/Services.meta
+Kororin.Shared/Interfaces/StreamingHubs.meta
+Kororin.Shared/Interfaces/StreamingHubs/IRoomHub.cs.meta
+Kororin.Shared/Interfaces/StreamingHubs/IRoomHubReceiver.cs.meta
+Kororin.Shared/Interfaces/StreamingHubs/JoinedUser.cs.meta
+Client/Build.zip
