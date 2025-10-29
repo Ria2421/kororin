@@ -1,0 +1,18 @@
+fileFormatVersion: 2
+guid: 907e0f2eeee7fe9498b224b768e1c740
+MonoImporter:
+  externalObjects: {}
+  serializedVersion: 2
+  defaultReferences: []
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 173670
+  packageName: Little Woolies - Hedgehog
+  packageVersion: 1.0
+  assetPath: Assets/LITTLE WOOLIES/SCRIPTS/effects.cs
+  uploadId: 382430

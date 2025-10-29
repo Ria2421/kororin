@@ -1,0 +1,18 @@
+fileFormatVersion: 2
+guid: ae7dacfdf7c1296449ecd8099f70b5bf
+MonoImporter:
+  externalObjects: {}
+  serializedVersion: 2
+  defaultReferences: []
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 173670
+  packageName: Little Woolies - Hedgehog
+  packageVersion: 1.0
+  assetPath: Assets/LITTLE WOOLIES/SCRIPTS/woolies_controller.cs
+  uploadId: 382430

@@ -1,0 +1,11 @@
+fileFormatVersion: 2
+guid: f1b13d7a80660504a858ea24cfa418c6
+ShaderImporter:
+  userData: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 173670
+  packageName: Little Woolies - Hedgehog
+  packageVersion: 1.0
+  assetPath: Assets/LITTLE WOOLIES/BG/Rocks/Standard Assets/Effects/ImageEffects/Shaders/CameraMotionBlurDX11.shader
+  uploadId: 382430

@@ -1,0 +1,11 @@
+fileFormatVersion: 2
+guid: acd613035ff3e455e8abf23fdc8c8c24
+ShaderImporter:
+  userData: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 173670
+  packageName: Little Woolies - Hedgehog
+  packageVersion: 1.0
+  assetPath: Assets/LITTLE WOOLIES/BG/Rocks/Standard Assets/Effects/ImageEffects/Shaders/_DepthOfField/DepthOfFieldScatter.shader
+  uploadId: 382430

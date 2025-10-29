@@ -1,0 +1,17 @@
+fileFormatVersion: 2
+guid: b9fa403f7a6ba8b499620b72c257e869
+ScriptedImporter:
+  internalIDToNameTable: []
+  externalObjects: {}
+  serializedVersion: 2
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+  script: {fileID: 11500000, guid: 625f186215c104763be7675aa2d941aa, type: 3}
+AssetOrigin:
+  serializedVersion: 1
+  productId: 173670
+  packageName: Little Woolies - Hedgehog
+  packageVersion: 1.0
+  assetPath: Assets/LITTLE WOOLIES/EFFECTS/Materials/papelitos_shr.shadergraph
+  uploadId: 382430

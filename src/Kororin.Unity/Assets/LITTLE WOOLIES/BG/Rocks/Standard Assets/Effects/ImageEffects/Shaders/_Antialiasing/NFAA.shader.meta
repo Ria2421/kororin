@@ -1,0 +1,11 @@
+fileFormatVersion: 2
+guid: ce0cb2621f6d84e21a87414e471a3cce
+ShaderImporter:
+  userData: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 173670
+  packageName: Little Woolies - Hedgehog
+  packageVersion: 1.0
+  assetPath: Assets/LITTLE WOOLIES/BG/Rocks/Standard Assets/Effects/ImageEffects/Shaders/_Antialiasing/NFAA.shader
+  uploadId: 382430

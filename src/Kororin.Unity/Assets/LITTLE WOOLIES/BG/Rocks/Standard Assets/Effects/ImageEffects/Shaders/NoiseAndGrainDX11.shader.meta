@@ -1,0 +1,11 @@
+fileFormatVersion: 2
+guid: 8b30686bb4322ab42ad5eb50a0210b58
+ShaderImporter:
+  userData: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 173670
+  packageName: Little Woolies - Hedgehog
+  packageVersion: 1.0
+  assetPath: Assets/LITTLE WOOLIES/BG/Rocks/Standard Assets/Effects/ImageEffects/Shaders/NoiseAndGrainDX11.shader
+  uploadId: 382430
