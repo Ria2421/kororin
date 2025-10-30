@@ -37,7 +37,14 @@ namespace Kororin.Shared.Interfaces.StreamingHubs
 
         #region ゲーム内
 
+        /// <summary>
+        /// プレイヤーの更新
+        /// </summary>
+        /// <param name="playerData"></param>
+        /// <returns></returns>
+        Task UpdateCharacterAsync(CharacterData charaData);
         #region プレイヤー関連
+
         #endregion
 
         #region ゲーム内UI、仕様関連

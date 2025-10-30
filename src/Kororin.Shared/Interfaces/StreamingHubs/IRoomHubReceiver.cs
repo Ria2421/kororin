@@ -1,6 +1,6 @@
 ﻿//-------------------------------------------------------------
 // サーバーからクライアントへの通信を管理するスクリプト
-// Aughter:中本健太
+// Author:Kenta Nakamoto
 //-------------------------------------------------------------
 using Shared.Interfaces.StreamingHubs;
 using System;
@@ -52,6 +52,12 @@ namespace Kororin.Shared.Interfaces.StreamingHubs
         #region ゲーム内
 
         #region プレイヤー関連
+
+        /// <summary>
+        /// プレイヤー動作通知
+        /// </summary>
+        void OnUpdateCharacter(CharacterData charaData);
+
         #endregion
 
         #region 敵関連

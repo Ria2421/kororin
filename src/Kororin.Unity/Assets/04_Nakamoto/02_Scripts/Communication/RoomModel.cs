@@ -88,8 +88,8 @@ public class RoomModel : BaseModel, IRoomHubReceiver
     ////マスタークライアントの更新通知
     //public Action<MasterClientData> OnUpdateMasterClientSyn { get; set; }
 
-    ////プレイヤー位置回転通知
-    //public Action<PlayerData> OnUpdatePlayerSyn { get; set; }
+    //プレイヤー位置回転通知
+    public Action<CharacterData> OnUpdatedCharacter { get; set; }
 
     //プレイヤーダウン通知
     public Action<Guid> OnPlayerDeadSyn { get; set; }
@@ -147,7 +147,6 @@ public class RoomModel : BaseModel, IRoomHubReceiver
     #region MagicOnion接続・切断処理
     /// <summary>
     /// MagicOnion接続処理
-    /// Aughter:木田晃輔
     /// </summary>
     /// <returns></returns>
     public async UniTask ConnectAsync()
@@ -158,7 +157,6 @@ public class RoomModel : BaseModel, IRoomHubReceiver
 
     /// <summary>
     /// MagicOnion切断処理
-    /// Aughter:木田晃輔
     /// </summary>
     /// <returns></returns>
     public async UniTask DisconnectAsync()
@@ -171,7 +169,6 @@ public class RoomModel : BaseModel, IRoomHubReceiver
 
     /// <summary>
     /// 破棄処理
-    /// Aughter:木田晃輔
     /// </summary>
     async void OnDestroy()
     {
@@ -183,7 +180,6 @@ public class RoomModel : BaseModel, IRoomHubReceiver
 
     ///// <summary>
     ///// 同時開始
-    ///// Aughtor:木田晃輔
     ///// </summary>
     //public void OnSameStart(List<TerminalData> list)
     //{
@@ -204,7 +200,6 @@ public class RoomModel : BaseModel, IRoomHubReceiver
 
     /// <summary>
     /// ルーム検索通知
-    /// Aughter:木田晃輔
     /// </summary>
     /// <param name="roomName"></param>
     /// <param name="userName"></param>
@@ -226,7 +221,6 @@ public class RoomModel : BaseModel, IRoomHubReceiver
 
     /// <summary>
     /// ルーム生成通知
-    /// Aughter:木田晃輔
     /// </summary>
     /// <returns></returns>
     public void OnRoom()
@@ -236,7 +230,6 @@ public class RoomModel : BaseModel, IRoomHubReceiver
 
     /// <summary>
     /// 入室通知(IRoomHubReceiverインターフェイスの実装)
-    /// Aughter:木田晃輔
     /// </summary>
     /// <param name="joinedUser"></param>
     public void Onjoin(JoinedUser joinedUser)
@@ -256,7 +249,6 @@ public class RoomModel : BaseModel, IRoomHubReceiver
 
     /// <summary>
     /// 退室通知
-    /// Aughter:木田晃輔
     /// </summary>
     /// <param name="user"></param>
     public void OnLeave(Dictionary<Guid, JoinedUser> joinedUser, Guid targetUser)
@@ -276,7 +268,6 @@ public class RoomModel : BaseModel, IRoomHubReceiver
 
     /// <summary>
     /// 準備完了通知
-    /// Aughter:木田晃輔
     /// </summary>
     /// <param name="conID"></param>
     public void OnReady(JoinedUser joinedUser)
@@ -287,22 +278,21 @@ public class RoomModel : BaseModel, IRoomHubReceiver
     #endregion
 
     #region プレイヤー通知関連
-    ///// <summary>
-    ///// プレイヤーの移動通知
-    ///// Aughter:木田晃輔
-    ///// </summary>
-    ///// <param name="user"></param>
-    ///// <param name="pos"></param>
-    ///// <param name="rot"></param>
-    ///// <param name="animID"></param>
-    //public void OnUpdatePlayer(PlayerData playerData)
-    //{
-    //    OnUpdatePlayerSyn(playerData);
-    //}
+
+    /// <summary>
+    /// プレイヤーの移動通知
+    /// </summary>
+    /// <param name="user"></param>
+    /// <param name="pos"></param>
+    /// <param name="rot"></param>
+    /// <param name="animID"></param>
+    public void OnUpdateCharacter(CharacterData charaData)
+    {
+        OnUpdatedCharacter(charaData);
+    }
 
     /// <summary>
     /// マスタークライアントの変更通知
-    /// Aughter:木田晃輔
     /// </summary>
     public void OnChangeMasterClient()
     {
@@ -313,7 +303,6 @@ public class RoomModel : BaseModel, IRoomHubReceiver
 
     ///// <summary>
     ///// マスタークライアントの更新通知
-    ///// Aughter:木田晃輔
     ///// </summary>
     ///// <param name="masterClientData"></param>
     //public void OnUpdateMasterClient(MasterClientData masterClientData)
@@ -326,7 +315,6 @@ public class RoomModel : BaseModel, IRoomHubReceiver
     #region ゲーム内UI・仕様の同期関連
     /// <summary>
     /// ゲーム開始通知
-    /// Aughter:木田晃輔
     /// </summary>
     public void OnStartGame()
     {
@@ -335,7 +323,6 @@ public class RoomModel : BaseModel, IRoomHubReceiver
 
     /// <summary>
     /// ギミックの起動通知
-    /// Aughter:木田晃輔
     /// </summary>
     /// <param name="gimmickData"></param>
     public void OnBootGimmick(string uniqueID, bool triggerOnce)
@@ -345,7 +332,6 @@ public class RoomModel : BaseModel, IRoomHubReceiver
 
     /// <summary>
     /// アイテム獲得通知
-    /// Author:木田晃輔
     /// </summary>
     public void OnGetItem(Guid conId, string itemID, int nowLevel, int nowExp, int nextLevelExp)
     {
@@ -362,7 +348,6 @@ public class RoomModel : BaseModel, IRoomHubReceiver
 
     /// <summary>
     /// 入室同期
-    /// Aughter:木田晃輔
     /// </summary>
     /// <returns></returns>
     public async UniTask JoinedAsync(string roomName, int userId, string userName)
@@ -382,7 +367,6 @@ public class RoomModel : BaseModel, IRoomHubReceiver
 
     /// <summary>
     /// 退室の同期
-    /// Aughter:木田晃輔
     /// </summary>
     /// <returns></returns>
     public async UniTask LeavedAsync()
@@ -404,7 +388,6 @@ public class RoomModel : BaseModel, IRoomHubReceiver
 
     ///// <summary>
     ///// スタート
-    ///// Aughter:木田晃輔
     ///// </summary>
     ///// <param name="hostName"></param>
     ///// <returns></returns>
@@ -422,19 +405,18 @@ public class RoomModel : BaseModel, IRoomHubReceiver
     #region ゲーム内
 
     #region プレイヤー関連
-    ///// <summary>
-    ///// プレイヤーの更新同期
-    ///// </summary>
-    ///// <param name="playerData"></param>
-    ///// <returns></returns>
-    //public async UniTask UpdatePlayerAsync(PlayerData playerData)
-    //{
-    //    await roomHub.UpdatePlayerAsync(playerData);
-    //}
+    /// <summary>
+    /// キャラの更新同期
+    /// </summary>
+    /// <param name="playerData"></param>
+    /// <returns></returns>
+    public async UniTask UpdateCharacterAsync(CharacterData charaData)
+    {
+        await roomHub.UpdateCharacterAsync(charaData);
+    }
 
     ///// <summary>
     ///// マスタークライアントの更新同期
-    ///// Aughter:木田晃輔
     ///// </summary>
     ///// <param name="masterClient"></param>
     ///// <returns></returns>
@@ -448,7 +430,6 @@ public class RoomModel : BaseModel, IRoomHubReceiver
     #region ゲーム内UI、仕様関連
     ///// <summary>
     ///// ギミックの起動同期
-    /////  Aughter:木田晃輔
     ///// </summary>
     ///// <param name="uniqueID"></param>
     ///// <returns></returns>

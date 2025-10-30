@@ -225,32 +225,32 @@ namespace StreamingHubs
             this.roomContext.JoinedUserList[conID].IsMaster = false;
         }
 
-        ///// <summary>
-        ///// プレイヤーの更新
-        ///// Author:Nishiura
-        ///// </summary>
-        ///// <param name="playerData"></param>
-        ///// <returns></returns>
-        //public async Task UpdatePlayerAsync(PlayerData playerData)
-        //{
-        //    lock (roomContextRepository) // 排他制御
-        //    {
-        //        // キャラクターデータリストに自身のデータがない場合
-        //        if (!this.roomContext.characterDataList.ContainsKey(this.ConnectionId))
-        //        {
-        //            // 新たなキャラクターデータを追加
-        //            this.roomContext.AddCharacterData(this.ConnectionId, playerData);
-        //        }
-        //        else // 既に存在している場合
-        //        {
-        //            // キャラクターデータを更新
-        //            this.roomContext.characterDataList[this.ConnectionId] = playerData;
-        //        }
+        /// <summary>
+        /// プレイヤーの更新
+        /// Author:Nishiura
+        /// </summary>
+        /// <param name="playerData"></param>
+        /// <returns></returns>
+        public async Task UpdateCharacterAsync(CharacterData charaData)
+        {
+            lock (roomContextRepository) // 排他制御
+            {
+                // キャラクターデータリストに自身のデータがない場合
+                if (!this.roomContext.CharacterDataList.ContainsKey(this.ConnectionId))
+                {
+                    // 新たなキャラクターデータを追加
+                    this.roomContext.CharacterDataList.Add(this.ConnectionId, charaData);
+                }
+                else // 既に存在している場合
+                {
+                    // キャラクターデータを更新
+                    this.roomContext.CharacterDataList[this.ConnectionId] = charaData;
+                }
 
-        //        // ルームの自分以外に、ユーザ情報通知を送信
-        //        this.roomContext.Group.Except([this.ConnectionId]).OnUpdatePlayer(playerData);
-        //    }
-        //}
+                // ルームの自分以外に、ユーザ情報通知を送信
+                this.roomContext.Group.Except([this.ConnectionId]).OnUpdateCharacter(charaData);
+            }
+        }
 
         ///// <summary>
         ///// マスタークライアントの更新

@@ -63,11 +63,16 @@ namespace Kororin.Server.Model.Context
         #region コンテキストに保存する情報のリスト一覧
 
         /// <summary>
-        /// 参加者リスト
+        /// 参加者の情報リスト
         /// Author:Kida
         /// </summary>
         public Dictionary<Guid, JoinedUser> JoinedUserList { get; } = new Dictionary<Guid, JoinedUser>();
 
+        /// <summary>
+        /// 参加者のキャラデータリスト
+        /// </summary>
+        public Dictionary<Guid,CharacterData> CharacterDataList { get; } = new Dictionary<Guid, CharacterData>();
+        
         #endregion
 
         // RoomContextの定義

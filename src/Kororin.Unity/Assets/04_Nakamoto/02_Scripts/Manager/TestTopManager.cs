@@ -8,8 +8,15 @@ using UnityEngine.SceneManagement;
 
 public class TestTopManager : MonoBehaviour
 {
-    [SerializeField] int testId = 0;
-    [SerializeField] string testName = "";
+    //-------------------
+    // フィールド
+
+    // 通信確立フラグ
+    private bool isConnect = false;         
+    public bool IsConnected { get; private set; }
+
+    [SerializeField] int testId = 0;        // 仮ユーザーID
+    [SerializeField] string testName = "";  // 仮ユーザー名
 
     public static TestTopManager Instance { get; private set; }
 
@@ -48,6 +55,7 @@ public class TestTopManager : MonoBehaviour
     public void OnCreatedRoom()
     {
         Debug.Log("入室");
+        isConnect = true;
     }
 
     // 入室完了通知
