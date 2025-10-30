@@ -7,6 +7,9 @@ public class HedgehogBase : MonoBehaviour
 {
     #region アニメーション関連
 
+    /// <summary>
+    /// アニメーションID
+    /// </summary>
     public enum Anim_Id
     {
         Idle = 0,
@@ -35,35 +38,11 @@ public class HedgehogBase : MonoBehaviour
     [Foldout("アニメーション関連")]
     [SerializeField]
     Avatar defaultAvatar;
-
-    // エフェクトの生成位置
-    [Foldout("アニメーション関連")]
-    [SerializeField]
-    protected Transform reference;
-    public Transform Reference { get { return reference; } }
     #endregion
 
     #region パーティクル関連
 
     #endregion
-
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
-    {
-       
-    }
-
-    [ContextMenu("Test")]
-    public void Test()
-    {
-        int nextId = GetAnimId() == (int)Anim_Id.Love ? 0 : GetAnimId() + 1;
-        SetAnimId(nextId);
-    }
-
-    protected virtual void Move()
-    {
-
-    }
 
     #region アニメーション関連
 
@@ -75,8 +54,6 @@ public class HedgehogBase : MonoBehaviour
         if (animator.avatar == ballAvatar) return;
         animator.avatar = ballAvatar;
         animator.Rebind();
-
-        InvokeRepeating("Move", 0, 0.1f);
     }
 
     /// <summary>
@@ -88,7 +65,8 @@ public class HedgehogBase : MonoBehaviour
         animator.avatar = defaultAvatar;
         animator.Rebind();
 
-        CancelInvoke("Move");
+        var angles = transform.localEulerAngles;
+        transform.localEulerAngles = new Vector3(angles.x, 0, angles.z);
     }
 
     /// <summary>
