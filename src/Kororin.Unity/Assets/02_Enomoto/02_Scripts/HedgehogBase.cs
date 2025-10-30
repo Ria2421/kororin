@@ -40,10 +40,6 @@ public class HedgehogBase : MonoBehaviour
     Avatar defaultAvatar;
     #endregion
 
-    #region パーティクル関連
-
-    #endregion
-
     #region アニメーション関連
 
     /// <summary>
