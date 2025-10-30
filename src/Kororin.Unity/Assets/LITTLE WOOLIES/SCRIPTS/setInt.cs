@@ -6,6 +6,7 @@ public class setInt : StateMachineBehaviour
 {
 
     public string parameter;
+    public int selfId = 0;
     public int value = 0;
     // OnStateEnter is called when a transition starts and the state machine starts to evaluate this state
     //override public void OnStateEnter(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
@@ -22,7 +23,10 @@ public class setInt : StateMachineBehaviour
     // OnStateExit is called when a transition ends and the state machine finishes evaluating this state
     override public void OnStateExit(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
     {
-        animator.SetInteger(parameter, value);
+        if (animator.GetInteger(parameter) == selfId)
+        {
+            animator.SetInteger(parameter, value);
+        }
     }
 
     // OnStateMove is called right after Animator.OnAnimatorMove()
