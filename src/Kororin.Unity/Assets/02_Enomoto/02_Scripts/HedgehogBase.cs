@@ -60,9 +60,6 @@ public class HedgehogBase : MonoBehaviour
         if (animator.avatar == defaultAvatar) return;
         animator.avatar = defaultAvatar;
         animator.Rebind();
-
-        var angles = transform.localEulerAngles;
-        transform.localEulerAngles = new Vector3(angles.x, 0, angles.z);
     }
 
     /// <summary>
@@ -81,8 +78,14 @@ public class HedgehogBase : MonoBehaviour
     public void SetAnimId(int id)
     {
         Anim_Id animId = (Anim_Id)id;
-        if (animId == Anim_Id.Idle_Ball || animId == Anim_Id.Run_Ball || animId == Anim_Id.Jump_Ball) 
+        if (animId == Anim_Id.Idle_Ball || animId == Anim_Id.Run_Ball || animId == Anim_Id.Jump_Ball)
+        {
             ChangeToBallAvatar();
+        }
+        else
+        {
+            ChangeToDefaultAvatar();
+        }
 
         animator.SetInteger("animation_id", id);
     }

@@ -1,14 +1,19 @@
 using UnityEngine;
+using static HedgehogBase;
 
-public class Ball : HedgehogBase
+public class Ball : MonoBehaviour
 {
     private Rigidbody rb;
 
+    [SerializeField] GameObject playerObj;
     [SerializeField] float deceleratSpeed; // 減速スピード
     [SerializeField] float applyForce;     // 加える力
-    [SerializeField] float runSpeedThreshold; // ★追加：走るアニメーションに切り替えるスピードの閾値
-    [SerializeField] float rotationSpeedFactor;// ★追加：回転の速さを調整する係数
-    [SerializeField] Transform meshTransform;
+    [SerializeField] float runSpeedThreshold; // 走るアニメーションに切り替えるスピードの閾値
+    [SerializeField] float rotationSpeed = 10f; // インスペクターで設定
+
+    HedgehogBase hedgehog;
+
+    bool isMoveType;
 
     float dx, dz;
 
@@ -19,6 +24,10 @@ public class Ball : HedgehogBase
 
         // 減速のためのDrag（抵抗）を設定
         rb.linearDamping = deceleratSpeed;
+
+        hedgehog = playerObj.GetComponent<HedgehogBase>();
+
+        isMoveType = false;
     }
 
     void Update()
@@ -26,17 +35,47 @@ public class Ball : HedgehogBase
         // プレイヤーの入力を取得
         dx = Input.GetAxis("Horizontal");
         dz = Input.GetAxis("Vertical");
+    }
 
+    private void FixedUpdate()
+    {
         AddForce();
     }
 
     public void AddForce()
     {
-        // 入力に基づいて移動方向を計算
-        var movement = new Vector3(dx, 0, dz);
+        var movement = new Vector3(dx, 0, dz).normalized;
+        rb.AddForce(movement * applyForce, ForceMode.Force);
 
-        // 球体に力を加える
-        rb.AddForce(movement * applyForce);
+        if (isMoveType)
+        {
+            rb.constraints &= RigidbodyConstraints.FreezeRotationX | RigidbodyConstraints.FreezeRotationZ;
+
+            // 1. ターゲットとなる回転を作成
+            
+            // 入力に基づいて移動方向を計算
+            movement = new Vector3(dx, 0, dz);
+            // 球体に力を加える
+            rb.AddForce(movement * applyForce);
+        }
+        else
+        {
+            transform.rotation = Quaternion.Euler(0, transform.eulerAngles.y, 0);
+            movement = new Vector3(dx, 0, dz).normalized;
+
+            //// inputDirectionを「前」とする回転
+            //Quaternion targetRotation = Quaternion.LookRotation(movement);
+
+            //// 2. 現在の回転からターゲットの回転へ滑らかに補間
+            //transform.rotation = Quaternion.Slerp(
+            //    transform.rotation,
+            //    targetRotation,
+            //    rotationSpeed * Time.fixedDeltaTime
+            //);
+
+
+            rb.AddForce(movement * applyForce, ForceMode.Force);
+        }
 
         UpdateMovementAnimation();
     }
@@ -51,37 +90,23 @@ public class Ball : HedgehogBase
         Vector3 horizontalVelocity = new Vector3(rb.linearVelocity.x, 0, rb.linearVelocity.z);
         float currentSpeed = horizontalVelocity.magnitude;
 
-        // 現在再生中のアニメーションIDを取得
-        Anim_Id currentAnimId = (Anim_Id)GetAnimId();
+        //// 現在再生中のアニメーションIDを取得
+        //Anim_Id currentAnimId = (Anim_Id)GetAnimId();
 
         // スピードが閾値を超えているか判定
-        if (currentSpeed >= runSpeedThreshold)
+        if (currentSpeed >= runSpeedThreshold * 2)
         {
-            // 閾値を超えていて、現在のIDがRun_Ball以外ならRun_Ballに切り替え
-            if (currentAnimId != Anim_Id.Run)
-            {
-                SetAnimId((int)Anim_Id.Run);
-            }
+            hedgehog.SetAnimId((int)Anim_Id.Run_Ball);
+            isMoveType = true;
         }
-        else if (currentSpeed >= runSpeedThreshold * 2)
+        else if (currentSpeed >= 0.5f)
         {
-            // 閾値を超えていて、現在のIDがRun_Ball以外ならRun_Ballに切り替え
-            if (currentAnimId != Anim_Id.Run_Ball)
-            {
-                SetAnimId((int)Anim_Id.Run_Ball);
-            }
+            hedgehog.SetAnimId((int)Anim_Id.Run);
+            isMoveType = false;
         }
         else
         {
-            // 閾値未満で、現在のIDがIdle_Ball以外ならIdle_Ballに切り替え
-            // ただし、Jumpなどのアクションアニメーション中は切り替えない方が良い
-            if (currentAnimId == Anim_Id.Run_Ball || currentAnimId == Anim_Id.Idle_Ball)
-            {
-                if (currentAnimId != Anim_Id.Idle_Ball)
-                {
-                    SetAnimId((int)Anim_Id.Idle_Ball);
-                }
-            }
+            hedgehog.SetAnimId((int)Anim_Id.Idle);
         }
     }
 }
