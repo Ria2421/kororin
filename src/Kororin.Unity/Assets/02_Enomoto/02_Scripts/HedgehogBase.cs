@@ -34,10 +34,10 @@ public class HedgehogBase : MonoBehaviour
     protected Animator animator;
     [Foldout("アニメーション関連")]
     [SerializeField]
-    Avatar ballAvatar;
+    protected Avatar ballAvatar;
     [Foldout("アニメーション関連")]
     [SerializeField]
-    Avatar defaultAvatar;
+    protected Avatar defaultAvatar;
     #endregion
 
     #region パーティクル関連
