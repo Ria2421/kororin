@@ -24,7 +24,7 @@ namespace Shared.Interfaces.StreamingHubs
         /// <summary>
         /// 位置
         /// </summary>
-        public Vector2 Position { get; set; } = Vector2.zero;
+        public Vector3 Position { get; set; } = Vector3.zero;
 
         [Key(2)]
         /// <summary>

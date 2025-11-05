@@ -14,7 +14,7 @@ public class TestMultiLobbyManager : MonoBehaviour
 
     // 通信確立フラグ
     private bool isConnect = false;
-    public bool IsConnected { get; private set; }
+    public bool IsConnect {  get { return isConnect; } }
 
     // ローカルテスト用
     [SerializeField] int testId = 0;        // 仮ユーザーID
@@ -38,21 +38,43 @@ public class TestMultiLobbyManager : MonoBehaviour
     // 起動処理
     private async void Awake()
     {
+        if (instance == null)
+        {
+            instance = this;
+        }
+        else
+        {
+            // インスタンスが複数存在しないように、既に存在していたら自身を消去する
+            Destroy(gameObject);
+        }
+
         if (!LoadingManager.Instance) SceneManager.LoadScene("01_UI_Loading", LoadSceneMode.Additive);
-
-        CharacterManager.Instance.StartPoints = generatePos;
-
-        await RoomModel.Instance.ConnectAsync();
     }
 
     // 初期処理
     private async void Start()
     {
-        await RoomModel.Instance.JoinedAsync("Kororin", testId, testName);
+        // 生成位置の設定
+        CharacterManager.Instance.StartPoints = generatePos;
 
         RoomModel.Instance.OnJoinedUser += OnJoinedUser;
         RoomModel.Instance.OnCreatedRoom += OnCreatedRoom;
         RoomModel.Instance.OnLeavedUser += OnLeavedUser;
+
+        await RoomModel.Instance.ConnectAsync();
+
+        await RoomModel.Instance.JoinedAsync("Kororin", testId, testName);
+    }
+
+    private void OnDisable()
+    {
+        if (!RoomModel.Instance) return;
+        StopAllCoroutines();
+
+        // シーン遷移したときに登録した通知処理を解除
+        RoomModel.Instance.OnJoinedUser -= OnJoinedUser;
+        RoomModel.Instance.OnCreatedRoom -= OnCreatedRoom;
+        RoomModel.Instance.OnLeavedUser -= OnLeavedUser;
     }
 
     // 更新処理
@@ -68,7 +90,6 @@ public class TestMultiLobbyManager : MonoBehaviour
     {
         Debug.Log("入室");
         isConnect = true;
-        CharacterManager.Instance.GenerateAllCharacters();
     }
 
     // 入室完了通知
