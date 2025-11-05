@@ -1,7 +1,7 @@
-﻿//=============================
-// クライアントからサーバーへの通信を管理するスクリプト
-// Author:木田晃輔
-//=============================
+﻿//-------------------------------------------------------------
+// クライアント～サーバー間の通信に関するスクリプト
+// Author:中本健太
+//-------------------------------------------------------------
 
 #region using一覧
 using MagicOnion.Server.Hubs;
@@ -22,8 +22,8 @@ namespace StreamingHubs
         RoomContextRepository roomContextRepos;
         Dictionary<Guid, JoinedUser> JoinedUsers { get; set; }
 
-        // 参加可能人数
-        private const int MAX_JOINABLE_PLAYERS = 3;
+        // 最大参加可能人数
+        private const int MIN_JOINABLE_PLAYERS = 2;
 
         #region 接続・切断処理
         //接続した場合
@@ -44,7 +44,6 @@ namespace StreamingHubs
         #region マッチングしてからゲーム開始までの処理
         /// <summary>
         /// 入室処理
-        /// Author:Kida
         /// </summary>
         /// <param name="roomName"></param>
         /// <param name="userId"></param>
@@ -99,7 +98,6 @@ namespace StreamingHubs
 
         /// <summary>
         /// 退室処理
-        /// Author:Kida
         /// </summary>
         /// <returns></returns>
         public async Task LeavedAsync(bool isEnd)
@@ -129,7 +127,6 @@ namespace StreamingHubs
                             }
                         }
                     }
-
                 }
 
                 //// ルーム参加者全員に、ユーザーの退室通知を送信
@@ -166,10 +163,9 @@ namespace StreamingHubs
 
         /// <summary>
         /// 準備完了
-        /// Author:Nishiura
         /// </summary>
         /// <returns></returns>
-        public async Task ReadyAsync(int characterId)
+        public async Task StandbyAsync()
         {
             lock (roomContextRepository) // 排他制御
             {
@@ -177,14 +173,17 @@ namespace StreamingHubs
 
                 // 自身のデータを取得
                 var joinedUser = roomContext.JoinedUserList[this.ConnectionId];
-                joinedUser.IsReady = true; // 準備完了にする
+                joinedUser.IsReady = true;  // 準備完了にする
 
                 // ルーム参加者全員に、自分が準備完了した通知を送信
-                this.roomContext.Group.All.OnReady(joinedUser);
+                this.roomContext.Group.All.OnStandby(this.ConnectionId);
+
+                // 最低参加人数がいない時点で早期リターン
+                if(this.roomContext.JoinedUserList.Count < MIN_JOINABLE_PLAYERS) return;
 
                 foreach (var user in this.roomContext.JoinedUserList)
                 { // 現在の参加者数分ループ
-                    if (user.Value.IsReady != true) canStartGame = false; // もし一人でも準備完了していなかった場合、開始させない
+                    if (!user.Value.IsReady) canStartGame = false; // もし一人でも準備完了していなかった場合、開始させない
                 }
 
                 // ゲームが開始できる場合、開始通知をする
@@ -196,13 +195,13 @@ namespace StreamingHubs
                 }
             }
         }
+
         #endregion
 
         #region ゲーム内での処理
 
         /// <summary>
         /// マスタークライアント譲渡処理
-        /// Author:Nishiura
         /// </summary>
         /// <param name="conID"></param>
         /// <returns></returns>
@@ -227,7 +226,6 @@ namespace StreamingHubs
 
         /// <summary>
         /// プレイヤーの更新
-        /// Author:Nishiura
         /// </summary>
         /// <param name="playerData"></param>
         /// <returns></returns>
@@ -254,7 +252,6 @@ namespace StreamingHubs
 
         ///// <summary>
         ///// マスタークライアントの更新
-        ///// Author:木田晃輔
         ///// </summary>
         ///// <param name="masterClientData"></param>
         ///// <returns></returns>
@@ -323,7 +320,6 @@ namespace StreamingHubs
 
         ///// <summary>
         ///// ギミック起動同期処理
-        ///// Autho:Nishiura
         ///// </summary>
         ///// <param name="gimID">ギミック識別ID</param>
         ///// <returns></returns>

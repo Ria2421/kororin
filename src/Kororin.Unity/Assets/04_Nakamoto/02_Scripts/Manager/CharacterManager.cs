@@ -1,6 +1,6 @@
 //---------------------------------------------------
 // キャラクター管理 [ CharacterManager.cs ]
-//  Author:Kenta Nakamoto
+// Author:Kenta Nakamoto
 //---------------------------------------------------
 using DG.Tweening;
 using Shared.Interfaces.StreamingHubs;
@@ -132,6 +132,8 @@ public class CharacterManager : MonoBehaviour
             if (joinduser.Key == RoomModel.Instance.ConnectionId)
             {
                 playerObjSelf = playerObj;
+
+                playerObj.GetComponent<Player>().IsSelf = true;
 
                 // カメラの追従設定
                 //if (cinemachineTargetGroup)

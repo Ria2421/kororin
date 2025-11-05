@@ -3,6 +3,7 @@
 // Author:Kenta Nakamoto
 //-----------------------------------------------------------
 using Shared.Interfaces.StreamingHubs;
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -15,6 +16,10 @@ public class TestMultiLobbyManager : MonoBehaviour
     // 通信確立フラグ
     private bool isConnect = false;
     public bool IsConnect {  get { return isConnect; } }
+
+    // スタンバイフラグ
+    private bool isStandby = false;
+    public bool IsStandby { get { return isStandby; } set { isStandby = value; } }
 
     // ローカルテスト用
     [SerializeField] int testId = 0;        // 仮ユーザーID
@@ -60,6 +65,8 @@ public class TestMultiLobbyManager : MonoBehaviour
         RoomModel.Instance.OnJoinedUser += OnJoinedUser;
         RoomModel.Instance.OnCreatedRoom += OnCreatedRoom;
         RoomModel.Instance.OnLeavedUser += OnLeavedUser;
+        RoomModel.Instance.OnStoodby += OnStoodby;
+        RoomModel.Instance.OnStartedGame += OnStartedGame;
 
         await RoomModel.Instance.ConnectAsync();
 
@@ -103,6 +110,19 @@ public class TestMultiLobbyManager : MonoBehaviour
     public void OnLeavedUser(JoinedUser leavedUser)
     {
         Debug.Log(leavedUser.UserName + "が退室しました。");
+    }
+
+    // 準備完了通知
+    public void OnStoodby(Guid guid)
+    {
+        Debug.Log(RoomModel.Instance.joinedUserList[guid].UserName + "、準備完了！");
+    }
+
+    // ゲーム開始通知
+    public void OnStartedGame()
+    {
+        // インゲームシーンに移動
+        Debug.Log("ゲーム開始");
     }
 
     #endregion

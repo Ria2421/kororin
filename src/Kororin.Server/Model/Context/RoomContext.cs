@@ -1,7 +1,7 @@
-﻿//=============================
-// ルームコンテキストスクリプト
-// Author:木田晃輔
-//=============================
+﻿//-------------------------------------------------------------
+// RoomContextに関するスクリプト
+// Author:中本健太
+//-------------------------------------------------------------
 using Cysharp.Runtime.Multicast;
 using Korirn.Server.Model.Context;
 using Kororin.Shared.Interfaces.StreamingHubs;
@@ -14,37 +14,31 @@ namespace Kororin.Server.Model.Context
         #region RoomContext基本構造
         /// <summary>
         /// コンテキストID
-        /// Author:Kida
         /// </summary>
         public Guid Id { get; }
 
         /// <summary>
         /// ルーム名
-        /// Author:Kida
         /// </summary>
         public string Name { get; }
 
         /// <summary>
         /// パスワード
-        /// Author:Kida
         /// </summary>
         public string PassWord { get; set; }
 
         /// <summary>
         /// 現在のステージ
-        /// Author:Nishiura
         /// </summary>
         public EnumManager.STAGE_TYPE NowStage { get; set; }
 
         /// <summary>
         /// ステージ進行リクエスト変数
-        /// Author:Nishiura
         /// </summary>
         public bool isAdvanceRequest;
 
         /// <summary>
         /// グループ
-        /// Author:Kida
         /// </summary>
         public IMulticastSyncGroup<Guid, IRoomHubReceiver> Group { get; }
 
@@ -64,7 +58,6 @@ namespace Kororin.Server.Model.Context
 
         /// <summary>
         /// 参加者の情報リスト
-        /// Author:Kida
         /// </summary>
         public Dictionary<Guid, JoinedUser> JoinedUserList { get; } = new Dictionary<Guid, JoinedUser>();
 
@@ -89,7 +82,6 @@ namespace Kororin.Server.Model.Context
 
         /// <summary>
         /// グループ退室処理
-        /// Author:木田晃輔
         /// </summary>
         public void Dispose()
         {
@@ -99,7 +91,6 @@ namespace Kororin.Server.Model.Context
 
         /// <summary>
         /// ユーザーの退出処理
-        /// Aughter:Kida
         /// </summary>
         /// <returns></returns>
         public void RemoveUser(Guid guid)

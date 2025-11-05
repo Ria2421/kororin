@@ -31,7 +31,7 @@ namespace Kororin.Shared.Interfaces.StreamingHubs
         /// 準備完了
         /// </summary>
         /// <returns></returns>
-        Task ReadyAsync(int characterID);
+        Task StandbyAsync();
 
         #endregion
 

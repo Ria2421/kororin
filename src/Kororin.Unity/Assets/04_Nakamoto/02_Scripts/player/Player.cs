@@ -1,9 +1,16 @@
+//-------------------------------------------------------------
+// プレイヤーの動作テストスクリプト [ Player.cs ]
+// Author:中本健太
+//-------------------------------------------------------------
 using Shared.Interfaces.StreamingHubs;
 using System.Collections;
 using UnityEngine;
 
 public class Player : MonoBehaviour
 {
+    private bool isSelf = false;
+    public bool IsSelf { get { return isSelf; } set { isSelf = value; } }
+
     private Rigidbody rb;
 
     [SerializeField] private float deceleratSpeed; // 減速スピード
@@ -50,5 +57,15 @@ public class Player : MonoBehaviour
     public int GetAnimId()
     {
         return animator != null ? animator.GetInteger("animation_id") : 0;
+    }
+
+    private async void OnTriggerEnter(Collider other)
+    {
+        if(other.tag == "Standby" && isSelf)
+        {
+            TestMultiLobbyManager.Instance.IsStandby = true;
+            await RoomModel.Instance.StandbyAsync();
+            Debug.Log("準備完了！");
+        }
     }
 }
