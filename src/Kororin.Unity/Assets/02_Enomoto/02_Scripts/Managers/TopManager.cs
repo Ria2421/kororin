@@ -15,6 +15,9 @@ public class TopManager : ManagerBase
     {
         switch (stage)
         {
+            case STAGE_TYPE.MultiScene:
+                LoadingManager.Instance.StartSceneLoad("03_Multi");
+                break;
             case STAGE_TYPE.Stage01:
                 LoadingManager.Instance.StartSceneLoad("01_Stage");
                 break;
