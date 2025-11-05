@@ -13,7 +13,7 @@ public class Ball : MonoBehaviour
 
     HedgehogBase hedgehog;
 
-    bool isMoveType;
+    bool isSphere;
 
     float dx, dz;
 
@@ -27,7 +27,7 @@ public class Ball : MonoBehaviour
 
         hedgehog = playerObj.GetComponent<HedgehogBase>();
 
-        isMoveType = false;
+        isSphere = false;
     }
 
     void Update()
@@ -44,14 +44,14 @@ public class Ball : MonoBehaviour
 
     public void AddForce()
     {
+        UpdateMovementAnimation();
+
         var movement = new Vector3(dx, 0, dz).normalized;
         rb.AddForce(movement * applyForce, ForceMode.Force);
 
-        if (isMoveType)
+        if (isSphere)
         {
-            rb.constraints &= RigidbodyConstraints.FreezeRotationX | RigidbodyConstraints.FreezeRotationZ;
-
-            // 1. ターゲットとなる回転を作成
+            //rb.constraints &= RigidbodyConstraints.FreezeRotationX | RigidbodyConstraints.FreezeRotationZ;
             
             // 入力に基づいて移動方向を計算
             movement = new Vector3(dx, 0, dz);
@@ -60,24 +60,23 @@ public class Ball : MonoBehaviour
         }
         else
         {
-            transform.rotation = Quaternion.Euler(0, transform.eulerAngles.y, 0);
+            transform.rotation = Quaternion.Euler(0, 180, 0);
             movement = new Vector3(dx, 0, dz).normalized;
 
-            //// inputDirectionを「前」とする回転
-            //Quaternion targetRotation = Quaternion.LookRotation(movement);
+            // 入力がある場合のみ回転
+            if (movement.magnitude >= 0.1f)
+            {
+                // キー入力方向へ瞬時回転
+                Quaternion targetRotation = Quaternion.LookRotation(-movement);
+                transform.rotation = targetRotation;
 
-            //// 2. 現在の回転からターゲットの回転へ滑らかに補間
-            //transform.rotation = Quaternion.Slerp(
-            //    transform.rotation,
-            //    targetRotation,
-            //    rotationSpeed * Time.fixedDeltaTime
-            //);
-
+                // X, Z軸の傾きを強制的に0にリセットし、Y軸の向きを確定
+                Vector3 currentEuler = transform.eulerAngles;
+                transform.rotation = Quaternion.Euler(0f, currentEuler.y, 0f);
+            }
 
             rb.AddForce(movement * applyForce, ForceMode.Force);
         }
-
-        UpdateMovementAnimation();
     }
 
     /// <summary>
@@ -94,15 +93,15 @@ public class Ball : MonoBehaviour
         //Anim_Id currentAnimId = (Anim_Id)GetAnimId();
 
         // スピードが閾値を超えているか判定
-        if (currentSpeed >= runSpeedThreshold * 2)
+        if (currentSpeed >= runSpeedThreshold * 1.5f)
         {
             hedgehog.SetAnimId((int)Anim_Id.Run_Ball);
-            isMoveType = true;
+            isSphere = true;
         }
         else if (currentSpeed >= 0.5f)
         {
             hedgehog.SetAnimId((int)Anim_Id.Run);
-            isMoveType = false;
+            isSphere = false;
         }
         else
         {
