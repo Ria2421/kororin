@@ -13,11 +13,11 @@ public class TestTopCollider : MonoBehaviour
     {
         if (modeType == "Single")
         {
-            TestTopManager.Instance.TransitionSinglScene();
+            LoadingManager.Instance.StartSceneLoad("01_Stage");
         }
         else if(modeType == "Multi")
         {
-            TestTopManager.Instance.TransitionMultiScene();
+            LoadingManager.Instance.StartSceneLoad("03_SampleMultiLobby");
         }
     }
 }

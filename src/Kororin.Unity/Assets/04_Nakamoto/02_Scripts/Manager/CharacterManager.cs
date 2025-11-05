@@ -9,15 +9,18 @@ using System.Collections.Generic;
 using Unity.Cinemachine;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.UIElements;
 
 public class CharacterManager : MonoBehaviour
 {
     //-----------------------
     // フィールド
 
-    /// <summary>
-    /// 参加者のプレイヤーオブジェリスト
-    /// </summary>
+    // 各プレイヤーの初期位置
+    private List<Transform> startPoints = new List<Transform>();   
+    public List<Transform> StartPoints {  get { return startPoints; } set { startPoints = value; } }
+
+    // 参加者のプレイヤーオブジェリスト
     private Dictionary<Guid, GameObject> playerObjs = new Dictionary<Guid, GameObject>();
 
     public Dictionary<Guid, GameObject> PlayerObjs { get { return playerObjs; } }
@@ -26,13 +29,52 @@ public class CharacterManager : MonoBehaviour
 
     [SerializeField] private GameObject playerObjSelf;  // ローカル用に属性付与
 
+    static CharacterManager instance;
+    public static CharacterManager Instance
+    {
+        get
+        {
+            return instance;
+        }
+    }
+
     //------------
     // 定数
 
     private const float UPDATE_SEC = 0.1f;  // 通信頻度
 
     //-----------------------
-    // 通信関連
+    // メソッド
+
+    private void Awake()
+    {
+        if (instance == null)
+        {
+            instance = this;
+        }
+        else
+        {
+            // インスタンスが複数存在しないように、既に存在していたら自身を消去する
+            Destroy(gameObject);
+        }
+
+        // 既にステージに配置されているプレイヤーを削除し、参加人数分プレイヤー生成
+        //DestroyExistingPlayer();
+        //GenerateCharacters();
+
+        // 通知処理を登録
+        //RoomModel.Instance.OnUpdatePlayerSyn += this.OnUpdatePlayer;
+        //RoomModel.Instance.OnUpdateMasterClientSyn += this.OnUpdateMasterClient;
+        //RoomModel.Instance.OnLeavedUser += this.OnLeave;
+        //RoomModel.Instance.OnEnemyHealthSyn += this.OnHitEnemy;
+        //RoomModel.Instance.OnChangedMasterClient += this.ActivateAllEnemies;
+        //RoomModel.Instance.OnShootedBullet += this.OnShootedBullet;
+        //RoomModel.Instance.OnUpdateStatusSyn += this.OnUpdatePlayerStatus;
+        //RoomModel.Instance.OnLevelUpSyn += this.OnLevelup;
+        //RoomModel.Instance.OnPlayerDeadSyn += this.OnPlayerDead;
+        //RoomModel.Instance.OnBeamEffectActived += this.OnBeamEffectActived;
+        //RoomModel.Instance.OnDeleteEnemySyn += this.OnDestroyEnemy;
+    }
 
     /// <summary>
     /// 入室者のプレイヤーオブジェの生成
@@ -41,25 +83,25 @@ public class CharacterManager : MonoBehaviour
     public void GenerateCharacters(Guid connectionID)
     {
         // 開始位置の設定
-        //var point = startPoints[0];
-        //startPoints.RemoveAt(0);
+        var point = startPoints[0];
+        startPoints.RemoveAt(0);
 
-        var playerObj = Instantiate(playerPrefab, playerPrefab.transform.position, Quaternion.identity);
+        var playerObj = Instantiate(playerPrefab, point.position, Quaternion.identity);
         playerObjs.Add(connectionID, playerObj);
     }
 
     /// <summary>
     /// 参加しているユーザー情報を元に、全員のプレイヤーを生成する
     /// </summary>
-    private void GenerateAllCharacters()
+    public void GenerateAllCharacters()
     {
         foreach (var joinduser in RoomModel.Instance.joinedUserList)
         {
             // 開始位置の設定
-            //var point = startPoints[0];
-            //startPoints.RemoveAt(0);
+            var point = startPoints[0];
+            startPoints.RemoveAt(0);
 
-            var playerObj = Instantiate(playerPrefab, playerPrefab.transform.position, Quaternion.identity);
+            var playerObj = Instantiate(playerPrefab, point.position, Quaternion.identity);
             playerObjs.Add(joinduser.Key, playerObj);
 
             // 自身のプレイヤーを生成した場合
@@ -97,7 +139,7 @@ public class CharacterManager : MonoBehaviour
     {
         while (true)
         {
-            if (TestTopManager.Instance.IsConnected)
+            if (TestMultiLobbyManager.Instance.IsConnected)
             {
                 UpdateCharacterDataRequest();
             }

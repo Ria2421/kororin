@@ -9,67 +9,11 @@ using UnityEngine.SceneManagement;
 public class TestTopManager : MonoBehaviour
 {
     //-------------------
-    // フィールド
-
-    // 通信確立フラグ
-    private bool isConnect = false;         
-    public bool IsConnected { get; private set; }
-
-    [SerializeField] int testId = 0;        // 仮ユーザーID
-    [SerializeField] string testName = "";  // 仮ユーザー名
-
-    public static TestTopManager Instance { get; private set; }
+    // メソッド
 
     // 起動処理
-    private async void Awake()
+    private void Awake()
     {
         if (!LoadingManager.Instance) SceneManager.LoadScene("01_UI_Loading", LoadSceneMode.Additive);
-        if (Instance == null) Instance = this;
-
-        await RoomModel.Instance.ConnectAsync();
     }
-
-    // 初期処理
-    void Start()
-    {
-        RoomModel.Instance.OnJoinedUser += OnJoinedUser;
-        RoomModel.Instance.OnCreatedRoom += OnCreatedRoom;
-        RoomModel.Instance.OnLeavedUser += OnLeavedUser;
-    }
-
-    // シングルモード遷移
-    public void TransitionSinglScene()
-    {
-        LoadingManager.Instance.StartSceneLoad("01_Stage");
-    }
-
-    // マルチモード遷移
-    public async void TransitionMultiScene()
-    {
-        await RoomModel.Instance.JoinedAsync("Kororin",testId,testName);
-    }
-
-    #region 通知処理
-
-    // ルーム作成通知
-    public void OnCreatedRoom()
-    {
-        Debug.Log("入室");
-        isConnect = true;
-    }
-
-    // 入室完了通知
-    public void OnJoinedUser(JoinedUser joinedUser)
-    {
-        Debug.Log(joinedUser.UserName + "が入室しました。");
-    }
-
-    // 退室通知
-    public void OnLeavedUser(JoinedUser leavedUser)
-    {
-        Debug.Log(leavedUser.UserName + "が退室しました。");
-    }
-
-    #endregion
-
 }
