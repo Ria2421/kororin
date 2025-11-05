@@ -313,6 +313,7 @@ public class RoomModel : BaseModel, IRoomHubReceiver
     #endregion
 
     #region ゲーム内UI・仕様の同期関連
+
     /// <summary>
     /// ゲーム開始通知
     /// </summary>
@@ -363,6 +364,8 @@ public class RoomModel : BaseModel, IRoomHubReceiver
             }
             Debug.Log(user.Value.UserName + "が参加");
         }
+
+        CharacterManager.Instance.GenerateAllCharacters();
     }
 
     /// <summary>

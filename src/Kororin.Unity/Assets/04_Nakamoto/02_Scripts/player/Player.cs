@@ -20,6 +20,9 @@ public class Player : MonoBehaviour
         // 減速のためのDrag（抵抗）を設定
         // 値が大きいほど早く減速
         rb.linearDamping = deceleratSpeed;
+
+        // オンラインのみ
+        if (!RoomModel.Instance) return;
     }
 
     void Update()

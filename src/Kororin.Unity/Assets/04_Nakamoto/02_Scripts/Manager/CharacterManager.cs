@@ -2,12 +2,14 @@
 // キャラクター管理 [ CharacterManager.cs ]
 //  Author:Kenta Nakamoto
 //---------------------------------------------------
+using DG.Tweening;
 using Shared.Interfaces.StreamingHubs;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using Unity.Cinemachine;
 using UnityEngine;
+using UnityEngine.TextCore.Text;
 using UnityEngine.UI;
 using UnityEngine.UIElements;
 
@@ -28,6 +30,7 @@ public class CharacterManager : MonoBehaviour
     [SerializeField] private GameObject playerPrefab;   // 生成するプレイヤーオブジェ
 
     [SerializeField] private GameObject playerObjSelf;  // ローカル用に属性付与
+    public GameObject PlayerObjSelf { get { return playerObjSelf; } }
 
     static CharacterManager instance;
     public static CharacterManager Instance
@@ -46,6 +49,7 @@ public class CharacterManager : MonoBehaviour
     //-----------------------
     // メソッド
 
+    // 起動処理
     private void Awake()
     {
         if (instance == null)
@@ -61,9 +65,16 @@ public class CharacterManager : MonoBehaviour
         // 既にステージに配置されているプレイヤーを削除し、参加人数分プレイヤー生成
         //DestroyExistingPlayer();
         //GenerateCharacters();
+    }
+
+    // 初期処理
+    private void Start()
+    {
+        if (!RoomModel.Instance) return;
+        StartCoroutine("UpdateCoroutine");
 
         // 通知処理を登録
-        //RoomModel.Instance.OnUpdatePlayerSyn += this.OnUpdatePlayer;
+        RoomModel.Instance.OnUpdatedCharacter += this.OnUpdateCharacter;
         //RoomModel.Instance.OnUpdateMasterClientSyn += this.OnUpdateMasterClient;
         //RoomModel.Instance.OnLeavedUser += this.OnLeave;
         //RoomModel.Instance.OnEnemyHealthSyn += this.OnHitEnemy;
@@ -74,6 +85,15 @@ public class CharacterManager : MonoBehaviour
         //RoomModel.Instance.OnPlayerDeadSyn += this.OnPlayerDead;
         //RoomModel.Instance.OnBeamEffectActived += this.OnBeamEffectActived;
         //RoomModel.Instance.OnDeleteEnemySyn += this.OnDestroyEnemy;
+    }
+
+    private void OnDisable()
+    {
+        if (!RoomModel.Instance) return;
+        StopAllCoroutines();
+
+        // シーン遷移したときに登録した通知処理を解除
+        RoomModel.Instance.OnUpdatedCharacter -= this.OnUpdateCharacter;
     }
 
     /// <summary>
@@ -88,6 +108,10 @@ public class CharacterManager : MonoBehaviour
 
         var playerObj = Instantiate(playerPrefab, point.position, Quaternion.identity);
         playerObjs.Add(connectionID, playerObj);
+
+        playerObj.GetComponent<Player>().enabled = false;
+
+        StartCoroutine("UpdateCoroutine");
     }
 
     /// <summary>
@@ -128,6 +152,10 @@ public class CharacterManager : MonoBehaviour
                 //    camera.GetComponent<CinemachineCamera>().Target.TrackingTarget = playerObjSelf.transform;
                 //}
             }
+            else
+            {
+                playerObj.GetComponent<Player>().enabled = false;
+            }
         }
     }
 
@@ -139,7 +167,7 @@ public class CharacterManager : MonoBehaviour
     {
         while (true)
         {
-            if (TestMultiLobbyManager.Instance.IsConnected)
+            if (TestMultiLobbyManager.Instance.IsConnect)
             {
                 UpdateCharacterDataRequest();
             }
@@ -177,4 +205,32 @@ public class CharacterManager : MonoBehaviour
             ConnectionID = RoomModel.Instance.ConnectionId,
         };
     }
+
+    /// <summary>
+    /// キャラの更新処理
+    /// </summary>
+    /// <param name="characterData"></param>
+    void UpdateCharacter(CharacterData characterData,GameObject playerObj)
+    {
+        playerObj.gameObject.transform.DOMove(characterData.Position, UPDATE_SEC).SetEase(Ease.Linear);
+        playerObj.gameObject.transform.localScale = characterData.Scale;
+        playerObj.gameObject.transform.DORotateQuaternion(characterData.Rotation, UPDATE_SEC).SetEase(Ease.Linear);
+    }
+
+    #region 通知関連
+
+    /// <summary>
+    /// キャラ更新通知
+    /// </summary>
+    /// <param name="characterData"></param>
+    public void OnUpdateCharacter(CharacterData characterData)
+    {
+        if (!playerObjs.ContainsKey(characterData.ConnectionID) || !RoomModel.Instance) return;
+
+        // プレイヤーの情報更新
+        var player = playerObjs[characterData.ConnectionID];
+        UpdateCharacter(characterData,player);
+    }
+
+    #endregion
 }
