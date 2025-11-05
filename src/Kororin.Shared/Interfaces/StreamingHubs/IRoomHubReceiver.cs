@@ -40,7 +40,7 @@ namespace Kororin.Shared.Interfaces.StreamingHubs
         /// 準備完了通知
         /// </summary>
         /// <param name="conID">接続ID</param>
-        void OnReady(JoinedUser joinedUser);
+        void OnStandby(Guid guid);
 
         /// <summary>
         /// ゲーム開始通知

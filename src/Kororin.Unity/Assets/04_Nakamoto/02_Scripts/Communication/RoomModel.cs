@@ -1,6 +1,6 @@
 //-------------------------------------------------------------
-// RoomHubへの接続管理
-// Aughter:中本健太
+// RoomHubへの接続管理 [ RoomModel.cs ]
+// Author:中本健太
 //-------------------------------------------------------------
 #region using一覧
 using Cysharp.Net.Http;
@@ -61,7 +61,7 @@ public class RoomModel : BaseModel, IRoomHubReceiver
     public Action<Guid, int> OnChangedCharacter { get; set; }
 
     // 準備完了通知
-    public Action<Guid> OnReadySyn { get; set; }
+    public Action<Guid> OnStoodby { get; set; }
 
     // ゲーム開始通知
     public Action OnStartedGame { get; set; }
@@ -270,11 +270,12 @@ public class RoomModel : BaseModel, IRoomHubReceiver
     /// 準備完了通知
     /// </summary>
     /// <param name="conID"></param>
-    public void OnReady(JoinedUser joinedUser)
+    public void OnStandby(Guid guid)
     {
-        joinedUserList[joinedUser.ConnectionId] = joinedUser;
-        OnReadySyn(joinedUser.ConnectionId);
+        joinedUserList[guid].IsReady = true;
+        OnStoodby(guid);
     }
+
     #endregion
 
     #region プレイヤー通知関連
@@ -384,9 +385,9 @@ public class RoomModel : BaseModel, IRoomHubReceiver
     /// 準備完了同期
     /// </summary>
     /// <returns></returns>
-    public async UniTask ReadyAsync(int characterId)
+    public async UniTask StandbyAsync()
     {
-        await roomHub.ReadyAsync(characterId);
+        await roomHub.StandbyAsync();
     }
 
     ///// <summary>

@@ -1,6 +1,7 @@
 ﻿//-------------------------------------------------
 // データベースとの接続を管理するスクリプト
-// Aughter:中本健太
+// Author:中本健太
+//-------------------------------------------------
 
 using Microsoft.EntityFrameworkCore;
 using Kororin.Shared.Interfaces.Model.Entity;
