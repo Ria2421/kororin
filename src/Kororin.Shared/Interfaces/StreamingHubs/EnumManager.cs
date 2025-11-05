@@ -17,10 +17,12 @@ namespace Kororin.Shared.Interfaces.StreamingHubs
         public enum STAGE_TYPE
         {
             Rndom = 0,
+            TopScene,
+            MultiScene,
             Stage01,
             Stage02,
         }
-        public const int STAGE_TYPE_MAX = 2;
+        public const int STAGE_TYPE_MAX = 4;
 
         /// <summary>
         /// アイテムの種類
