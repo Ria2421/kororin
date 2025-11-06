@@ -5,17 +5,16 @@ public class Ball : MonoBehaviour
 {
     private Rigidbody rb;
 
-    [SerializeField] GameObject playerObj;
+    [SerializeField] HedgehogBase hedgehog;
     [SerializeField] float deceleratSpeed; // 減速スピード
     [SerializeField] float applyForce;     // 加える力
     [SerializeField] float runSpeedThreshold; // 走るアニメーションに切り替えるスピードの閾値
     [SerializeField] float rotationSpeed = 10f; // インスペクターで設定
-
-    HedgehogBase hedgehog;
-
     bool isSphere;
-
     float dx, dz;
+
+    bool canControl = true;
+    public bool CanControl { get { return canControl; } set { canControl = value; } }
 
     void Start()
     {
@@ -25,16 +24,14 @@ public class Ball : MonoBehaviour
         // 減速のためのDrag（抵抗）を設定
         rb.linearDamping = deceleratSpeed;
 
-        hedgehog = playerObj.GetComponent<HedgehogBase>();
-
         isSphere = false;
     }
 
     void Update()
     {
         // プレイヤーの入力を取得
-        dx = Input.GetAxis("Horizontal");
-        dz = Input.GetAxis("Vertical");
+        dx = canControl ? Input.GetAxis("Horizontal") : 0;
+        dz = canControl ? Input.GetAxis("Vertical") : 0;
     }
 
     private void FixedUpdate()
@@ -44,6 +41,7 @@ public class Ball : MonoBehaviour
 
     public void AddForce()
     {
+        if(dx == 0 && dz == 0) return;
         UpdateMovementAnimation();
 
         var movement = new Vector3(dx, 0, dz).normalized;
@@ -88,9 +86,6 @@ public class Ball : MonoBehaviour
         // Rigidbody.velocity.magnitude は全体の速度
         Vector3 horizontalVelocity = new Vector3(rb.linearVelocity.x, 0, rb.linearVelocity.z);
         float currentSpeed = horizontalVelocity.magnitude;
-
-        //// 現在再生中のアニメーションIDを取得
-        //Anim_Id currentAnimId = (Anim_Id)GetAnimId();
 
         // スピードが閾値を超えているか判定
         if (currentSpeed >= runSpeedThreshold * 1.5f)
