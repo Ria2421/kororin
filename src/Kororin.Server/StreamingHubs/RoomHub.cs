@@ -23,7 +23,7 @@ namespace StreamingHubs
         Dictionary<Guid, JoinedUser> JoinedUsers { get; set; }
 
         // 最大参加可能人数
-        private const int MIN_JOINABLE_PLAYERS = 2;
+        private const int MAX_JOINABLE_PLAYERS = 2;
 
         #region 接続・切断処理
         //接続した場合
@@ -39,9 +39,11 @@ namespace StreamingHubs
             // 退室処理を実行
             LeavedAsync(false); return CompletedTask;
         }
+
         #endregion
 
         #region マッチングしてからゲーム開始までの処理
+
         /// <summary>
         /// 入室処理
         /// </summary>
@@ -179,7 +181,7 @@ namespace StreamingHubs
                 this.roomContext.Group.All.OnStandby(this.ConnectionId);
 
                 // 最低参加人数がいない時点で早期リターン
-                if(this.roomContext.JoinedUserList.Count < MIN_JOINABLE_PLAYERS) return;
+                if(this.roomContext.JoinedUserList.Count < MAX_JOINABLE_PLAYERS) return;
 
                 foreach (var user in this.roomContext.JoinedUserList)
                 { // 現在の参加者数分ループ

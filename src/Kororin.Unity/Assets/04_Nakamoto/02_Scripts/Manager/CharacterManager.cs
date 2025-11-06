@@ -100,14 +100,13 @@ public class CharacterManager : MonoBehaviour
     /// 入室者のプレイヤーオブジェの生成
     /// </summary>
     /// <param name="connectionID"></param>
-    public void GenerateCharacters(Guid connectionID)
+    public void GenerateCharacters(JoinedUser joinedUser)
     {
         // 開始位置の設定
-        var point = startPoints[0];
-        startPoints.RemoveAt(0);
+        var point = startPoints[joinedUser.JoinOrder - 1];
 
         var playerObj = Instantiate(playerPrefab, point.position, Quaternion.identity);
-        playerObjs.Add(connectionID, playerObj);
+        playerObjs.Add(joinedUser.ConnectionId, playerObj);
 
         playerObj.GetComponent<Player>().enabled = false;
 
@@ -122,8 +121,7 @@ public class CharacterManager : MonoBehaviour
         foreach (var joinduser in RoomModel.Instance.joinedUserList)
         {
             // 開始位置の設定
-            var point = startPoints[0];
-            startPoints.RemoveAt(0);
+            var point = startPoints[joinduser.Value.JoinOrder - 1];
 
             var playerObj = Instantiate(playerPrefab, point.position, Quaternion.identity);
             playerObjs.Add(joinduser.Key, playerObj);
