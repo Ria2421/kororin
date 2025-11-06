@@ -6,6 +6,8 @@ using DG.Tweening;
 
 public class HedgehogBase : MonoBehaviour
 {
+    [SerializeField] Ball ball;
+
     #region アニメーション関連
 
     /// <summary>
@@ -40,14 +42,21 @@ public class HedgehogBase : MonoBehaviour
     [SerializeField]
     protected Avatar defaultAvatar;
 
-    [Foldout("アニメーション関連")]
+    [Foldout("スポーンアニメーション関連")]
     [SerializeField]
     protected bool playSpawnAnim = true;
+
+    [Foldout("スポーンアニメーション関連")]
+    [SerializeField]
+    protected float spawnDist = 5;
     #endregion
 
     private void Start()
     {
-        if(playSpawnAnim) PlaySpawnAnim();
+        if (playSpawnAnim)
+        {
+            PlaySpawnAnim();
+        }
     }
 
     #region アニメーション関連
@@ -97,6 +106,8 @@ public class HedgehogBase : MonoBehaviour
             ChangeToDefaultAvatar();
         }
 
+        if(animId == Anim_Id.Land) ball.CanControl = false;
+
         animator.SetInteger("animation_id", id);
     }
 
@@ -107,32 +118,44 @@ public class HedgehogBase : MonoBehaviour
     {
         var parent = transform.parent.transform;
         Rigidbody rigidbody = parent.GetComponent<Rigidbody>();
-        Vector3 startPos = new Vector3(0, 5, -8);
+        Vector3 spawnWeight = new Vector3(parent.forward.x * -spawnDist, parent.position.y + spawnDist, parent.forward.z * -spawnDist);
+        Vector3 startPos = parent.position + spawnWeight;
         Vector3 endPos;
         float jumpPower = 3;
         float duration = 2;
+        float landHeight = 0.25f;
+
+        rigidbody.useGravity = false;
+        endPos = parent.position;
+        parent.position = startPos;
 
         ChangeToBallAvatar();
         SetAnimId((int)Anim_Id.Run_Ball);
 
-        rigidbody.useGravity = false;
-        endPos = parent.position;
-        startPos += endPos;
-        parent.position = startPos;
-
         var sequence = DOTween.Sequence();
-        sequence.Append(parent.DOJump(new Vector3(endPos.x, endPos.y, startPos.z / 2), jumpPower, 1, duration / 2).SetEase(Ease.Linear))
-            .Join(parent.DORotate(Vector3.right * 360f * 5f, duration / 2, RotateMode.FastBeyond360).SetEase(Ease.Linear))
-            .Append(parent.DOJump(endPos, jumpPower / 2, 1, duration / 2).SetEase(Ease.Linear))
-            .Join(parent.DORotate(Vector3.right * 360f, duration / 2, RotateMode.FastBeyond360).SetEase(Ease.Linear));
-        sequence.OnComplete(() => 
+        sequence.Append(parent.DOJump(new Vector3((startPos.x - spawnWeight.x / 2), endPos.y, (startPos.z - spawnWeight.z / 2)), jumpPower, 1, duration / 2).SetEase(Ease.Linear))
+            .Join(parent.DORotate(parent.eulerAngles + Vector3.right * 360f * 5f, duration / 2, RotateMode.FastBeyond360).SetEase(Ease.Linear))
+            .Append(parent.DOJump(endPos + Vector3.up * landHeight, jumpPower / 2, 1, duration / 2).SetEase(Ease.Linear))
+            .Join(parent.DORotate(parent.eulerAngles + Vector3.right * 360f, duration / 2, RotateMode.FastBeyond360).SetEase(Ease.Linear));
+        sequence.OnComplete(() =>
         {
             rigidbody.linearVelocity = Vector3.zero;
             rigidbody.useGravity = true;
-            parent.eulerAngles = Vector3.zero;
+            parent.eulerAngles = new Vector3(0, parent.eulerAngles.y, 0);
             SetAnimId((int)Anim_Id.Land);
         });
     }
 
+    #endregion
+
+    #region アニメーションイベント関連
+    
+    /// <summary>
+    /// 着地アニメーション終了時
+    /// </summary>
+    public void OnEndLandAnim()
+    {
+        ball.CanControl = true;
+    }
     #endregion
 }

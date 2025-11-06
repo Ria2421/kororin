@@ -39,7 +39,14 @@ public class SelectStageCannon : CannonBase
 
     void CallOnSelectStageMethod()
     {
-        TopManager.Instance.OnSelectStage(stageType);
+        if (TopManager.Instance)
+        {
+            TopManager.Instance.OnSelectStage(stageType);
+        }
+        if (MultiSceneManager.Instance)
+        {
+            MultiSceneManager.Instance.OnSelectStage(stageType);
+        }
     }
 
     public override void OnEnterAnim()

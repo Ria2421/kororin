@@ -12,6 +12,15 @@ EditorBuildSettings:
     path: Assets/02_Enomoto/01_Scenes/02_Top.unity
     guid: e8b46f9d4f15a434caac2ca12cc40b71
   - enabled: 1
+    path: Assets/02_Enomoto/01_Scenes/03_Multi.unity
+    guid: 4b0090172b2843648b278e943fe86457
+  - enabled: 1
+    path: Assets/02_Enomoto/01_Scenes/Stages/01_Stage.unity
+    guid: 777661cddc18d23419be36efb88df2cf
+  - enabled: 1
+    path: Assets/02_Enomoto/01_Scenes/Stages/02_Stage.unity
+    guid: 44ab35b638d9cfd498e35545ec0c107d
+  - enabled: 1
     path: Assets/02_Enomoto/01_Scenes/UI/01_UI_Loading.unity
     guid: 65fb5ece84953cb4d82a5e1fcd43cd40
   - enabled: 1
