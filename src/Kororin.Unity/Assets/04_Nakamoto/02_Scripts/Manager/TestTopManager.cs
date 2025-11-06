@@ -1,7 +1,7 @@
-//--------------------------------------------------
-// トップ画面通信テスト用 [ TestTopManager.cs ]
+//----------------------------------------------------------
+// 試験用トップ画面マネージャー [ TestTopManager.cs ]
 // Author:Kenta Nakamoto
-//--------------------------------------------------
+//----------------------------------------------------------
 using Shared.Interfaces.StreamingHubs;
 using UnityEngine;
 using UnityEngine.SceneManagement;

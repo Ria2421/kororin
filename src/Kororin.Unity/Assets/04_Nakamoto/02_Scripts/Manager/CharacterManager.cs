@@ -49,7 +49,9 @@ public class CharacterManager : MonoBehaviour
     //-----------------------
     // メソッド
 
-    // 起動処理
+    /// <summary>
+    /// 起動処理
+    /// </summary>
     private void Awake()
     {
         if (instance == null)
@@ -67,7 +69,9 @@ public class CharacterManager : MonoBehaviour
         //GenerateCharacters();
     }
 
-    // 初期処理
+    /// <summary>
+    /// 初期処理
+    /// </summary>
     private void Start()
     {
         if (!RoomModel.Instance) return;
@@ -87,6 +91,9 @@ public class CharacterManager : MonoBehaviour
         //RoomModel.Instance.OnDeleteEnemySyn += this.OnDestroyEnemy;
     }
 
+    /// <summary>
+    /// 切断時処理
+    /// </summary>
     private void OnDisable()
     {
         if (!RoomModel.Instance) return;
@@ -167,7 +174,7 @@ public class CharacterManager : MonoBehaviour
     {
         while (true)
         {
-            if (TestMultiLobbyManager.Instance.IsConnect)
+            if (RoomModel.Instance.IsConnect)
             {
                 UpdateCharacterDataRequest();
             }

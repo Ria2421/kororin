@@ -23,6 +23,10 @@ public class RoomModel : BaseModel, IRoomHubReceiver
     private GrpcChannel channel;  // サーバーURL
     private IRoomHub roomHub;     // roomHubの関数を呼び出す時に使う
 
+    // 通信確立フラグ
+    private bool isConnect = false;
+    public bool IsConnect { get { return isConnect; } set { isConnect = value; } }
+
     // マスタークライアントかどうか
     public bool IsMaster { get; set; }
 
@@ -30,7 +34,10 @@ public class RoomModel : BaseModel, IRoomHubReceiver
     public Guid ConnectionId { get; private set; }
 
     // ユーザーID
-    public int userId { get; set; }
+    public int UserId { get; set; }
+
+    // ユーザー名
+    public string UserName { get; set; }
 
     // 現在の参加者情報
     public Dictionary<Guid, JoinedUser> joinedUserList { get; private set; } = new Dictionary<Guid, JoinedUser>();
@@ -56,9 +63,6 @@ public class RoomModel : BaseModel, IRoomHubReceiver
 
     // ユーザー退室通知
     public Action<JoinedUser> OnLeavedUser { get; set; }
-
-    // キャラクター変更通知
-    public Action<Guid, int> OnChangedCharacter { get; set; }
 
     // 準備完了通知
     public Action<Guid> OnStoodby { get; set; }

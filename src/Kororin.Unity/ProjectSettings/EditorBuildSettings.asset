@@ -29,6 +29,9 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/04_Nakamoto/01_Scenes/03_SampleLobby.unity
     guid: dab79f3418a70204c9c77d6d18c9665b
+  - enabled: 1
+    path: Assets/04_Nakamoto/01_Scenes/04_SampleStage.unity
+    guid: b53d3962170dac449844599d69def1cf
   m_configObjects:
     com.unity.input.settings.actions: {fileID: -944628639613478452, guid: 052faaac586de48259a63d0c4782560b, type: 3}
   m_UseUCBPForAssetBundles: 0

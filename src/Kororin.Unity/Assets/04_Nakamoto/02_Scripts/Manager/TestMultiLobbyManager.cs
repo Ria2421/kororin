@@ -1,5 +1,5 @@
 //-----------------------------------------------------------
-// マルチロビーマネージャーテスト用 [ TestMultiLobby.cs ]
+// 試験用マルチロビーマネージャー [ TestMultiLobby.cs ]
 // Author:Kenta Nakamoto
 //-----------------------------------------------------------
 using Shared.Interfaces.StreamingHubs;
@@ -13,19 +13,15 @@ public class TestMultiLobbyManager : MonoBehaviour
     //-------------------
     // フィールド
 
-    // 通信確立フラグ
-    private bool isConnect = false;
-    public bool IsConnect {  get { return isConnect; } }
-
     // スタンバイフラグ
     private bool isStandby = false;
     public bool IsStandby { get { return isStandby; } set { isStandby = value; } }
 
     // ローカルテスト用
-    [SerializeField] int testId = 0;        // 仮ユーザーID
-    [SerializeField] string testName = "";  // 仮ユーザー名
+    [SerializeField] private int testId = 0;        // 仮ユーザーID
+    [SerializeField] private string testName = "";  // 仮ユーザー名
 
-    [SerializeField] List<Transform> generatePos = new List<Transform>();   // プレイヤー生成位置
+    [SerializeField] private List<Transform> generatePos = new List<Transform>();   // プレイヤー生成位置
 
     #region インスタンス
 
@@ -40,7 +36,9 @@ public class TestMultiLobbyManager : MonoBehaviour
     //-------------------
     // メソッド
 
-    // 起動処理
+    /// <summary>
+    /// 起動処理
+    /// </summary>
     private async void Awake()
     {
         if (instance == null)
@@ -56,7 +54,9 @@ public class TestMultiLobbyManager : MonoBehaviour
         if (!LoadingManager.Instance) SceneManager.LoadScene("01_UI_Loading", LoadSceneMode.Additive);
     }
 
-    // 初期処理
+    /// <summary>
+    /// 初期処理
+    /// </summary>
     private async void Start()
     {
         // 生成位置の設定
@@ -74,6 +74,9 @@ public class TestMultiLobbyManager : MonoBehaviour
         await RoomModel.Instance.JoinedAsync("Kororin", testId, testName);
     }
 
+    /// <summary>
+    /// 切断時の処理
+    /// </summary>
     private void OnDisable()
     {
         if (!RoomModel.Instance) return;
@@ -85,31 +88,34 @@ public class TestMultiLobbyManager : MonoBehaviour
         RoomModel.Instance.OnLeavedUser -= OnLeavedUser;
         RoomModel.Instance.OnStoodby -= OnStoodby;
         RoomModel.Instance.OnStartedGame -= OnStartedGame;
-    }
-
-    // 更新処理
-    void Update()
-    {
-        
+        RoomModel.Instance.OnChangedMasterClient -= OnChangedMasterClient;
     }
 
     #region 通知処理
 
-    // ルーム作成通知
+    /// <summary>
+    /// ルーム作成通知
+    /// </summary>
     public void OnCreatedRoom()
     {
         Debug.Log("入室");
-        isConnect = true;
+        RoomModel.Instance.IsConnect = true;
     }
 
-    // 入室完了通知
+    /// <summary>
+    /// 入室完了通知
+    /// </summary>
+    /// <param name="joinedUser"></param>
     public void OnJoinedUser(JoinedUser joinedUser)
     {
         Debug.Log(joinedUser.UserName + "が入室しました。");
         CharacterManager.Instance.GenerateCharacters(joinedUser);
     }
 
-    // 退室通知
+    /// <summary>
+    /// 退室通知
+    /// </summary>
+    /// <param name="leavedUser"></param>
     public void OnLeavedUser(JoinedUser leavedUser)
     {
         // 退出ユーザーのオブジェを削除
@@ -120,23 +126,32 @@ public class TestMultiLobbyManager : MonoBehaviour
         Debug.Log(leavedUser.UserName + "が退室しました。");
     }
 
-    // マスター変更通知
+    /// <summary>
+    /// マスター変更通知
+    /// </summary>
     public void OnChangedMasterClient()
     {
         // マスターになった時の処理
     }
 
-    // 準備完了通知
+    /// <summary>
+    /// 準備完了通知
+    /// </summary>
+    /// <param name="guid"></param>
     public void OnStoodby(Guid guid)
     {
         Debug.Log(RoomModel.Instance.joinedUserList[guid].UserName + "、準備完了！");
     }
 
-    // ゲーム開始通知
+    /// <summary>
+    /// ゲーム開始通知
+    /// </summary>
     public void OnStartedGame()
     {
         // インゲームシーンに移動
+        RoomModel.Instance.IsConnect = false;
         Debug.Log("ゲーム開始");
+        LoadingManager.Instance.StartSceneLoad("04_SampleStage");
     }
 
     #endregion
