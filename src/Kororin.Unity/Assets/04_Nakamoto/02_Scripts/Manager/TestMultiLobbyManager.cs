@@ -67,6 +67,7 @@ public class TestMultiLobbyManager : MonoBehaviour
         RoomModel.Instance.OnLeavedUser += OnLeavedUser;
         RoomModel.Instance.OnStoodby += OnStoodby;
         RoomModel.Instance.OnStartedGame += OnStartedGame;
+        RoomModel.Instance.OnChangedMasterClient += OnChangedMasterClient;
 
         await RoomModel.Instance.ConnectAsync();
 
@@ -82,6 +83,8 @@ public class TestMultiLobbyManager : MonoBehaviour
         RoomModel.Instance.OnJoinedUser -= OnJoinedUser;
         RoomModel.Instance.OnCreatedRoom -= OnCreatedRoom;
         RoomModel.Instance.OnLeavedUser -= OnLeavedUser;
+        RoomModel.Instance.OnStoodby -= OnStoodby;
+        RoomModel.Instance.OnStartedGame -= OnStartedGame;
     }
 
     // 更新処理
@@ -103,13 +106,24 @@ public class TestMultiLobbyManager : MonoBehaviour
     public void OnJoinedUser(JoinedUser joinedUser)
     {
         Debug.Log(joinedUser.UserName + "が入室しました。");
-        CharacterManager.Instance.GenerateCharacters(joinedUser.ConnectionId);
+        CharacterManager.Instance.GenerateCharacters(joinedUser);
     }
 
     // 退室通知
     public void OnLeavedUser(JoinedUser leavedUser)
     {
+        // 退出ユーザーのオブジェを削除
+        var leaveObj = CharacterManager.Instance.PlayerObjs[leavedUser.ConnectionId];
+        CharacterManager.Instance.PlayerObjs.Remove(leavedUser.ConnectionId);
+        Destroy(leaveObj);
+
         Debug.Log(leavedUser.UserName + "が退室しました。");
+    }
+
+    // マスター変更通知
+    public void OnChangedMasterClient()
+    {
+        // マスターになった時の処理
     }
 
     // 準備完了通知

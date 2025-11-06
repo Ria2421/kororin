@@ -65,7 +65,6 @@ public class Player : MonoBehaviour
         {
             TestMultiLobbyManager.Instance.IsStandby = true;
             await RoomModel.Instance.StandbyAsync();
-            Debug.Log("€”õŠ®—¹I");
         }
     }
 }
