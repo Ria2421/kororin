@@ -1,3 +1,4 @@
+using DG.Tweening;
 using UnityEngine;
 using static HedgehogBase;
 
@@ -110,15 +111,25 @@ public class Ball : MonoBehaviour
     /// <summary>
     /// リスポーン処理
     /// </summary>
-    public void Respawn()
+    public void OnRespawn()
     {
+        transform.eulerAngles = Vector3.zero;
+        rb.useGravity = true;
         rb.linearVelocity = Vector3.zero;
-        transform.position = checkPoint.RespawnPos;
         hedgehog.SetAnimId((int)Anim_Id.Land);
+
+        const float scaleDuration = 0.3f;
+        transform.DOScale(Vector3.one, scaleDuration).SetEase(Ease.OutBack);
     }
 
+    /// <summary>
+    /// デッドゾーンに触れたら
+    /// </summary>
     public void OnDeadZone()
     {
-
+        canControl = false;
+        transform.localScale = Vector3.zero;
+        rb.useGravity = false;
+        rb.linearVelocity = Vector3.zero;
     }
 }
