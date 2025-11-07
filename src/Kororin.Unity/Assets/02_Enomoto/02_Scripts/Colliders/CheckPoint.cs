@@ -6,8 +6,13 @@ public class CheckPoint : MonoBehaviour
     GameObject shockWaveParticle;
 
     [SerializeField]
+    GameObject respawnParticle;
+
+    [SerializeField]
     Vector3 respawnPos;
     public Vector3 RespawnPos { get { return respawnPos; } }
+
+    Ball ball;
 
     private void Awake()
     {
@@ -26,5 +31,18 @@ public class CheckPoint : MonoBehaviour
                 particle.transform.position = ball.transform.position;
             }
         }
+    }
+
+    public void Respawn(Ball ball)
+    {
+        Instantiate(respawnParticle, respawnPos, Quaternion.identity);
+        this.ball = ball;
+        ball.transform.position = respawnPos;
+        Invoke("CallOnRespawn", 1f);
+    }
+
+    void CallOnRespawn()
+    {
+        ball.OnRespawn();
     }
 }

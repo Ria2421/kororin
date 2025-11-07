@@ -5399,6 +5399,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CheckPoint
   shockWaveParticle: {fileID: 5937262531020395756, guid: a492d1cffb79d134fba582241f2d16f5, type: 3}
+  respawnParticle: {fileID: 2404867798935323754, guid: 2509f36aa94a60444be56e01e1cf0c48, type: 3}
   respawnPos: {x: 0, y: 0, z: 0}
 --- !u!1 &244954703
 GameObject:
@@ -12690,6 +12691,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CheckPoint
   shockWaveParticle: {fileID: 5937262531020395756, guid: a492d1cffb79d134fba582241f2d16f5, type: 3}
+  respawnParticle: {fileID: 2404867798935323754, guid: 2509f36aa94a60444be56e01e1cf0c48, type: 3}
   respawnPos: {x: 0, y: 0, z: 0}
 --- !u!64 &1310722161
 MeshCollider:
