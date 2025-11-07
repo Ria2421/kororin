@@ -17,6 +17,8 @@ public class Ball : MonoBehaviour
     private bool canMove; // 移動を許可するかどうかのフラグ
     bool isSphere;        // ボール状態かどうか
     float dx, dz;
+    float raycastLength = 1f; // 地面判定用のRayの長さ（Colliderの下端から）
+    bool isGrounded = false;
 
     bool canControl = true;
     public bool CanControl { get { return canControl; } set { canControl = value; } }
@@ -42,7 +44,9 @@ public class Ball : MonoBehaviour
         dx = canControl ? Input.GetAxis("Horizontal") : 0;
         dz = canControl ? Input.GetAxis("Vertical") : 0;
 
-        if (Input.GetKeyDown(KeyCode.Space))
+        CheckIsGround();
+
+        if (Input.GetKeyDown(KeyCode.Space) && isGrounded)
         {
             Jump();
         }
@@ -124,6 +128,15 @@ public class Ball : MonoBehaviour
 
     public void Jump()
     {
+        //if (isSphere)
+        //{
+        //    hedgehog.SetAnimId((int)Anim_Id.Jump_Ball);
+        //}
+        //else
+        //{
+        //    hedgehog.SetAnimId((int)Anim_Id.Jump);
+        //}
+
         rb.AddForce(Vector3.up * jumpForce, ForceMode.Impulse);
     }
 
@@ -189,6 +202,29 @@ public class Ball : MonoBehaviour
         if (collision.gameObject.tag == "Player" || collision.gameObject.tag == "Wall")
         {
             canMove = true;
+        }
+    }
+
+    public void CheckIsGround()
+    {
+        RaycastHit hit;
+
+        // プレイヤーの中心から真下に向けてRaycastを発射
+        if (Physics.Raycast(transform.position, Vector3.down, out hit, raycastLength))
+        {
+            // Rayが何かに当たった場合、そのオブジェクトのタグをチェック
+            if (hit.collider.CompareTag("Ground"))
+            {
+                isGrounded = true;
+            }
+            else
+            {
+                isGrounded = false;
+            }
+        }
+        else
+        {
+            isGrounded = false;
         }
     }
 }
