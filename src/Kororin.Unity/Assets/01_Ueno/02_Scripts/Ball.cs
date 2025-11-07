@@ -1,4 +1,5 @@
 using DG.Tweening;
+using Unity.VisualScripting;
 using UnityEngine;
 using static HedgehogBase;
 
@@ -10,15 +11,18 @@ public class Ball : MonoBehaviour
     [SerializeField] float deceleratSpeed; // 減速スピード
     [SerializeField] float applyForce;     // 加える力
     [SerializeField] float runSpeedThreshold; // 走るアニメーションに切り替えるスピードの閾値
-    [SerializeField] float rotationSpeed = 10f; // インスペクターで設定
-    bool isSphere;
+    [SerializeField] float jumpForce;         // ジャンプ力
+    [SerializeField] float knockbackForce;
+
+    private bool canMove; // 移動を許可するかどうかのフラグ
+    bool isSphere;        // ボール状態かどうか
     float dx, dz;
 
     bool canControl = true;
     public bool CanControl { get { return canControl; } set { canControl = value; } }
 
     CheckPoint checkPoint;
-    public CheckPoint CheckPoint { get { return checkPoint; } set { checkPoint = value; } } 
+    public CheckPoint CheckPoint { get { return checkPoint; } set { checkPoint = value; } }
 
     void Start()
     {
@@ -29,6 +33,7 @@ public class Ball : MonoBehaviour
         rb.linearDamping = deceleratSpeed;
 
         isSphere = false;
+        canMove = true;
     }
 
     void Update()
@@ -36,25 +41,34 @@ public class Ball : MonoBehaviour
         // プレイヤーの入力を取得
         dx = canControl ? Input.GetAxis("Horizontal") : 0;
         dz = canControl ? Input.GetAxis("Vertical") : 0;
+
+        if (Input.GetKeyDown(KeyCode.Space))
+        {
+            Jump();
+        }
     }
 
     private void FixedUpdate()
     {
-        AddForce();
+        if (canMove) AddForce();
     }
 
+    /// <summary>
+    /// 移動処理
+    /// </summary>
     public void AddForce()
     {
-        if(dx == 0 && dz == 0) return;
+        if (dx == 0 && dz == 0) return;
         UpdateMovementAnimation();
 
         var movement = new Vector3(dx, 0, dz).normalized;
         rb.AddForce(movement * applyForce, ForceMode.Force);
 
+        rb.constraints &= ~RigidbodyConstraints.FreezeRotationX;
+        rb.constraints &= ~RigidbodyConstraints.FreezeRotationZ;
+
         if (isSphere)
         {
-            //rb.constraints &= RigidbodyConstraints.FreezeRotationX | RigidbodyConstraints.FreezeRotationZ;
-            
             // 入力に基づいて移動方向を計算
             movement = new Vector3(dx, 0, dz);
             // 球体に力を加える
@@ -71,11 +85,10 @@ public class Ball : MonoBehaviour
                 // キー入力方向へ瞬時回転
                 Quaternion targetRotation = Quaternion.LookRotation(movement);
                 transform.rotation = targetRotation;
-
-                // X, Z軸の傾きを強制的に0にリセットし、Y軸の向きを確定
-                Vector3 currentEuler = transform.eulerAngles;
-                transform.rotation = Quaternion.Euler(0f, currentEuler.y, 0f);
             }
+            // X, Z軸の傾きを強制的に0にリセットし、Y軸の向きを確定
+            Vector3 currentEuler = transform.eulerAngles;
+            transform.rotation = Quaternion.Euler(0f, currentEuler.y, 0f);
 
             rb.AddForce(movement * applyForce, ForceMode.Force);
         }
@@ -92,10 +105,11 @@ public class Ball : MonoBehaviour
         float currentSpeed = horizontalVelocity.magnitude;
 
         // スピードが閾値を超えているか判定
-        if (currentSpeed >= runSpeedThreshold * 1.5f)
+        if (currentSpeed >= runSpeedThreshold * 1.2f)
         {
             hedgehog.SetAnimId((int)Anim_Id.Run_Ball);
             isSphere = true;
+
         }
         else if (currentSpeed >= 0.5f)
         {
@@ -106,6 +120,11 @@ public class Ball : MonoBehaviour
         {
             hedgehog.SetAnimId((int)Anim_Id.Idle);
         }
+    }
+
+    public void Jump()
+    {
+        rb.AddForce(Vector3.up * jumpForce, ForceMode.Impulse);
     }
 
     /// <summary>
@@ -131,5 +150,45 @@ public class Ball : MonoBehaviour
         transform.localScale = Vector3.zero;
         rb.useGravity = false;
         rb.linearVelocity = Vector3.zero;
+    }
+
+    /// <summary>
+    /// 当たり判定
+    /// </summary>
+    /// <param name="collision"></param>
+    private void OnCollisionEnter(Collision collision)
+    {
+        if (collision.gameObject.tag == "Player" || collision.gameObject.tag == "Wall")
+        {
+            canMove = false;
+
+            rb.constraints |= RigidbodyConstraints.FreezeRotationX;
+            rb.constraints |= RigidbodyConstraints.FreezeRotationZ;
+
+            // ★ 速度をゼロにして、衝突による移動慣性を完全に消去
+            rb.linearVelocity = Vector3.zero;
+            rb.angularVelocity = Vector3.zero; // 回転速度もゼロに
+
+            // ノックバックの方向を計算
+            Vector3 knockbackDirection = -transform.forward;
+
+            // Y軸方向のノックバックを抑える
+            knockbackDirection.y = 0;
+
+            // ノックバックの力を加える (瞬間的に速度を変える)
+            rb.AddForce(knockbackDirection.normalized * knockbackForce, ForceMode.VelocityChange);
+
+            hedgehog.SetAnimId((int)Anim_Id.Idle);
+
+            rb.rotation = Quaternion.identity;
+        }
+    }
+
+    private void OnCollisionExit(Collision collision)
+    {
+        if (collision.gameObject.tag == "Player" || collision.gameObject.tag == "Wall")
+        {
+            canMove = true;
+        }
     }
 }
