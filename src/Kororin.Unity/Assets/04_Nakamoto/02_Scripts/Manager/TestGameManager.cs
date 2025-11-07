@@ -94,7 +94,7 @@ public class TestGameManager : MonoBehaviour
     /// </summary>
     public void OnResulted(Dictionary<Guid,JoinedUser> joindUsers)
     {
-
+        LoadingManager.Instance.StartSceneLoad("03_SampleLobby");
     }
 
     /// <summary>

@@ -17,10 +17,6 @@ public class TestMultiLobbyManager : MonoBehaviour
     private bool isStandby = false;
     public bool IsStandby { get { return isStandby; } set { isStandby = value; } }
 
-    // ローカルテスト用
-    [SerializeField] private int testId = 0;        // 仮ユーザーID
-    [SerializeField] private string testName = "";  // 仮ユーザー名
-
     [SerializeField] private List<Transform> generatePos = new List<Transform>();   // プレイヤー生成位置
 
     #region インスタンス
@@ -69,9 +65,18 @@ public class TestMultiLobbyManager : MonoBehaviour
         RoomModel.Instance.OnStartedGame += OnStartedGame;
         RoomModel.Instance.OnChangedMasterClient += OnChangedMasterClient;
 
-        await RoomModel.Instance.ConnectAsync();
-
-        await RoomModel.Instance.JoinedAsync("Kororin", testId, testName);
+        if(RoomModel.Instance.joinedUserList.Count == 0)
+        {
+            await RoomModel.Instance.ConnectAsync();
+            await RoomModel.Instance.JoinedAsync("Kororin", RoomModel.Instance.UserId, RoomModel.Instance.UserName);
+        }
+        else
+        {
+            // キャラ生成
+            CharacterManager.Instance.GenerateAllCharacters();
+            // 接続フラグオン
+            RoomModel.Instance.IsConnect = true;
+        }
     }
 
     /// <summary>

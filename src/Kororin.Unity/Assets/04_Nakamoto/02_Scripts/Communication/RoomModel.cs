@@ -34,10 +34,12 @@ public class RoomModel : BaseModel, IRoomHubReceiver
     public Guid ConnectionId { get; private set; }
 
     // ユーザーID
-    public int UserId { get; set; }
+    [SerializeField] private int userID = 0;
+    public int UserId { get { return userID; } set { userID = value; } }
 
     // ユーザー名
-    public string UserName { get; set; }
+    [SerializeField] private string userName = "";
+    public string UserName { get { return userName; } set { userName = value; } }
 
     // 現在の参加者情報
     public Dictionary<Guid, JoinedUser> joinedUserList { get; private set; } = new Dictionary<Guid, JoinedUser>();
@@ -321,6 +323,7 @@ public class RoomModel : BaseModel, IRoomHubReceiver
     /// <param name="result"></param>
     public void OnResult(Dictionary<Guid, JoinedUser> result)
     {
+        isConnect = false;
         joinedUserList = result;
         OnResulted(result);
     }
