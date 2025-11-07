@@ -51,6 +51,31 @@ namespace Kororin.Shared.Interfaces.StreamingHubs
 
         #region ゲーム内
 
+        #region システム
+
+        /// <summary>
+        /// マスタークライアントの変更通知
+        /// </summary>
+        void OnChangeMasterClient();
+
+        /// <summary>
+        /// カウント開始通知
+        /// </summary>
+        void OnStartCount();
+
+        /// <summary>
+        /// ゲート開放通知
+        /// </summary>
+        void OnOpenGate();
+
+        /// <summary>
+        /// リザルト通知
+        /// </summary>
+        /// <param name="joinedUsers"></param>
+        void OnResult(Dictionary<Guid,JoinedUser> joinedUsers);
+
+        #endregion
+
         #region プレイヤー関連
 
         /// <summary>
@@ -60,17 +85,9 @@ namespace Kororin.Shared.Interfaces.StreamingHubs
 
         #endregion
 
-        #region 敵関連
-        #endregion
-
         #region ゲーム内UI、仕様
         #endregion
 
         #endregion
-
-        /// <summary>
-        /// マスタークライアントの変更通知
-        /// </summary>
-        void OnChangeMasterClient();
     }
 }

@@ -33,16 +33,39 @@ namespace Kororin.Shared.Interfaces.StreamingHubs
         /// <returns></returns>
         Task StandbyAsync();
 
-        #endregion
-
-        #region ゲーム内
-
         /// <summary>
         /// プレイヤーの更新
         /// </summary>
         /// <param name="playerData"></param>
         /// <returns></returns>
         Task UpdateCharacterAsync(CharacterData charaData);
+
+        #endregion
+
+        #region ゲーム内
+
+        #region システム
+
+        /// <summary>
+        /// インゲーム遷移完了
+        /// </summary>
+        /// <returns></returns>
+        Task TransitionInGameAsync();
+
+        /// <summary>
+        /// カウント終了
+        /// </summary>
+        /// <returns></returns>
+        Task CountEndAsync();
+
+        /// <summary>
+        /// ゴール到着
+        /// </summary>
+        /// <returns></returns>
+        Task ArrivalGoalAsync();
+
+        #endregion
+
         #region プレイヤー関連
 
         #endregion
