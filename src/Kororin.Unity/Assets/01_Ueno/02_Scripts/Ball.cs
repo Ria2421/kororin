@@ -16,6 +16,9 @@ public class Ball : MonoBehaviour
     bool canControl = true;
     public bool CanControl { get { return canControl; } set { canControl = value; } }
 
+    CheckPoint checkPoint;
+    public CheckPoint CheckPoint { get { return checkPoint; } set { checkPoint = value; } } 
+
     void Start()
     {
         // Rigidbodyコンポーネントを取得
@@ -102,5 +105,20 @@ public class Ball : MonoBehaviour
         {
             hedgehog.SetAnimId((int)Anim_Id.Idle);
         }
+    }
+
+    /// <summary>
+    /// リスポーン処理
+    /// </summary>
+    public void Respawn()
+    {
+        rb.linearVelocity = Vector3.zero;
+        transform.position = checkPoint.RespawnPos;
+        hedgehog.SetAnimId((int)Anim_Id.Land);
+    }
+
+    public void OnDeadZone()
+    {
+
     }
 }

@@ -27,6 +27,9 @@ EditorBuildSettings:
     path: Assets/02_Enomoto/01_Scenes/UI/02_UI_Ranking.unity
     guid: 6af4db3600c0fc244be463fb4bd7098d
   - enabled: 1
+    path: Assets/02_Enomoto/01_Scenes/UI/03_UI_Game.unity
+    guid: d672f639f0b97374cac8cb3509d6256b
+  - enabled: 1
     path: Assets/04_Nakamoto/01_Scenes/03_SampleLobby.unity
     guid: dab79f3418a70204c9c77d6d18c9665b
   - enabled: 1
