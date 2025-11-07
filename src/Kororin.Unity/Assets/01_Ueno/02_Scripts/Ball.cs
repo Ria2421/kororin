@@ -67,7 +67,7 @@ public class Ball : MonoBehaviour
             if (movement.magnitude >= 0.1f)
             {
                 // キー入力方向へ瞬時回転
-                Quaternion targetRotation = Quaternion.LookRotation(-movement);
+                Quaternion targetRotation = Quaternion.LookRotation(movement);
                 transform.rotation = targetRotation;
 
                 // X, Z軸の傾きを強制的に0にリセットし、Y軸の向きを確定
