@@ -162,6 +162,7 @@ public class RoomModel : BaseModel, IRoomHubReceiver
     #endregion
 
     #region MagicOnion接続・切断処理
+
     /// <summary>
     /// MagicOnion接続処理
     /// </summary>
@@ -182,7 +183,6 @@ public class RoomModel : BaseModel, IRoomHubReceiver
         if (channel != null) await channel.ShutdownAsync();
         roomHub = null; channel = null;
     }
-    #endregion
 
     /// <summary>
     /// 破棄処理
@@ -192,6 +192,8 @@ public class RoomModel : BaseModel, IRoomHubReceiver
         DisconnectAsync();
         instance = null;
     }
+
+    #endregion
 
     #region 通知の処理
 
@@ -453,7 +455,38 @@ public class RoomModel : BaseModel, IRoomHubReceiver
     //}
     #endregion
 
-    #region ゲーム内
+    #region インゲーム
+
+    #region システム
+
+    /// <summary>
+    /// インゲーム遷移完了
+    /// </summary>
+    /// <returns></returns>
+    public async UniTask TransitionInGameAsync()
+    {
+        await roomHub.TransitionInGameAsync();
+    }
+
+    /// <summary>
+    /// カウント終了
+    /// </summary>
+    /// <returns></returns>
+    public async UniTask CountEndAsync()
+    {
+        await roomHub.CountEndAsync();
+    }
+
+    /// <summary>
+    /// ゴール到達
+    /// </summary>
+    /// <returns></returns>
+    public async UniTask ArrivalGoalAsync()
+    {
+        await roomHub.ArrivalGoalAsync();
+    }
+
+    #endregion
 
     #region プレイヤー関連
     /// <summary>
