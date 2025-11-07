@@ -3,14 +3,18 @@
 // Author:中本健太
 //-------------------------------------------------------------
 using Shared.Interfaces.StreamingHubs;
+using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class TestGameManager : MonoBehaviour
 {
     //-------------------
     // フィールド
 
+    [SerializeField] private Text cntTxt;           // カウントダウン用テキスト
     [SerializeField] private GameObject gateObj;    // スタートゲートオブジェ
     [SerializeField] private List<Transform> generatePos = new List<Transform>();   // プレイヤー生成位置
 
@@ -20,7 +24,7 @@ public class TestGameManager : MonoBehaviour
     /// <summary>
     /// 初期処理
     /// </summary>
-    void Start()
+    async void  Start()
     {
         // 生成位置の設定
         CharacterManager.Instance.StartPoints = generatePos;
@@ -28,10 +32,18 @@ public class TestGameManager : MonoBehaviour
         // キャラ生成
         CharacterManager.Instance.GenerateAllCharacters();
 
+        // 接続フラグオン
         RoomModel.Instance.IsConnect = true;
 
+        // 通知処理の登録
+        RoomModel.Instance.OnStartedCount += OnStartedCount;
+        RoomModel.Instance.OnOpenedGate += OnOpenGate;
         RoomModel.Instance.OnLeavedUser += OnLeavedUser;
         RoomModel.Instance.OnChangedMasterClient += OnChangedMasterClient;
+        RoomModel.Instance.OnResulted += OnResulted;
+
+        // 遷移完了状態を送信
+        await RoomModel.Instance.TransitionInGameAsync();
     }
 
     /// <summary>
@@ -42,9 +54,12 @@ public class TestGameManager : MonoBehaviour
         if (!RoomModel.Instance) return;
         StopAllCoroutines();
 
-        // シーン遷移したときに登録した通知処理を解除
+        // 通知処理の解除
+        RoomModel.Instance.OnStartedCount -= OnStartedCount;
+        RoomModel.Instance.OnOpenedGate -= OnOpenGate;
         RoomModel.Instance.OnLeavedUser -= OnLeavedUser;
         RoomModel.Instance.OnChangedMasterClient -= OnChangedMasterClient;
+        RoomModel.Instance.OnResulted -= OnResulted;
     }
 
     /// <summary>
@@ -56,6 +71,31 @@ public class TestGameManager : MonoBehaviour
     }
 
     #region 通知処理
+
+    /// <summary>
+    /// カウント開始通知
+    /// </summary>
+    public void OnStartedCount()
+    {
+        // カウントコルーチン呼び出し
+        StartCoroutine(StartCountCoroutine());
+    }
+
+    /// <summary>
+    /// ゲート開放通知
+    /// </summary>
+    public void OnOpenGate()
+    {
+        Destroy(gateObj);
+    }
+
+    /// <summary>
+    /// リザルト通知
+    /// </summary>
+    public void OnResulted(Dictionary<Guid,JoinedUser> joindUsers)
+    {
+
+    }
 
     /// <summary>
     /// 退室通知
@@ -80,4 +120,40 @@ public class TestGameManager : MonoBehaviour
     }
 
     #endregion
+
+    /// <summary>
+    /// カウントダウン
+    /// </summary>
+    /// <returns></returns>
+    public IEnumerator StartCountCoroutine()
+    {
+        int count = 3;
+        cntTxt.text = count.ToString();
+
+        yield return new WaitForSeconds(1);
+
+        while (true)
+        {
+            count--;
+            cntTxt.text = count.ToString();
+            yield return new WaitForSeconds(1);
+
+            if(count == 1)
+            {
+                // スタート関数呼び出し
+                DisplayStart();
+
+                cntTxt.text = "Start!!";
+                yield return new WaitForSeconds(1);
+                cntTxt.text = "";
+
+                yield break;
+            }
+        }
+    }
+
+    async private void DisplayStart()
+    {
+        await RoomModel.Instance.CountEndAsync();
+    }
 }
