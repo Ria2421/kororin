@@ -84,6 +84,19 @@ public class RoomModel : BaseModel, IRoomHubReceiver
 
     #endregion
 
+    #region インゲームシステム
+
+    // カウント開始通知
+    public Action OnStartedCount { get; set; }
+
+    // ゲート開放通知
+    public Action OnOpenedGate { get; set; }
+
+    // リザルト通知
+    public Action<Dictionary<Guid,JoinedUser>> OnResulted {  get; set; }
+
+    #endregion
+
     #region プレイヤー・マスタクライアント
 
     //マスタークライアントの変更通知
@@ -278,6 +291,36 @@ public class RoomModel : BaseModel, IRoomHubReceiver
     {
         joinedUserList[guid].IsReady = true;
         OnStoodby(guid);
+    }
+
+    #endregion
+
+    #region インゲームシステム通知
+
+    /// <summary>
+    /// カウント開始通知
+    /// </summary>
+    public void OnStartCount()
+    {
+        OnStartedCount();
+    }
+
+    /// <summary>
+    /// ゲート開放通知
+    /// </summary>
+    public void OnOpenGate()
+    {
+        OnOpenedGate();
+    }
+
+    /// <summary>
+    /// リザルト通知
+    /// </summary>
+    /// <param name="result"></param>
+    public void OnResult(Dictionary<Guid, JoinedUser> result)
+    {
+        joinedUserList = result;
+        OnResulted(result);
     }
 
     #endregion

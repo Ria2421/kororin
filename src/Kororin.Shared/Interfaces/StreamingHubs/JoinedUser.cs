@@ -41,16 +41,28 @@ namespace Shared.Interfaces.StreamingHubs
         public bool IsMaster { get; set; }
 
         /// <summary>
-        /// 準備完了判定
+        /// ロビー準備完了判定
         /// </summary>
         [Key(5)]
-        public bool IsReady { get; set; }
+        public bool IsReady { get; set; } = false;
+
+        /// <summary>
+        /// インゲーム遷移完了判定
+        /// </summary>
+        [Key(6)]
+        public bool IsTransition { get; set; } = false;
+
+        /// <summary>
+        /// カウント終了判定
+        /// </summary>
+        [Key(7)]
+        public bool IsCountEnd { get; set; } = false;
 
         /// <summary>
         /// 順位
         /// </summary>
-        [Key(6)]
-        public int Rank { get; set; }
+        [Key(8)]
+        public int Rank { get; set; } = -1;
     }
 
 }

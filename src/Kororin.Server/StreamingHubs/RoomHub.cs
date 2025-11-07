@@ -17,13 +17,22 @@ namespace StreamingHubs
 {
     public class RoomHub(RoomContextRepository roomContextRepository) : StreamingHubBase<IRoomHub, IRoomHubReceiver>, IRoomHub
     {
-        //コンテキスト定義
+        //-----------------------
+        // フィールド
+
+        // コンテキスト定義
         private RoomContext roomContext;
         RoomContextRepository roomContextRepos;
         Dictionary<Guid, JoinedUser> JoinedUsers { get; set; }
 
+        // 順位付け用カウント
+        private int rankCnt = 1;
+
         // 最大参加可能人数
         private const int MAX_JOINABLE_PLAYERS = 2;
+
+        //-----------------------
+        // メソッド
 
         #region 接続・切断処理
         //接続した場合
@@ -164,7 +173,7 @@ namespace StreamingHubs
         }
 
         /// <summary>
-        /// 準備完了
+        /// ロビー準備完了
         /// </summary>
         /// <returns></returns>
         public async Task StandbyAsync()
@@ -192,8 +201,13 @@ namespace StreamingHubs
                 if (canStartGame)
                 {
                     this.roomContext.Group.All.OnStartGame();
-
                     this.roomContext.IsStartGame = true;
+
+                    // フラグリセット
+                    foreach (var user in this.roomContext.JoinedUserList)
+                    {
+                        user.Value.IsReady= false;
+                    }
                 }
             }
         }
@@ -201,6 +215,110 @@ namespace StreamingHubs
         #endregion
 
         #region ゲーム内での処理
+
+        /// <summary>
+        /// インゲーム遷移完了処理
+        /// </summary>
+        /// <returns></returns>
+        public async Task TransitionInGameAsync()
+        {
+            lock (roomContextRepository)    // 排他制御
+            {
+                bool canCountdown = true;   // カウントダウン開始判定
+
+                // 自身を遷移完了にする
+                var joinedUser = roomContext.JoinedUserList[this.ConnectionId];
+                joinedUser.IsTransition = true;
+
+                // 全員が遷移完了してるかチェック
+                foreach (var user in this.roomContext.JoinedUserList)
+                {
+                    if (!user.Value.IsTransition) canCountdown = false;
+                }
+
+                // 遷移完了してたらカウント開始
+                if (canCountdown)
+                {
+                    this.roomContext.Group.All.OnStartCount();
+
+                    // フラグリセット
+                    foreach (var user in this.roomContext.JoinedUserList)
+                    {
+                        user.Value.IsTransition = false;
+                    }
+                }
+            }
+        }
+
+        /// <summary>
+        /// カウント終了処理
+        /// </summary>
+        /// <returns></returns>
+        public async Task CountEndAsync()
+        {
+            lock (roomContextRepository)    // 排他制御
+            {
+                bool canOpenGate = true;    // カウントダウン開始判定
+
+                // 自身をカウント終了状態にする
+                var joinedUser = roomContext.JoinedUserList[this.ConnectionId];
+                joinedUser.IsCountEnd = true;
+
+                // 全員がカウント終了してるかチェック
+                foreach (var user in this.roomContext.JoinedUserList)
+                {
+                    if (!user.Value.IsCountEnd) canOpenGate = false;
+                }
+
+                // 遷移完了してたらカウント開始
+                if (canOpenGate)
+                {
+                    this.roomContext.Group.All.OnOpenGate();
+
+                    // フラグリセット
+                    foreach (var user in this.roomContext.JoinedUserList)
+                    {
+                        user.Value.IsCountEnd = false;
+                    }
+                }
+            }
+        }
+
+        /// <summary>
+        /// ゴール到着処理
+        /// </summary>
+        /// <returns></returns>
+        public async Task ArrivalGoalAsync()
+        {
+            lock (roomContextRepository)    // 排他制御
+            {
+                bool canTransResult = true; // カウントダウン開始判定
+
+                // 順位を保存
+                var joinedUser = roomContext.JoinedUserList[this.ConnectionId];
+                joinedUser.Rank = rankCnt;
+                rankCnt++;
+
+                // 全員が遷移完了してるかチェック
+                foreach (var user in this.roomContext.JoinedUserList)
+                {
+                    if (user.Value.Rank == -1) canTransResult = false;
+                }
+
+                // 遷移完了してたらカウント開始
+                if (canTransResult)
+                {
+                    this.roomContext.Group.All.OnResult(roomContext.JoinedUserList);
+
+                    // フラグリセット
+                    foreach (var user in this.roomContext.JoinedUserList)
+                    {
+                        user.Value.Rank = -1;
+                        rankCnt = 1;
+                    }
+                }
+            }
+        }
 
         /// <summary>
         /// マスタークライアント譲渡処理
