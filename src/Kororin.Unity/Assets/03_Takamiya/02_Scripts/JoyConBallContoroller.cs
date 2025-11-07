@@ -22,8 +22,18 @@ public class JoyConBallContoroller : MonoBehaviour
     [SerializeField] float drag;             // 摩擦（止まりやすさ）
 
 
+    //ジャンプ用の調整パラメータ
+    [SerializeField] float jumpForce = 5.0f;         // ジャンプ力
+    [SerializeField] float jumpThreshold = 1.5f;     // 振り上げを検知するY加速度のしきい値
+    [SerializeField] float jumpCooldown = 0.8f;      // 次のジャンプまでの待機時間（秒）
+
+
     // 変化量をなめらかにするための補間用の変数
     Vector3 smoothedInput = Vector3.zero;
+    bool canJump = true;                             // ジャンプ可能フラグ
+    bool isGrounded = false;                         // 地面に触れているか
+    float lastJumpTime = 0f;                         // 最後にジャンプした時間
+
 
     void Start()
     {
@@ -45,7 +55,7 @@ public class JoyConBallContoroller : MonoBehaviour
             joyconL = joycons.Find(c => c.isLeft);
 
             //右のJoy-Conを取得
-            /*joyconR = joycons.Find(c => !c.isLeft);*/
+            joyconR = joycons.Find(c => !c.isLeft);
         }
         else
         {
@@ -92,5 +102,46 @@ public class JoyConBallContoroller : MonoBehaviour
 
         // 力を加える
         rb.AddForce(smoothedInput * moveSpeed);
+
+        // ジャンプ判定（地面にいる時のみ）
+        if (isGrounded && accel.y > jumpThreshold && canJump && Time.time - lastJumpTime > jumpCooldown)
+        {
+            Jump();
+        }
+    }
+
+    void Jump()
+    {
+        // 下方向に動いていても、Y速度をリセットしてから上に加える
+        rb.linearVelocity = new Vector3(rb.linearVelocity.x, 0, rb.linearVelocity.z);
+        rb.AddForce(Vector3.up * jumpForce, ForceMode.VelocityChange);
+
+        canJump = false;
+        lastJumpTime = Time.time;
+
+        // 少し待ってからジャンプ可能に戻す
+        Invoke(nameof(ResetJump), jumpCooldown);
+    }
+
+    void ResetJump()
+    {
+        canJump = true;
+    }
+
+    void OnCollisionEnter(Collision collision)
+    {
+        if (collision.gameObject.CompareTag("Ground"))
+        {
+            isGrounded = true;
+            canJump = true;
+        }
+    }
+
+    void OnCollisionExit(Collision collision)
+    {
+        if (collision.gameObject.CompareTag("Ground"))
+        {
+            isGrounded = false;
+        }
     }
 }

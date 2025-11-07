@@ -6,6 +6,7 @@ TagManager:
   tags:
   - Standby
   - Goal
+  - Ground
   layers:
   - Default
   - TransparentFX
