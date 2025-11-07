@@ -59,12 +59,23 @@ public class Player : MonoBehaviour
         return animator != null ? animator.GetInteger("animation_id") : 0;
     }
 
+    /// <summary>
+    /// ƒgƒŠƒK[ÚG”»’è
+    /// </summary>
+    /// <param name="other"></param>
     private async void OnTriggerEnter(Collider other)
     {
-        if(other.tag == "Standby" && isSelf)
+        if(!isSelf) return;
+
+        if(other.tag == "Standby")
         {
             TestMultiLobbyManager.Instance.IsStandby = true;
             await RoomModel.Instance.StandbyAsync();
+        }
+
+        if (other.tag == "Goal")
+        {
+            await RoomModel.Instance.ArrivalGoalAsync();
         }
     }
 }

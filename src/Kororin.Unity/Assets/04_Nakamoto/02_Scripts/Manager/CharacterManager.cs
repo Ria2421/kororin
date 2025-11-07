@@ -116,8 +116,6 @@ public class CharacterManager : MonoBehaviour
         playerObjs.Add(joinedUser.ConnectionId, playerObj);
 
         playerObj.GetComponent<Player>().enabled = false;
-
-        StartCoroutine("UpdateCoroutine");
     }
 
     /// <summary>
@@ -174,7 +172,9 @@ public class CharacterManager : MonoBehaviour
     {
         while (true)
         {
-            if (RoomModel.Instance.IsConnect)
+            Debug.Log(RoomModel.Instance);
+
+            if (RoomModel.Instance != null && RoomModel.Instance.IsConnect)
             {
                 UpdateCharacterDataRequest();
             }
