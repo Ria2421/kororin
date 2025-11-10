@@ -8,8 +8,12 @@ using UnityEngine;
 
 public class Player : MonoBehaviour
 {
+    // é©êgÇ©Ç«Ç§Ç©îªï 
     private bool isSelf = false;
     public bool IsSelf { get { return isSelf; } set { isSelf = value; } }
+
+    // ÉSÅ[ÉãÇµÇΩÇ©îªï 
+    private bool isGoal = false;
 
     private Rigidbody rb;
 
@@ -73,8 +77,9 @@ public class Player : MonoBehaviour
             await RoomModel.Instance.StandbyAsync();
         }
 
-        if (other.tag == "Goal")
+        if (!isGoal && other.tag == "Goal")
         {
+            isGoal = true;
             await RoomModel.Instance.ArrivalGoalAsync();
         }
     }
