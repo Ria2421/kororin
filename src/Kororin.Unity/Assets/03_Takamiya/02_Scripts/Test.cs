@@ -1,52 +1,90 @@
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.InputSystem;
 using static HedgehogBase;
+
 
 public class Test : MonoBehaviour
 {
     private Rigidbody rb;
 
-    [SerializeField] HedgehogBase hedgehog;
-    [SerializeField] float deceleratSpeed; // Œ¸‘¬ƒXƒs[ƒh
-    [SerializeField] float applyForce;     // ‰Á‚¦‚é—Í
-    [SerializeField] float runSpeedThreshold; // ‘–‚éƒAƒjƒ[ƒVƒ‡ƒ“‚ÉØ‚è‘Ö‚¦‚éƒXƒs[ƒh‚Ìè‡’l
-    [SerializeField] float rotationSpeed = 10f; // ƒCƒ“ƒXƒyƒNƒ^[‚Åİ’è
+    [SerializeField] GameObject JoyConManager;  //JoyConManagerã®ãƒ—ãƒ¬ãƒãƒ–
 
-    // „Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ Joy-Conİ’è „Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ„Ÿ
+    /// <summary>
+    /// ç§»å‹•ã®è¨­å®š
+    /// </summary>
+    [SerializeField] HedgehogBase hedgehog;
+    [SerializeField] float deceleratSpeed;      // æ¸›é€Ÿã‚¹ãƒ”ãƒ¼ãƒ‰
+    [SerializeField] float applyForce;          // åŠ ãˆã‚‹åŠ›
+    [SerializeField] float runSpeedThreshold;   // èµ°ã‚‹ã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚·ãƒ§ãƒ³ã«åˆ‡ã‚Šæ›¿ãˆã‚‹ã‚¹ãƒ”ãƒ¼ãƒ‰ã®é–¾å€¤
+    [SerializeField] float rotationSpeed;       // ã‚¤ãƒ³ã‚¹ãƒšã‚¯ã‚¿ãƒ¼ã§è¨­å®š
+
+    /// <summary>
+    /// Joy-Conè¨­å®š
+    /// </summary>
     List<Joycon> joycons;
     Joycon joyconL;
     Joycon joyconR;
-
-    [SerializeField] float tiltSensitivity = 2f;   // ŒX‚«Š´“x
-    [SerializeField] float smoothing = 5f;         // “ü—Í‚Ì‚È‚ß‚ç‚©‚³
-    [SerializeField] float deadZone = 0.5f;        // ƒfƒbƒhƒ][ƒ“i¬‚³‚ÈŒX‚«–³‹j
-    [SerializeField] float maxSpeed = 5f;          // Å‘å‘¬“x§ŒÀ
+    [SerializeField] float tiltSensitivity;   // å‚¾ãæ„Ÿåº¦
+    [SerializeField] float smoothing;         // å…¥åŠ›ã®ãªã‚ã‚‰ã‹ã•
+    [SerializeField] float deadZone;          // ãƒ‡ãƒƒãƒ‰ã‚¾ãƒ¼ãƒ³ï¼ˆå°ã•ãªå‚¾ãç„¡è¦–ï¼‰
     Vector3 smoothedInput = Vector3.zero;
 
-    //ƒWƒƒƒ“ƒv—p‚Ì’²®ƒpƒ‰ƒ[ƒ^
-    [SerializeField] float jumpForce = 5.0f;         // ƒWƒƒƒ“ƒv—Í
-    [SerializeField] float jumpThreshold = 0.8f;     // U‚èã‚°‚ğŒŸ’m‚·‚éY‰Á‘¬“x‚Ì‚µ‚«‚¢’l
-    [SerializeField] float jumpCooldown = 1.0f;      // Ÿ‚ÌƒWƒƒƒ“ƒv‚Ü‚Å‚Ì‘Ò‹@ŠÔi•bj
+    /// <summary>
+    /// ã‚²ãƒ¼ãƒ ãƒ‘ãƒƒãƒ‰ã®ã‚¹ãƒ†ã‚£ãƒƒã‚¯ã®è¨­å®š
+    /// </summary>
+    [SerializeField] float stickDeadZone;     // ãƒ‡ãƒƒãƒ‰ã‚¾ãƒ¼ãƒ³
+    [SerializeField] float stopThreshold;     // è»¢ãŒã£ã¦ã‹ã‚‰ã®é€Ÿåº¦ãŒã©ã®ãã‚‰ã„å°ã•ããªã£ãŸã‚‰å®Œå…¨ã«åœæ­¢ã™ã‚‹ã®ã‹
 
-    bool isSphere;
-    float dx, dz;
-    float lastJumpTime = 0f;                       // ÅŒã‚ÉƒWƒƒƒ“ƒv‚µ‚½ŠÔ
-    bool canControl = true;
-    bool isGrounded = false;                         // ’n–Ê‚ÉG‚ê‚Ä‚¢‚é‚©
+    /// <summary>
+    /// ã‚¸ãƒ£ãƒ³ãƒ—ç”¨ã®èª¿æ•´ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿
+    /// </summary>
+    [SerializeField] float jumpForce;         // ã‚¸ãƒ£ãƒ³ãƒ—åŠ›
+    [SerializeField] float jumpThreshold;     // æŒ¯ã‚Šä¸Šã’ã‚’æ¤œçŸ¥ã™ã‚‹YåŠ é€Ÿåº¦ã®ã—ãã„å€¤
+    [SerializeField] float jumpCooldown;      // æ¬¡ã®ã‚¸ãƒ£ãƒ³ãƒ—ã¾ã§ã®å¾…æ©Ÿæ™‚é–“ï¼ˆç§’ï¼‰
+
+    bool isSphere;                            // çƒä½“ã®çŠ¶æ…‹
+    float dx, dz;                             // å…¥åŠ›æ–¹å‘
+    float lastJumpTime = 0f;                  // æœ€å¾Œã«ã‚¸ãƒ£ãƒ³ãƒ—ã—ãŸæ™‚é–“
+    bool canControl = true;                   // æ“ä½œå¯èƒ½ã‹ã©ã†ã‹
+    bool isGrounded = false;                  // åœ°é¢ã«è§¦ã‚Œã¦ã„ã‚‹ã‹ãƒ•ãƒ©ã‚°
+
     public bool CanControl { get { return canControl; } set { canControl = value; } }
 
+    /// <summary>
+    /// ã‚²ãƒ¼ãƒ èµ·å‹•æ™‚
+    /// </summary>
+    private void Awake()
+    {
+        // ã™ã§ã«ã‚·ãƒ¼ãƒ³å†…ã«å­˜åœ¨ã—ã¦ã„ã‚‹ãªã‚‰ç”Ÿæˆã—ãªã„
+        if (JoyconManager.Instance == null)
+        {
+            GameObject obj = Instantiate(JoyConManager);
+            obj.name = "JoyconManager";
+            DontDestroyOnLoad(obj);
+            Debug.Log("JoyconManagerã®Prefabã‚’è‡ªå‹•ç”Ÿæˆã—ã¾ã—ãŸ");
+        }
+        else
+        {
+            Debug.Log("æ—¢ã«JoyconManagerãŒå­˜åœ¨ã—ã¦ã„ã¾ã™");
+        }
+    }
+
+    /// <summary>
+    /// ã‚²ãƒ¼ãƒ é–‹å§‹æ™‚
+    /// </summary>
     void Start()
     {
-        // RigidbodyƒRƒ“ƒ|[ƒlƒ“ƒg‚ğæ“¾
+        // Rigidbodyã‚³ãƒ³ãƒãƒ¼ãƒãƒ³ãƒˆã‚’å–å¾—
         rb = GetComponent<Rigidbody>();
 
-        // Œ¸‘¬‚Ì‚½‚ß‚ÌDragi’ïRj‚ğİ’è
+        // æ¸›é€Ÿã®ãŸã‚ã®Dragï¼ˆæŠµæŠ—ï¼‰ã‚’è¨­å®š
         rb.linearDamping = deceleratSpeed;
 
         isSphere = false;
 
 
-        // Joy-Con‰Šú‰»
+        // Joy-ConåˆæœŸåŒ–
         joycons = JoyconManager.Instance.j;
         if (joycons != null && joycons.Count > 0)
         {
@@ -55,42 +93,95 @@ public class Test : MonoBehaviour
         }
         else
         {
-            Debug.LogWarning("Joy-Con‚ªŒ©‚Â‚©‚è‚Ü‚¹‚ñ‚Å‚µ‚½I ¨ WASD‚Å‘€ì‚µ‚Ü‚·");
+            Debug.LogWarning("Joy-ConãŒè¦‹ã¤ã‹ã‚Šã¾ã›ã‚“ã§ã—ãŸ!ã‚²ãƒ¼ãƒ ãƒ‘ãƒƒãƒ‰ã§æ“ä½œã—ã¦ãã ã•ã„");
         }
 
     }
 
+    /// <summary>
+    /// æ¯ãƒ•ãƒ¬ãƒ¼ãƒ æ›´æ–°
+    /// </summary>
     void Update()
+    {
+
+        //JoyConå„ªå…ˆ
+        bool useJoyCon = (joyconL != null && joyconL.state != null) || (joyconR != null && joyconR.state != null);
+
+        if (useJoyCon)
+        {
+            InputJoyCon();//InputJoyConé–¢æ•°å‘¼ã³å‡ºã—
+        }
+        else
+        {
+            InputGamepad();//InputGamepadé–¢æ•°å‘¼ã³å‡ºã—
+        }
+    }
+
+    private void FixedUpdate()
+    {
+        AddForce();
+        ApplyStopCheck();
+    }
+
+    void ApplyStopCheck()
+    {
+        // XZ å¹³é¢ã®é€Ÿåº¦ï¼ˆæ¨ªæ–¹å‘ã®å‹•ãï¼‰ã‚’å–å¾—
+        Vector3 flatVel = new Vector3(rb.linearVelocity.x, 0, rb.linearVelocity.z);
+
+        // å…¥åŠ›ãŒãªã„ or ã”ãå°ã•ã„
+        bool noInput = Mathf.Abs(dx) < 0.05f && Mathf.Abs(dz) < 0.05f;
+
+        if (noInput)
+        {
+            // å¾ã€…ã«æ¸›é€Ÿ
+            rb.linearVelocity = Vector3.Lerp(rb.linearVelocity,
+                new Vector3(0, rb.linearVelocity.y, 0),
+                Time.fixedDeltaTime * 3f);
+
+            // ã»ã¨ã‚“ã©æ­¢ã¾ã£ãŸã‚‰å®Œå…¨åœæ­¢
+            if (flatVel.magnitude < stopThreshold)
+            {
+                rb.linearVelocity = new Vector3(0, rb.linearVelocity.y, 0);
+            }
+        }
+    }
+
+    /// <summary>
+    /// Joy-Conã®å…¥åŠ›å‡¦ç†
+    /// </summary>
+    private void InputJoyCon()
     {
         if (!canControl) { dx = dz = 0; return; }
 
-        // Joy-Con‚ªÚ‘±‚³‚ê‚Ä‚¢‚ê‚ÎJoy-Con“ü—Í—Dæ
+        // Joy-ConãŒæ¥ç¶šã•ã‚Œã¦ã„ã‚Œã°Joy-Conå…¥åŠ›å„ªå…ˆ
         if ((joyconL != null && joyconL.state != null) || (joyconR != null && joyconR.state != null))
         {
+            // å·¦å³Joy-Conã®åŠ é€Ÿåº¦ã‚’å–å¾—ï¼ˆå­˜åœ¨ã—ãªã„å ´åˆã¯ã‚¼ãƒ­ï¼‰
             Vector3 accelL = joyconL != null ? joyconL.GetAccel() : Vector3.zero;
             Vector3 accelR = joyconR != null ? joyconR.GetAccel() : Vector3.zero;
 
-            // —¼•û‚Ì•½‹Ïi•Ğ•û‚µ‚©‚È‚¢ê‡‚Í‚»‚Ì‚Ü‚Üj
+            // ä¸¡æ–¹ã®å¹³å‡ï¼ˆç‰‡æ–¹ã—ã‹ãªã„å ´åˆã¯ãã®ã¾ã¾ï¼‰
             Vector3 accel = (accelL + accelR) / ((joyconL != null && joyconR != null) ? 2f : 1f);
 
-            // „Ÿ„Ÿ U‚èã‚°‚ÅƒWƒƒƒ“ƒvi¶‰E‚Ç‚¿‚ç‚Å‚àOKj „Ÿ„Ÿ
+            // å·¦å³ã©ã¡ã‚‰ã‹ã®Joy-ConãŒã—ãã„å€¤ã‚’è¶…ãˆãŸã‚‰ã‚¸ãƒ£ãƒ³ãƒ—
             bool jumpDetected =
                 (joyconL != null && joyconL.GetAccel().y > jumpThreshold) ||
                 (joyconR != null && -joyconR.GetAccel().y > jumpThreshold);
 
+            // ã‚¸ãƒ£ãƒ³ãƒ—æ¡ä»¶ï¼šæŒ¯ã‚Šä¸Šã’æ¤œçŸ¥ï¼†åœ°é¢ã«æ¥åœ°ï¼†ã‚¯ãƒ¼ãƒ«ã‚¿ã‚¤ãƒ çµŒé
             if (jumpDetected && isGrounded && Time.time - lastJumpTime > jumpCooldown)
             {
                 Jump();
             }
 
-            // ƒmƒCƒYœ‹
+            // ãƒ‡ãƒƒãƒ‰ã‚¾ãƒ¼ãƒ³å‡¦ç†ï¼ˆå°ã•ãªå‚¾ãã¯ç„¡è¦–ï¼‰
             if (Mathf.Abs(accel.x) < deadZone) accel.x = 0;
             if (Mathf.Abs(accel.y) < deadZone) accel.y = 0;
 
-            // ²•ÏŠ·iJoy-Con‚ğŒX‚¯‚½•ûŒü‚Éi‚Şj
+            // è»¸å¤‰æ›ï¼ˆJoy-Conã‚’å‚¾ã‘ãŸæ–¹å‘ã«é€²ã‚€ï¼‰
             Vector3 input = new Vector3(accel.x, 0, -accel.y) * tiltSensitivity;
 
-            // ƒXƒ€[ƒWƒ“ƒO
+            // ã‚¹ãƒ ãƒ¼ã‚¸ãƒ³ã‚°
             smoothedInput = Vector3.Lerp(smoothedInput, input, Time.deltaTime * smoothing);
 
             dx = smoothedInput.x;
@@ -98,20 +189,18 @@ public class Test : MonoBehaviour
         }
         else
         {
-            // ƒvƒŒƒCƒ„[‚Ì“ü—Í‚ğæ“¾
+            // ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ã®å…¥åŠ›ã‚’å–å¾—
             dx = canControl ? Input.GetAxis("Horizontal") : 0;
             dz = canControl ? Input.GetAxis("Vertical") : 0;
         }
     }
 
-    private void FixedUpdate()
-    {
-        AddForce();
-    }
-
+    /// <summary>
+    /// ã‚¸ãƒ£ãƒ³ãƒ—å‡¦ç†
+    /// </summary>
     void Jump()
     {
-        // ‰ºŒü‚«‘¬“xƒŠƒZƒbƒg‚µ‚Äã‚É—Í‚ğ‰Á‚¦‚é
+        // ä¸‹å‘ãé€Ÿåº¦ãƒªã‚»ãƒƒãƒˆã—ã¦ä¸Šã«åŠ›ã‚’åŠ ãˆã‚‹
         rb.linearVelocity = new Vector3(rb.linearVelocity.x, 0, rb.linearVelocity.z);
         rb.AddForce(Vector3.up * jumpForce, ForceMode.VelocityChange);
 
@@ -119,6 +208,9 @@ public class Test : MonoBehaviour
         lastJumpTime = Time.time;
     }
 
+    /// <summary>
+    /// åŠ›ã‚’åŠ ãˆã¦ç§»å‹•
+    /// </summary>
     public void AddForce()
     {
         if (dx == 0 && dz == 0) return;
@@ -129,45 +221,82 @@ public class Test : MonoBehaviour
 
         if (isSphere)
         {
-            //rb.constraints &= RigidbodyConstraints.FreezeRotationX | RigidbodyConstraints.FreezeRotationZ;
-
-            // “ü—Í‚ÉŠî‚Ã‚¢‚ÄˆÚ“®•ûŒü‚ğŒvZ
+            // å…¥åŠ›ã«åŸºã¥ã„ã¦ç§»å‹•æ–¹å‘ã‚’è¨ˆç®—
             movement = new Vector3(dx, 0, dz);
-            // ‹…‘Ì‚É—Í‚ğ‰Á‚¦‚é
+            // çƒä½“ã«åŠ›ã‚’åŠ ãˆã‚‹
             rb.AddForce(movement * applyForce);
         }
         else
         {
-            transform.rotation = Quaternion.Euler(0, 180, 0);
-            movement = new Vector3(dx, 0, dz).normalized;
-
-            // “ü—Í‚ª‚ ‚éê‡‚Ì‚İ‰ñ“]
-            if (movement.magnitude >= 0.1f)
+            if (isGrounded)
             {
-                // ƒL[“ü—Í•ûŒü‚Öu‰ñ“]
-                Quaternion targetRotation = Quaternion.LookRotation(-movement);
-                transform.rotation = targetRotation;
+                transform.rotation = Quaternion.Euler(0, 180, 0);
+                movement = new Vector3(dx, 0, dz).normalized;
 
-                // X, Z²‚ÌŒX‚«‚ğ‹­§“I‚É0‚ÉƒŠƒZƒbƒg‚µAY²‚ÌŒü‚«‚ğŠm’è
-                Vector3 currentEuler = transform.eulerAngles;
-                transform.rotation = Quaternion.Euler(0f, currentEuler.y, 0f);
+                // å…¥åŠ›ãŒã‚ã‚‹å ´åˆã®ã¿å›è»¢
+                if (movement.magnitude >= 0.1f)
+                {
+                    // ã‚­ãƒ¼å…¥åŠ›æ–¹å‘ã¸ç¬æ™‚å›è»¢
+                    Quaternion targetRotation = Quaternion.LookRotation(-movement);
+                    transform.rotation = targetRotation;
+
+                    // X, Zè»¸ã®å‚¾ãã‚’å¼·åˆ¶çš„ã«0ã«ãƒªã‚»ãƒƒãƒˆã—ã€Yè»¸ã®å‘ãã‚’ç¢ºå®š
+                    Vector3 currentEuler = transform.eulerAngles;
+                    transform.rotation = Quaternion.Euler(0f, currentEuler.y, 0f);
+                }
             }
-
             rb.AddForce(movement * applyForce, ForceMode.Force);
         }
     }
 
     /// <summary>
-    /// ˆÚ“®ƒXƒs[ƒh‚ÉŠî‚Ã‚¢‚ÄƒAƒjƒ[ƒVƒ‡ƒ“‚ğXV‚·‚é
+    /// é€šå¸¸ã®ã‚²ãƒ¼ãƒ ãƒ‘ãƒƒãƒ‰å…¥åŠ›å‡¦ç†
+    /// </summary>
+    void InputGamepad()
+    {
+        if (Gamepad.current == null) return;
+
+        // å·¦ã‚¹ãƒ†ã‚£ãƒƒã‚¯å…¥åŠ›
+        Vector2 stick = Gamepad.current.leftStick.ReadValue();
+
+        if (stick.magnitude < stickDeadZone)
+        {
+            dx = 0;
+            dz = 0;
+
+            ////ã‚ã‚‹ç¨‹åº¦é…ããªã£ãŸã‚‰å¼·åˆ¶åœæ­¢
+            //Vector3 flatVelocity = new Vector3(rb.linearVelocity.x, 0, rb.linearVelocity.z);
+            //if (flatVelocity.magnitude < stopThreshold)
+            //{
+            //    rb.linearVelocity = new Vector3(0, rb.linearVelocity.y, 0);
+            //}
+        }
+        else
+        {
+            dx = stick.x;
+            dz = stick.y;
+        }
+
+
+        // Aãƒœã‚¿ãƒ³ã§ã‚¸ãƒ£ãƒ³ãƒ—
+        if (Gamepad.current.buttonSouth.wasPressedThisFrame && isGrounded && Time.time - lastJumpTime > jumpCooldown)
+        {
+            Jump();
+        }
+    }
+
+    /// <summary>
+    /// ç§»å‹•ã‚¹ãƒ”ãƒ¼ãƒ‰ã«åŸºã¥ã„ã¦ã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚·ãƒ§ãƒ³ã‚’æ›´æ–°ã™ã‚‹
     /// </summary>
     private void UpdateMovementAnimation()
     {
-        // Y²•ûŒü‚Ì‘¬“x‚ğœŠO‚µA•½–Ê‚Å‚ÌˆÚ“®‘¬“xiƒxƒNƒgƒ‹‚Ì‘å‚«‚³j‚ğæ“¾
-        // Rigidbody.velocity.magnitude ‚Í‘S‘Ì‚Ì‘¬“x
+        // Yè»¸æ–¹å‘ã®é€Ÿåº¦ã‚’é™¤å¤–ã—ã€å¹³é¢ã§ã®ç§»å‹•é€Ÿåº¦ï¼ˆãƒ™ã‚¯ãƒˆãƒ«ã®å¤§ãã•ï¼‰ã‚’å–å¾—
+        // Rigidbody.velocity.magnitude ã¯å…¨ä½“ã®é€Ÿåº¦
         Vector3 horizontalVelocity = new Vector3(rb.linearVelocity.x, 0, rb.linearVelocity.z);
         float currentSpeed = horizontalVelocity.magnitude;
 
-        // ƒXƒs[ƒh‚ªè‡’l‚ğ’´‚¦‚Ä‚¢‚é‚©”»’è
+
+        // ã‚¹ãƒ”ãƒ¼ãƒ‰ãŒé–¾å€¤ã‚’è¶…ãˆã¦ã„ã‚‹ã‹åˆ¤å®š
         if (currentSpeed >= runSpeedThreshold * 1.5f)
         {
             hedgehog.SetAnimId((int)Anim_Id.Run_Ball);
@@ -184,7 +313,9 @@ public class Test : MonoBehaviour
         }
     }
 
-    //’n–Ê”»’è
+    /// <summary>
+    /// åœ°é¢ã«æ¥åœ°ã—ãŸã¨ãã®å‡¦ç†
+    /// </summary>
     private void OnCollisionEnter(Collision collision)
     {
         if (collision.gameObject.CompareTag("Ground"))
@@ -193,6 +324,9 @@ public class Test : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// åœ°é¢ã‹ã‚‰é›¢ã‚ŒãŸã¨ãã®å‡¦ç†
+    /// </summary>
     private void OnCollisionExit(Collision collision)
     {
         if (collision.gameObject.CompareTag("Ground"))
