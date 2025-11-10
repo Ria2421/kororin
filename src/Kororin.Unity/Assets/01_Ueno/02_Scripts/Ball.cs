@@ -113,13 +113,13 @@ public class Ball : MonoBehaviour
     /// </summary>
     public void OnRespawn()
     {
-        transform.eulerAngles = Vector3.zero;
+        ResetVelocitys();
         rb.useGravity = true;
-        rb.linearVelocity = Vector3.zero;
+
         hedgehog.SetAnimId((int)Anim_Id.Land);
 
         const float scaleDuration = 0.3f;
-        transform.DOScale(Vector3.one, scaleDuration).SetEase(Ease.OutBack);
+        hedgehog.transform.DOScale(Vector3.one, scaleDuration).SetEase(Ease.OutBack);
     }
 
     /// <summary>
@@ -128,8 +128,19 @@ public class Ball : MonoBehaviour
     public void OnDeadZone()
     {
         canControl = false;
-        transform.localScale = Vector3.zero;
+        hedgehog.transform.localScale = Vector3.zero;
+
         rb.useGravity = false;
+        ResetVelocitys();
+    }
+
+    /// <summary>
+    /// Rigidbodyの現在の速度をリセットする
+    /// </summary>
+    void ResetVelocitys()
+    {
         rb.linearVelocity = Vector3.zero;
+        rb.angularVelocity = Vector3.zero;
+        transform.eulerAngles = Vector3.zero;
     }
 }
