@@ -145,9 +145,7 @@ public class Ball : MonoBehaviour
     /// </summary>
     public void OnRespawn()
     {
-        ResetVelocitys();
-        rb.useGravity = true;
-
+        ResetVelocitys(true);
         hedgehog.SetAnimId((int)Anim_Id.Land);
 
         const float scaleDuration = 0.3f;
@@ -162,17 +160,17 @@ public class Ball : MonoBehaviour
         canControl = false;
         hedgehog.transform.localScale = Vector3.zero;
 
-        rb.useGravity = false;
-        ResetVelocitys();
+        ResetVelocitys(false);
     }
 
     /// <summary>
     /// Rigidbodyの現在の速度をリセットする
     /// </summary>
-    void ResetVelocitys()
+    public void ResetVelocitys(bool useGravity = true)
     {
         rb.linearVelocity = Vector3.zero;
         rb.angularVelocity = Vector3.zero;
+        rb.useGravity = useGravity;
         transform.eulerAngles = Vector3.zero;
     }
 
