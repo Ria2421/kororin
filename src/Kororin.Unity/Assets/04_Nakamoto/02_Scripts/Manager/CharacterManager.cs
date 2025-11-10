@@ -172,8 +172,6 @@ public class CharacterManager : MonoBehaviour
     {
         while (true)
         {
-            Debug.Log(RoomModel.Instance);
-
             if (RoomModel.Instance != null && RoomModel.Instance.IsConnect)
             {
                 UpdateCharacterDataRequest();

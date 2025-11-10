@@ -240,6 +240,7 @@ namespace StreamingHubs
                 if (canCountdown)
                 {
                     this.roomContext.Group.All.OnStartCount();
+                    rankCnt = 1;
 
                     // フラグリセット
                     foreach (var user in this.roomContext.JoinedUserList)
@@ -296,8 +297,12 @@ namespace StreamingHubs
 
                 // 順位を保存
                 var joinedUser = roomContext.JoinedUserList[this.ConnectionId];
-                joinedUser.Rank = rankCnt;
-                rankCnt++;
+
+                if(joinedUser.Rank == -1)
+                {
+                    joinedUser.Rank = rankCnt;
+                    rankCnt = rankCnt + 1;
+                }
 
                 // 全員が遷移完了してるかチェック
                 foreach (var user in this.roomContext.JoinedUserList)
@@ -309,12 +314,12 @@ namespace StreamingHubs
                 if (canTransResult)
                 {
                     this.roomContext.Group.All.OnResult(roomContext.JoinedUserList);
+                    rankCnt = 1;
 
                     // フラグリセット
                     foreach (var user in this.roomContext.JoinedUserList)
                     {
                         user.Value.Rank = -1;
-                        rankCnt = 1;
                     }
                 }
             }
