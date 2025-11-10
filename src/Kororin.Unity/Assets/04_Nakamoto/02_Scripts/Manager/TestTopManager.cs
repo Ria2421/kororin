@@ -28,6 +28,9 @@ public class TestTopManager : MonoBehaviour
         if (!LoadingManager.Instance) SceneManager.LoadScene("01_UI_Loading", LoadSceneMode.Additive);
     }
 
+    //===================
+    // Œ±—pŠÖ”
+
     public async void TestUserRegist()
     {
         var i = await APIModel.Instance.RegistUserAsync(testName);

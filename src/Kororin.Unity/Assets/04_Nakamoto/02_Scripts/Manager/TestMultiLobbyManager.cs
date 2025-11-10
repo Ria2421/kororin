@@ -73,7 +73,12 @@ public class TestMultiLobbyManager : MonoBehaviour
         if (RoomModel.Instance.joinedUserList.Count == 0)
         {
             await RoomModel.Instance.ConnectAsync();
+
+#if UNITY_EDITOR
             await RoomModel.Instance.JoinedAsync("Kororin", RoomModel.Instance.UserId, RoomModel.Instance.UserName);
+#else
+            await RoomModel.Instance.JoinedAsync("Kororin", APIModel.Instance.Id, APIModel.Instance.Name);
+#endif
         }
         else
         {
@@ -167,11 +172,14 @@ public class TestMultiLobbyManager : MonoBehaviour
     /// <summary>
     /// ゲーム開始通知
     /// </summary>
-    public void OnStartedGame()
+    public void OnStartedGame(int id)
     {
         // インゲームシーンに移動
         RoomModel.Instance.IsConnect = false;
-        Debug.Log("ゲーム開始");
+        Debug.Log("ステージ" + id + "：ゲーム開始");
+
+        //++ そのうち引数のidのステージに遷移
+
         LoadingManager.Instance.StartSceneLoad("04_SampleStage");
     }
 

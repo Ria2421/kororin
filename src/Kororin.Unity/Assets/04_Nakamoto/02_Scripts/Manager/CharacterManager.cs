@@ -79,16 +79,6 @@ public class CharacterManager : MonoBehaviour
 
         // 通知処理を登録
         RoomModel.Instance.OnUpdatedCharacter += this.OnUpdateCharacter;
-        //RoomModel.Instance.OnUpdateMasterClientSyn += this.OnUpdateMasterClient;
-        //RoomModel.Instance.OnLeavedUser += this.OnLeave;
-        //RoomModel.Instance.OnEnemyHealthSyn += this.OnHitEnemy;
-        //RoomModel.Instance.OnChangedMasterClient += this.ActivateAllEnemies;
-        //RoomModel.Instance.OnShootedBullet += this.OnShootedBullet;
-        //RoomModel.Instance.OnUpdateStatusSyn += this.OnUpdatePlayerStatus;
-        //RoomModel.Instance.OnLevelUpSyn += this.OnLevelup;
-        //RoomModel.Instance.OnPlayerDeadSyn += this.OnPlayerDead;
-        //RoomModel.Instance.OnBeamEffectActived += this.OnBeamEffectActived;
-        //RoomModel.Instance.OnDeleteEnemySyn += this.OnDestroyEnemy;
     }
 
     /// <summary>
@@ -198,7 +188,10 @@ public class CharacterManager : MonoBehaviour
     CharacterData GetCharacterData()
     {
         if (!playerObjs.ContainsKey(RoomModel.Instance.ConnectionId)) return null;
+
+        //++ 完成次第キャラの共通クラスを取得
         var player = playerObjs[RoomModel.Instance.ConnectionId].GetComponent<Player>();
+
         return new CharacterData()
         {
             Position = player.transform.position,
@@ -217,9 +210,17 @@ public class CharacterManager : MonoBehaviour
     /// <param name="characterData"></param>
     void UpdateCharacter(CharacterData characterData,GameObject playerObj)
     {
+        // 位置・大きさ・向きの同期
         playerObj.gameObject.transform.DOMove(characterData.Position, UPDATE_SEC).SetEase(Ease.Linear);
         playerObj.gameObject.transform.localScale = characterData.Scale;
         playerObj.gameObject.transform.DORotateQuaternion(characterData.Rotation, UPDATE_SEC).SetEase(Ease.Linear);
+
+        // アニメーション同期
+        if (playerObj.tag == "Player")
+        {
+            // キャラ共通のスクリプトのアニメーションセット関数を呼び出す
+            playerObj.GetComponent<Player>().SetAnimId(characterData.AnimationId);
+        }
     }
 
     #region 通知関連

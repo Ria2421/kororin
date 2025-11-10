@@ -55,6 +55,16 @@ public class Player : MonoBehaviour
     }
 
     /// <summary>
+    /// アニメーション設定処理
+    /// </summary>
+    /// <param name="id"></param>
+    public virtual void SetAnimId(int id)
+    {
+        if (animator == null) return;
+        animator.SetInteger("animation_id", id);
+    }
+
+    /// <summary>
     /// アニメーションID取得処理
     /// </summary>
     /// <returns></returns>
