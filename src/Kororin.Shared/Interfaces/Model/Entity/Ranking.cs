@@ -14,13 +14,13 @@ namespace Kororin.Shared.Interfaces.Model.Entity
     public class Ranking
     {
         [Key(0)]
-        public int Id { get; set; }                 // ランキングID
+        public int id { get; set; }                 // ランキングID
         [Key(1)]
-        public int UserId { get; set; }             // ユーザーID
+        public int user_id { get; set; }             // ユーザーID
         [Key(2)]
-        public int StageId { get; set; }            // ステージID
+        public int stage_id { get; set; }            // ステージID
         [Key(3)]
-        public float ClearTime { get; set; }        // クリアタイム
+        public float clear_time { get; set; }        // クリアタイム
         [Key(4)]
         public DateTime Created_at { get; set; }    // 生成日時
         [Key(5)]

@@ -18,7 +18,6 @@ class DatabaseSeeder extends Seeder
     {
         // seederに呼び出し
         $this->call(UsersTableSeeder::class);
-        $this->call(StagesTableSeeder::class);
-        $this->call(RoomTableSeeder::class);
+        $this->call(RankingsTableSeeder::class);
     }
 }

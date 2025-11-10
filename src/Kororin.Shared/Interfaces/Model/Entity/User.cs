@@ -15,9 +15,9 @@ namespace Kororin.Shared.Interfaces.Model.Entity
     public class User
     {
         [Key(0)]
-        public int Id { get; set; }                 // ユーザーID
+        public int id { get; set; }                 // ユーザーID
         [Key(1)]
-        public string Name { get; set; }            // 名前
+        public string name { get; set; }            // 名前
         [Key(2)]
         public DateTime Created_at { get; set; }    // 生成日時
         [Key(3)]
