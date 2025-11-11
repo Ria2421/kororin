@@ -1,0 +1,106 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!21 &2100000
+Material:
+  serializedVersion: 6
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: Sample2
+  m_Shader: {fileID: 4800000, guid: 0d586413bad803c4ba9d99cd8d1ada44, type: 3}
+  m_ShaderKeywords: DOUBLESIDE
+  m_LightmapFlags: 4
+  m_EnableInstancingVariants: 0
+  m_DoubleSidedGI: 0
+  m_CustomRenderQueue: -1
+  stringTagMap: {}
+  disabledShaderPasses: []
+  m_SavedProperties:
+    serializedVersion: 3
+    m_TexEnvs:
+    - _AlphaMask:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _BumpMap:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _DetailAlbedoMap:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _DetailMask:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _DetailNormalMap:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _EmissionMap:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _MainTex:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _MetallicGlossMap:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _OcclusionMap:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _ParallaxMap:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _ScatterMask:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    m_Floats:
+    - _BottomScatterHeight: -0.5
+    - _BumpScale: 1
+    - _CutOff: 0.5
+    - _Cutoff: 0.5
+    - _DecimePer: 0.5
+    - _DetailNormalMapScale: 1
+    - _DistortionNoisePower: 0.0005
+    - _DoubleSide: 1
+    - _DstBlend: 0
+    - _EdgeThickness: 0.01
+    - _Gain: 1.5
+    - _GlossMapScale: 1
+    - _Glossiness: 0.5
+    - _GlossyReflections: 1
+    - _HStripeFreq: 1
+    - _HStripeIntensity: 3
+    - _HStripeSpeed: 500
+    - _LargeDistortionNoisePower: 0.025
+    - _Metallic: 0
+    - _Mode: 0
+    - _OcclusionStrength: 1
+    - _Parallax: 0.02
+    - _RimPower: 5
+    - _ScatterLife: 0.2
+    - _ScatterPer: 0.2
+    - _ScatterSpeed: 0.05
+    - _SmoothnessTextureChannel: 0
+    - _SpecularHighlights: 1
+    - _SrcBlend: 1
+    - _Tessellation: 5
+    - _TopScatterHeight: 1
+    - _UVSec: 0
+    - _VStripeFreq: 500
+    - _VStripeIntensity: 2
+    - _VStripeSpeed: 333
+    - _ZWrite: 1
+    m_Colors:
+    - _Color: {r: 0.11058204, g: 0.6698113, b: 0.4019171, a: 0.5019608}
+    - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
+    - _HOffset: {r: 0, g: 0, b: 0, a: 0}

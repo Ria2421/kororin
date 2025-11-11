@@ -17,8 +17,8 @@ public class GameUIManager : MonoBehaviour
 
     private void Awake()
     {
-        camera.SetActive(false);
-        light.SetActive(false);
+        //camera.SetActive(false);
+        //light.SetActive(false);
 
         Instance = this;
         StartGameTimerText();
