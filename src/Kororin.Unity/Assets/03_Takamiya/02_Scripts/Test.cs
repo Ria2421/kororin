@@ -10,18 +10,18 @@ public class Test : MonoBehaviour
 
     [SerializeField] GameObject JoyConManager;  //JoyConManagerのプレハブ
 
-    /// <summary>
-    /// 移動の設定
-    /// </summary>
+    //==============================
+    // 移動の設定
+    //==============================
     [SerializeField] HedgehogBase hedgehog;
     [SerializeField] float deceleratSpeed;      // 減速スピード
     [SerializeField] float applyForce;          // 加える力
     [SerializeField] float runSpeedThreshold;   // 走るアニメーションに切り替えるスピードの閾値
     [SerializeField] float rotationSpeed;       // インスペクターで設定
 
-    /// <summary>
-    /// Joy-Con設定
-    /// </summary>
+    //==============================
+    // Joy-Con関連設定
+    //==============================
     List<Joycon> joycons;
     Joycon joyconL;
     Joycon joyconR;
@@ -30,19 +30,22 @@ public class Test : MonoBehaviour
     [SerializeField] float deadZone;          // デッドゾーン（小さな傾き無視）
     Vector3 smoothedInput = Vector3.zero;
 
-    /// <summary>
-    /// ゲームパッドのスティックの設定
-    /// </summary>
+    //==============================
+    // ゲームパッド関連設定
+    //==============================
     [SerializeField] float stickDeadZone;     // デッドゾーン
     [SerializeField] float stopThreshold;     // 転がってからの速度がどのくらい小さくなったら完全に停止するのか
 
-    /// <summary>
-    /// ジャンプ用の調整パラメータ
-    /// </summary>
+    //==============================
+    // ジャンプ関連設定
+    //==============================
     [SerializeField] float jumpForce;         // ジャンプ力
     [SerializeField] float jumpThreshold;     // 振り上げを検知するY加速度のしきい値
     [SerializeField] float jumpCooldown;      // 次のジャンプまでの待機時間（秒）
 
+    //==============================
+    // 状態管理用変数
+    //==============================
     bool isSphere;                            // 球体の状態
     float dx, dz;                             // 入力方向
     float lastJumpTime = 0f;                  // 最後にジャンプした時間
@@ -83,7 +86,6 @@ public class Test : MonoBehaviour
 
         isSphere = false;
 
-
         // Joy-Con初期化
         joycons = JoyconManager.Instance.j;
         if (joycons != null && joycons.Count > 0)
@@ -103,7 +105,6 @@ public class Test : MonoBehaviour
     /// </summary>
     void Update()
     {
-
         //JoyCon優先
         bool useJoyCon = (joyconL != null && joyconL.state != null) || (joyconR != null && joyconR.state != null);
 
@@ -119,29 +120,44 @@ public class Test : MonoBehaviour
 
     private void FixedUpdate()
     {
-        AddForce();
-        ApplyStopCheck();
+        // 入力がある場合は移動
+        if (Mathf.Abs(dx) > 0.05f || Mathf.Abs(dz) > 0.05f)
+        {
+            AddForce();
+        }
+        else
+        {
+            ApplyStopCheck(); // 入力がないとき減速チェック
+        }
+
+        // 入力がなくても速度に応じてアニメーション更新
+        UpdateMovementAnimation();
     }
 
+    /// <summary>
+    /// 減速処理(スティックを離したとき)
+    /// </summary>
     void ApplyStopCheck()
     {
-        // XZ 平面の速度（横方向の動き）を取得
-        Vector3 flatVel = new Vector3(rb.linearVelocity.x, 0, rb.linearVelocity.z);
-
-        // 入力がない or ごく小さい
+        // 入力がないかどうか
         bool noInput = Mathf.Abs(dx) < 0.05f && Mathf.Abs(dz) < 0.05f;
 
         if (noInput)
         {
+            // 横方向の速度を取得
+            Vector3 flatVel = new Vector3(rb.linearVelocity.x, 0, rb.linearVelocity.z);
+
             // 徐々に減速
             rb.linearVelocity = Vector3.Lerp(rb.linearVelocity,
                 new Vector3(0, rb.linearVelocity.y, 0),
-                Time.fixedDeltaTime * 3f);
+                Time.fixedDeltaTime * 5f); // 減速
 
-            // ほとんど止まったら完全停止
+            // ある程度止まったら完全停止
             if (flatVel.magnitude < stopThreshold)
             {
                 rb.linearVelocity = new Vector3(0, rb.linearVelocity.y, 0);
+                rb.angularVelocity = Vector3.zero;
+                hedgehog.SetAnimId((int)Anim_Id.Idle);
             }
         }
     }
@@ -200,8 +216,11 @@ public class Test : MonoBehaviour
     /// </summary>
     void Jump()
     {
-        // 下向き速度リセットして上に力を加える
+
+        // 下向き速度リセット
         rb.linearVelocity = new Vector3(rb.linearVelocity.x, 0, rb.linearVelocity.z);
+
+        //瞬時に上方向に力を加える
         rb.AddForce(Vector3.up * jumpForce, ForceMode.VelocityChange);
 
         isGrounded = false;
@@ -216,37 +235,30 @@ public class Test : MonoBehaviour
         if (dx == 0 && dz == 0) return;
         UpdateMovementAnimation();
 
+        // 入力方向を正規化
         var movement = new Vector3(dx, 0, dz).normalized;
+
+        //瞬時に力を加える
         rb.AddForce(movement * applyForce, ForceMode.Force);
 
-        if (isSphere)
+        if (!isSphere&&isGrounded)
         {
-            // 入力に基づいて移動方向を計算
-            movement = new Vector3(dx, 0, dz);
-            // 球体に力を加える
-            rb.AddForce(movement * applyForce);
-        }
-        else
-        {
-            if (isGrounded)
+            transform.rotation = Quaternion.Euler(0, 180, 0);
+            movement = new Vector3(dx, 0, dz).normalized;
+
+            // 入力がある場合のみ回転
+            if (movement.magnitude >= 0.01f)
             {
-                transform.rotation = Quaternion.Euler(0, 180, 0);
-                movement = new Vector3(dx, 0, dz).normalized;
+                // キー入力方向へ瞬時回転
+                Quaternion targetRotation = Quaternion.LookRotation(-movement);
+                transform.rotation = targetRotation;
 
-                // 入力がある場合のみ回転
-                if (movement.magnitude >= 0.1f)
-                {
-                    // キー入力方向へ瞬時回転
-                    Quaternion targetRotation = Quaternion.LookRotation(-movement);
-                    transform.rotation = targetRotation;
-
-                    // X, Z軸の傾きを強制的に0にリセットし、Y軸の向きを確定
-                    Vector3 currentEuler = transform.eulerAngles;
-                    transform.rotation = Quaternion.Euler(0f, currentEuler.y, 0f);
-                }
+                // X, Z軸の傾きを強制的に0にリセットし、Y軸の向きを確定
+                Vector3 currentEuler = transform.eulerAngles;
+                transform.rotation = Quaternion.Euler(0f, currentEuler.y, 0f);
             }
-            rb.AddForce(movement * applyForce, ForceMode.Force);
         }
+        rb.AddForce(movement * applyForce, ForceMode.Force);
     }
 
     /// <summary>
@@ -263,13 +275,6 @@ public class Test : MonoBehaviour
         {
             dx = 0;
             dz = 0;
-
-            ////ある程度遅くなったら強制停止
-            //Vector3 flatVelocity = new Vector3(rb.linearVelocity.x, 0, rb.linearVelocity.z);
-            //if (flatVelocity.magnitude < stopThreshold)
-            //{
-            //    rb.linearVelocity = new Vector3(0, rb.linearVelocity.y, 0);
-            //}
         }
         else
         {
@@ -290,6 +295,12 @@ public class Test : MonoBehaviour
     /// </summary>
     private void UpdateMovementAnimation()
     {
+        if (!isGrounded)
+        {
+            hedgehog.SetAnimId((int)Anim_Id.Run_Ball);
+            return;
+        }
+
         // Y軸方向の速度を除外し、平面での移動速度（ベクトルの大きさ）を取得
         // Rigidbody.velocity.magnitude は全体の速度
         Vector3 horizontalVelocity = new Vector3(rb.linearVelocity.x, 0, rb.linearVelocity.z);

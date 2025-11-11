@@ -301,7 +301,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 22388736}
   serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -1, z: -0, w: 0}
+  m_LocalRotation: {x: 0, y: 1, z: 0, w: 0}
   m_LocalPosition: {x: 0, y: -0.37, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -312,7 +312,7 @@ Transform:
   - {fileID: 1211211081}
   - {fileID: 1791923473}
   m_Father: {fileID: 259366411}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 180, z: 0}
 --- !u!1 &49794066
 GameObject:
   m_ObjectHideFlags: 0
@@ -5292,18 +5292,18 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Test
   JoyConManager: {fileID: 7684763748007499222, guid: 3797d0418e55a7b459daa9a711522dca, type: 3}
   hedgehog: {fileID: 22388737}
-  deceleratSpeed: 3
-  applyForce: 6
+  deceleratSpeed: 3.2
+  applyForce: 7
   runSpeedThreshold: 2
   rotationSpeed: 10
   tiltSensitivity: 3
   smoothing: 3
   deadZone: 0.5
   stickDeadZone: 0.3
-  stopThreshold: 0.5
-  jumpForce: 7
+  stopThreshold: 0.3
+  jumpForce: 7.5
   jumpThreshold: 0.3
-  jumpCooldown: 1
+  jumpCooldown: 1.5
 --- !u!54 &259366407
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -5314,7 +5314,7 @@ Rigidbody:
   serializedVersion: 5
   m_Mass: 1
   m_LinearDamping: 0
-  m_AngularDamping: 0.05
+  m_AngularDamping: 1
   m_CenterOfMass: {x: 0, y: 0, z: 0}
   m_InertiaTensor: {x: 1, y: 1, z: 1}
   m_InertiaRotation: {x: 0, y: 0, z: 0, w: 1}
