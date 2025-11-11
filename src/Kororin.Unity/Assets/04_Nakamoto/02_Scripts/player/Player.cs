@@ -8,8 +8,12 @@ using UnityEngine;
 
 public class Player : MonoBehaviour
 {
+    // 自身かどうか判別
     private bool isSelf = false;
     public bool IsSelf { get { return isSelf; } set { isSelf = value; } }
+
+    // ゴールしたか判別
+    private bool isGoal = false;
 
     private Rigidbody rb;
 
@@ -51,6 +55,16 @@ public class Player : MonoBehaviour
     }
 
     /// <summary>
+    /// アニメーション設定処理
+    /// </summary>
+    /// <param name="id"></param>
+    public virtual void SetAnimId(int id)
+    {
+        if (animator == null) return;
+        animator.SetInteger("animation_id", id);
+    }
+
+    /// <summary>
     /// アニメーションID取得処理
     /// </summary>
     /// <returns></returns>
@@ -73,8 +87,9 @@ public class Player : MonoBehaviour
             await RoomModel.Instance.StandbyAsync();
         }
 
-        if (other.tag == "Goal")
+        if (!isGoal && other.tag == "Goal")
         {
+            isGoal = true;
             await RoomModel.Instance.ArrivalGoalAsync();
         }
     }

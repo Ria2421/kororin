@@ -9,23 +9,8 @@ class User extends Model
 {
     use HasFactory;
 
-    protected $guarded = [
+    //更新しないカラムを指定する
+    protected $guarded = [                  //idはauto_incrementの為、指定しておく
         'id',
     ];
-
-    //リレーショナル（1対多）
-    public function user_relics()
-    {
-        return $this->hasMany(UserRelic::class);
-    }
-
-    public function achivement_status()
-    {
-        return $this->hasMany(AchievementStatus::class);
-    }
-
-    public function results()
-    {
-        return $this->hasMany(Result::class);
-    }
 }

@@ -29,9 +29,7 @@ public class SelectStageCannon : CannonBase
         {
             player = other.gameObject;
             player.transform.localScale = Vector3.one * 0.1f;
-            Rigidbody rigidbody = player.GetComponent<Rigidbody>();
-            rigidbody.useGravity = false;
-            rigidbody.linearVelocity = Vector3.zero;
+            player.GetComponent<Ball>().ResetVelocitys(false);
             player.transform.position = transform.position;
             PlayEnterAnim();
         }

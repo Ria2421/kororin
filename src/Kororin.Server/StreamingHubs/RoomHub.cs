@@ -11,6 +11,7 @@ using Kororin.Shared.Interfaces.StreamingHubs;
 using UnityEngine;
 using Korirn.Server.Model.Context;
 using Shared.Interfaces.StreamingHubs;
+using System.Runtime.InteropServices.Marshalling;
 #endregion
 
 namespace StreamingHubs
@@ -25,17 +26,17 @@ namespace StreamingHubs
         RoomContextRepository roomContextRepos;
         Dictionary<Guid, JoinedUser> JoinedUsers { get; set; }
 
-        // 順位付け用カウント
-        private int rankCnt = 1;
-
         // 最大参加可能人数
         private const int MAX_JOINABLE_PLAYERS = 2;
+
+        // 最大ステージ数 (乱数に用いるので最大数+1)
+        private const int MAX_STAGE_NUM = 6;
 
         //-----------------------
         // メソッド
 
         #region 接続・切断処理
-        //接続した場合
+        // 接続した場合
         protected override ValueTask OnConnected()
         {
             roomContextRepos = roomContextRepository;
@@ -121,15 +122,15 @@ namespace StreamingHubs
 
                 GameDbContext context = new GameDbContext();
 
-                //　退室するユーザーを取得
+                // 退室するユーザーを取得
                 var joinedUser = this.roomContext.JoinedUserList[this.ConnectionId];
 
                 if(isEnd == false)
                 {
-                    ////マスタークライアントだったら次の人に譲渡する
+                    // マスタークライアントだったら次の人に譲渡する
                     if (joinedUser.IsMaster == true)
                     {
-                        MasterLostAsync(this.ConnectionId);
+                        MasterChange(this.ConnectionId);
                         foreach (var user in this.roomContext.JoinedUserList)
                         {
                             if (user.Value.IsMaster == true)
@@ -140,7 +141,7 @@ namespace StreamingHubs
                     }
                 }
 
-                //// ルーム参加者全員に、ユーザーの退室通知を送信
+                // ルーム参加者全員に、ユーザーの退室通知を送信
                 this.roomContext.Group.All.OnLeave(roomContext.JoinedUserList, this.ConnectionId);
 
                 //　ルームから退室
@@ -178,36 +179,36 @@ namespace StreamingHubs
         /// <returns></returns>
         public async Task StandbyAsync()
         {
-            lock (roomContextRepository) // 排他制御
+            bool canStartGame = true; // ゲーム開始可能判定変数
+
+            // 自身のデータを取得
+            var joinedUser = roomContext.JoinedUserList[this.ConnectionId];
+            joinedUser.IsReady = true;  // 準備完了にする
+
+            // ルーム参加者全員に、自分が準備完了した通知を送信
+            this.roomContext.Group.All.OnStandby(this.ConnectionId);
+
+            // 最低参加人数がいない時点で早期リターン
+            if (this.roomContext.JoinedUserList.Count < MAX_JOINABLE_PLAYERS) return;
+
+            foreach (var user in this.roomContext.JoinedUserList)
+            { // 現在の参加者数分ループ
+                if (!user.Value.IsReady) canStartGame = false; // もし一人でも準備完了していなかった場合、開始させない
+            }
+
+            // ゲームが開始できる場合、開始通知をする
+            if (canStartGame)
             {
-                bool canStartGame = true; // ゲーム開始可能判定変数
+                Random rnd = new Random();
+                var id = rnd.Next(1, MAX_STAGE_NUM);   // 1以上最大ステージ数未満の値がランダムに出力
 
-                // 自身のデータを取得
-                var joinedUser = roomContext.JoinedUserList[this.ConnectionId];
-                joinedUser.IsReady = true;  // 準備完了にする
+                this.roomContext.Group.All.OnStartGame(id);
+                this.roomContext.IsStartGame = true;
 
-                // ルーム参加者全員に、自分が準備完了した通知を送信
-                this.roomContext.Group.All.OnStandby(this.ConnectionId);
-
-                // 最低参加人数がいない時点で早期リターン
-                if(this.roomContext.JoinedUserList.Count < MAX_JOINABLE_PLAYERS) return;
-
+                // フラグリセット
                 foreach (var user in this.roomContext.JoinedUserList)
-                { // 現在の参加者数分ループ
-                    if (!user.Value.IsReady) canStartGame = false; // もし一人でも準備完了していなかった場合、開始させない
-                }
-
-                // ゲームが開始できる場合、開始通知をする
-                if (canStartGame)
                 {
-                    this.roomContext.Group.All.OnStartGame();
-                    this.roomContext.IsStartGame = true;
-
-                    // フラグリセット
-                    foreach (var user in this.roomContext.JoinedUserList)
-                    {
-                        user.Value.IsReady= false;
-                    }
+                    user.Value.IsReady = false;
                 }
             }
         }
@@ -222,32 +223,30 @@ namespace StreamingHubs
         /// <returns></returns>
         public async Task TransitionInGameAsync()
         {
-            lock (roomContextRepository)    // 排他制御
+            bool canCountdown = true;   // カウントダウン開始判定
+
+            // 自身を遷移完了にする
+            var joinedUser = roomContext.JoinedUserList[this.ConnectionId];
+            joinedUser.IsTransition = true;
+
+            // 全員が遷移完了してるかチェック
+            foreach (var user in this.roomContext.JoinedUserList)
             {
-                bool canCountdown = true;   // カウントダウン開始判定
+                if (!user.Value.IsTransition) canCountdown = false;
+            }
 
-                // 自身を遷移完了にする
-                var joinedUser = roomContext.JoinedUserList[this.ConnectionId];
-                joinedUser.IsTransition = true;
+            // 遷移完了してたらカウント開始
+            if (canCountdown)
+            {
+                this.roomContext.Group.All.OnStartCount();
 
-                // 全員が遷移完了してるかチェック
+                // フラグリセット
                 foreach (var user in this.roomContext.JoinedUserList)
                 {
-                    if (!user.Value.IsTransition) canCountdown = false;
-                }
-
-                // 遷移完了してたらカウント開始
-                if (canCountdown)
-                {
-                    this.roomContext.Group.All.OnStartCount();
-
-                    // フラグリセット
-                    foreach (var user in this.roomContext.JoinedUserList)
-                    {
-                        user.Value.IsTransition = false;
-                    }
+                    user.Value.IsTransition = false;
                 }
             }
+
         }
 
         /// <summary>
@@ -256,30 +255,27 @@ namespace StreamingHubs
         /// <returns></returns>
         public async Task CountEndAsync()
         {
-            lock (roomContextRepository)    // 排他制御
+            bool canOpenGate = true;    // カウントダウン開始判定
+
+            // 自身をカウント終了状態にする
+            var joinedUser = roomContext.JoinedUserList[this.ConnectionId];
+            joinedUser.IsCountEnd = true;
+
+            // 全員がカウント終了してるかチェック
+            foreach (var user in this.roomContext.JoinedUserList)
             {
-                bool canOpenGate = true;    // カウントダウン開始判定
+                if (!user.Value.IsCountEnd) canOpenGate = false;
+            }
 
-                // 自身をカウント終了状態にする
-                var joinedUser = roomContext.JoinedUserList[this.ConnectionId];
-                joinedUser.IsCountEnd = true;
+            // 遷移完了してたらカウント開始
+            if (canOpenGate)
+            {
+                this.roomContext.Group.All.OnOpenGate();
 
-                // 全員がカウント終了してるかチェック
+                // フラグリセット
                 foreach (var user in this.roomContext.JoinedUserList)
                 {
-                    if (!user.Value.IsCountEnd) canOpenGate = false;
-                }
-
-                // 遷移完了してたらカウント開始
-                if (canOpenGate)
-                {
-                    this.roomContext.Group.All.OnOpenGate();
-
-                    // フラグリセット
-                    foreach (var user in this.roomContext.JoinedUserList)
-                    {
-                        user.Value.IsCountEnd = false;
-                    }
+                    user.Value.IsCountEnd = false;
                 }
             }
         }
@@ -292,12 +288,17 @@ namespace StreamingHubs
         {
             lock (roomContextRepository)    // 排他制御
             {
-                bool canTransResult = true; // カウントダウン開始判定
+                bool canTransResult = true; // 全員ゴールしたか判別
+
+                int rank = 1;
+
+                foreach(var user in this.roomContext.JoinedUserList)
+                {
+                    if(user.Value.Rank != -1) rank++;
+                }
 
                 // 順位を保存
-                var joinedUser = roomContext.JoinedUserList[this.ConnectionId];
-                joinedUser.Rank = rankCnt;
-                rankCnt++;
+                roomContext.JoinedUserList[this.ConnectionId].Rank = rank;
 
                 // 全員が遷移完了してるかチェック
                 foreach (var user in this.roomContext.JoinedUserList)
@@ -314,7 +315,6 @@ namespace StreamingHubs
                     foreach (var user in this.roomContext.JoinedUserList)
                     {
                         user.Value.Rank = -1;
-                        rankCnt = 1;
                     }
                 }
             }
@@ -325,7 +325,7 @@ namespace StreamingHubs
         /// </summary>
         /// <param name="conID"></param>
         /// <returns></returns>
-        void MasterLostAsync(Guid conID)
+        void MasterChange(Guid conID)
         {
             // 参加者リストをループ
             foreach (var user in this.roomContext.JoinedUserList)
@@ -333,9 +333,8 @@ namespace StreamingHubs
                 // 対象がマスタークライアントでない場合
                 if (user.Value.IsMaster == false)
                 {
-                    // その対象をマスタークライアントとし、通知を送る。ループを抜ける
+                    // その対象をマスタークライアントとしループを抜ける
                     user.Value.IsMaster = true;
-                    //this.roomContext.Group.Only([user.Key]).OnChangeMasterClient();
                     break;
                 }
             }
@@ -351,23 +350,20 @@ namespace StreamingHubs
         /// <returns></returns>
         public async Task UpdateCharacterAsync(CharacterData charaData)
         {
-            lock (roomContextRepository) // 排他制御
+            // キャラクターデータリストに自身のデータがない場合
+            if (!this.roomContext.CharacterDataList.ContainsKey(this.ConnectionId))
             {
-                // キャラクターデータリストに自身のデータがない場合
-                if (!this.roomContext.CharacterDataList.ContainsKey(this.ConnectionId))
-                {
-                    // 新たなキャラクターデータを追加
-                    this.roomContext.CharacterDataList.Add(this.ConnectionId, charaData);
-                }
-                else // 既に存在している場合
-                {
-                    // キャラクターデータを更新
-                    this.roomContext.CharacterDataList[this.ConnectionId] = charaData;
-                }
-
-                // ルームの自分以外に、ユーザ情報通知を送信
-                this.roomContext.Group.Except([this.ConnectionId]).OnUpdateCharacter(charaData);
+                // 新たなキャラクターデータを追加
+                this.roomContext.CharacterDataList.Add(this.ConnectionId, charaData);
             }
+            else // 既に存在している場合
+            {
+                // キャラクターデータを更新
+                this.roomContext.CharacterDataList[this.ConnectionId] = charaData;
+            }
+
+            // ルームの自分以外に、ユーザ情報通知を送信
+            this.roomContext.Group.Except([this.ConnectionId]).OnUpdateCharacter(charaData);
         }
 
         ///// <summary>

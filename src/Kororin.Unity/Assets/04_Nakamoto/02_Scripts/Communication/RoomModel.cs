@@ -16,10 +16,14 @@ using System.Threading.Tasks;
 using UnityEngine;
 using static Kororin.Shared.Interfaces.StreamingHubs.EnumManager;
 using Vector2 = UnityEngine.Vector2;
+using System.Runtime.InteropServices;
 #endregion
 
 public class RoomModel : BaseModel, IRoomHubReceiver
 {
+    //-----------------------
+    // フィールド
+
     private GrpcChannel channel;  // サーバーURL
     private IRoomHub roomHub;     // roomHubの関数を呼び出す時に使う
 
@@ -70,7 +74,7 @@ public class RoomModel : BaseModel, IRoomHubReceiver
     public Action<Guid> OnStoodby { get; set; }
 
     // ゲーム開始通知
-    public Action OnStartedGame { get; set; }
+    public Action<int> OnStartedGame { get; set; }
 
     // 易度上昇通知
     public Action<int> OnAscendDifficultySyn { get; set; }
@@ -127,12 +131,31 @@ public class RoomModel : BaseModel, IRoomHubReceiver
     #endregion
 
     #region RoomModelインスタンス生成
+
     private static RoomModel instance;
     public static RoomModel Instance
     {
-        get { return instance; }
+        get
+        {
+            // GETプロパティを呼ばれたときにインスタンスを作成する(初回のみ)
+            if (instance == null)
+            {
+                GameObject gameObj = new GameObject("RoomModel" + DateTime.Now.ToString());
+                instance = gameObj.AddComponent<RoomModel>();
+                DontDestroyOnLoad(gameObj);
+            }
+            return instance;
+        }
     }
 
+    #endregion
+
+    //-----------------------
+    // メソッド
+
+    /// <summary>
+    /// 起動処理
+    /// </summary>
     private void Awake()
     {
         if (instance == null)
@@ -146,22 +169,6 @@ public class RoomModel : BaseModel, IRoomHubReceiver
             Destroy(gameObject);
         }
     }
-
-    //public static RoomModel Instance
-    //{
-    //    get
-    //    {
-    //        // GETプロパティを呼ばれたときにインスタンスを作成する(初回のみ)
-    //        if (instance == null)
-    //        {
-    //            GameObject gameObj = new GameObject("RoomModel"+DateTime.Now.ToString());
-    //            instance = gameObj.AddComponent<RoomModel>();
-    //            DontDestroyOnLoad(gameObj);
-    //        }
-    //        return instance;
-    //    }
-    //}
-    #endregion
 
     #region MagicOnion接続・切断処理
 
@@ -199,46 +206,7 @@ public class RoomModel : BaseModel, IRoomHubReceiver
 
     #region 通知の処理
 
-    ///// <summary>
-    ///// 同時開始
-    ///// </summary>
-    //public void OnSameStart(List<TerminalData> list)
-    //{
-    //    OnSameStartSyn(list);
-    //}
-
-    ///// <summary>
-    ///// ゲーム終了通知
-    ///// </summary>
-    ///// <param name="result"></param>
-    //public async void OnGameEnd(ResultData result)
-    //{
-    //    OnGameEndSyn(result);
-    //    await roomHub.LeavedAsync(true);
-    //}
-
     #region 入室・退室・準備完了通知
-
-    /// <summary>
-    /// ルーム検索通知
-    /// </summary>
-    /// <param name="roomName"></param>
-    /// <param name="userName"></param>
-    public void OnSearchRoom(RoomData[] roomDatas)
-    {
-        List<string> roomNameList = new List<string>();
-        List<string> userNameList = new List<string>();
-        List<string> passWordList = new List<string>();
-
-        foreach (RoomData roomData in roomDatas)
-        {
-            roomNameList.Add(roomData.roomName);
-            userNameList.Add(roomData.userName);
-            passWordList.Add(roomData.passWord);
-        }
-
-        OnSearchedRoom(roomNameList, userNameList, passWordList);
-    }
 
     /// <summary>
     /// ルーム生成通知
@@ -370,9 +338,9 @@ public class RoomModel : BaseModel, IRoomHubReceiver
     /// <summary>
     /// ゲーム開始通知
     /// </summary>
-    public void OnStartGame()
+    public void OnStartGame(int id)
     {
-        OnStartedGame();
+        OnStartedGame(id);
     }
 
     /// <summary>
@@ -442,20 +410,6 @@ public class RoomModel : BaseModel, IRoomHubReceiver
         await roomHub.StandbyAsync();
     }
 
-    ///// <summary>
-    ///// スタート
-    ///// </summary>
-    ///// <param name="hostName"></param>
-    ///// <returns></returns>
-    //public async Task StartRoomAsync(string hostName)
-    //{
-    //    if (TitleManagerk.GameMode == 0) return;
-    //    var handler = new YetAnotherHttpHandler() { Http2Only = true };
-    //    var channel = GrpcChannel.ForAddress(ServerURL, new GrpcChannelOptions() { HttpHandler = handler });
-    //    var client = MagicOnionClient.Create<IRoomService>(channel);
-
-    //    await client.StartRoom(hostName);
-    //}
     #endregion
 
     #region インゲーム
@@ -515,6 +469,7 @@ public class RoomModel : BaseModel, IRoomHubReceiver
     #endregion
 
     #region ゲーム内UI、仕様関連
+
     ///// <summary>
     ///// ギミックの起動同期
     ///// </summary>
@@ -523,26 +478,6 @@ public class RoomModel : BaseModel, IRoomHubReceiver
     //public async UniTask BootGimmickAsync(string uniqueID, bool triggerOnce)
     //{
     //    await roomHub.BootGimmickAsync(uniqueID, triggerOnce);
-    //}
-
-    ///// <summary>
-    ///// ステージクリア
-    ///// Author:Nishiura
-    ///// </summary>
-    ///// <param name="isAdvance">ステージ進行判定</param>
-    ///// <returns></returns>
-    //public async UniTask StageClear(bool isAdvance)
-    //{
-    //    await roomHub.StageClear(isAdvance);
-    //}
-
-    ///// <summary>
-    ///// ステージ進行完了の同期
-    ///// </summary>
-    ///// <returns></returns>
-    //public async UniTask AdvancedStageAsync()
-    //{
-    //    await roomHub.AdvancedStageAsync();
     //}
 
     ///// <summary>

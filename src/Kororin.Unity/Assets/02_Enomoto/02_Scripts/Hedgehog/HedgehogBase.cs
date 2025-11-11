@@ -116,6 +116,7 @@ public class HedgehogBase : MonoBehaviour
     /// </summary>
     void PlaySpawnAnim()
     {
+        SetAnimId((int)Anim_Id.Idle_Ball);
         var parent = transform.parent.transform;
         Rigidbody rigidbody = parent.GetComponent<Rigidbody>();
         Vector3 spawnWeight = new Vector3(parent.forward.x * -spawnDist, parent.position.y + spawnDist, parent.forward.z * -spawnDist);

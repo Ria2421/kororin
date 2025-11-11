@@ -45,7 +45,7 @@ namespace Kororin.Shared.Interfaces.StreamingHubs
         /// <summary>
         /// ゲーム開始通知
         /// </summary>
-        void OnStartGame();
+        void OnStartGame(int rnd);
 
         #endregion
 

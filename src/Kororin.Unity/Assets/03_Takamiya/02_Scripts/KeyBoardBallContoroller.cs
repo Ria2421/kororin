@@ -1,14 +1,14 @@
 using UnityEngine;
 /// <summary>
-/// �L�[�{�[�h�ő��삷��X�N���v�g
+/// 
 /// </summary>
 public class KeyBoardBallContoroller : MonoBehaviour
 {
     Rigidbody rb;
 
-    [SerializeField] float moveSpeed;// �{�[���̓]����X�s�[�h
-    [SerializeField] float smoothing;// ���͂̂Ȃ߂炩��
-    [SerializeField] float drag;// ���C�i�~�܂�₷���j
+    [SerializeField] float moveSpeed;// 
+    [SerializeField] float smoothing;// 
+    [SerializeField] float drag;// 
 
     Vector3 smoothedInput = Vector3.zero;
 
@@ -34,14 +34,14 @@ public class KeyBoardBallContoroller : MonoBehaviour
         if (Input.GetKey(KeyCode.D))
             input.x += 1;
 
-        // �΂ߕ����̑��x�����ɂ��邽�ߐ��K��
+        // 
         if (input.sqrMagnitude > 1)
             input.Normalize();
 
-        // �X���[�Y���
+        // 
         smoothedInput = Vector3.Lerp(smoothedInput, input, Time.fixedDeltaTime * smoothing);
 
-        // �͂�������
+        // 
         rb.AddForce(smoothedInput * moveSpeed);
     }
 }

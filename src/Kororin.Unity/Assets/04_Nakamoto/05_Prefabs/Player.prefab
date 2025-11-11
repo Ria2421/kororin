@@ -153,5 +153,5 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Player
   deceleratSpeed: 1.5
-  applyForce: 1
+  applyForce: 2
   animator: {fileID: 0}
