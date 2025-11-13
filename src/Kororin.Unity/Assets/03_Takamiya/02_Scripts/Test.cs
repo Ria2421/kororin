@@ -130,6 +130,12 @@ public class Test : MonoBehaviour
             ApplyStopCheck(); // 入力がないとき減速チェック
         }
 
+        // 角速度の制限
+        if (rb.angularVelocity.magnitude > 10f)
+        {
+            rb.angularVelocity = rb.angularVelocity.normalized * 10f;
+        }
+
         // 入力がなくても速度に応じてアニメーション更新
         UpdateMovementAnimation();
     }
@@ -241,24 +247,34 @@ public class Test : MonoBehaviour
         //瞬時に力を加える
         rb.AddForce(movement * applyForce, ForceMode.Force);
 
-        if (!isSphere&&isGrounded)
+        if (isSphere)
         {
-            transform.rotation = Quaternion.Euler(0, 180, 0);
-            movement = new Vector3(dx, 0, dz).normalized;
-
-            // 入力がある場合のみ回転
-            if (movement.magnitude >= 0.01f)
-            {
-                // キー入力方向へ瞬時回転
-                Quaternion targetRotation = Quaternion.LookRotation(-movement);
-                transform.rotation = targetRotation;
-
-                // X, Z軸の傾きを強制的に0にリセットし、Y軸の向きを確定
-                Vector3 currentEuler = transform.eulerAngles;
-                transform.rotation = Quaternion.Euler(0f, currentEuler.y, 0f);
-            }
+            // 入力に基づいて移動方向を計算
+            movement = new Vector3(dx, 0, dz);
+            // 球体に力を加える
+            rb.AddForce(movement * applyForce);
         }
-        rb.AddForce(movement * applyForce, ForceMode.Force);
+        else
+        {
+            if (isGrounded)
+            {
+                transform.rotation = Quaternion.Euler(0, 180, 0);
+                movement = new Vector3(dx, 0, dz).normalized;
+
+                // 入力がある場合のみ回転
+                if (movement.magnitude >= 0.1f)
+                {
+                    // キー入力方向へ瞬時回転
+                    Quaternion targetRotation = Quaternion.LookRotation(movement);
+                    transform.rotation = targetRotation;
+
+                    // X, Z軸の傾きを強制的に0にリセットし、Y軸の向きを確定
+                    Vector3 currentEuler = transform.eulerAngles;
+                    transform.rotation = Quaternion.Euler(0f, currentEuler.y, 0f);
+                }
+            }
+            rb.AddForce(movement * applyForce, ForceMode.Force);
+        }
     }
 
     /// <summary>
