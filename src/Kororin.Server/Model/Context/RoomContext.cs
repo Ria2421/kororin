@@ -65,7 +65,12 @@ namespace Kororin.Server.Model.Context
         /// 参加者のキャラデータリスト
         /// </summary>
         public Dictionary<Guid,CharacterData> CharacterDataList { get; } = new Dictionary<Guid, CharacterData>();
-        
+
+        /// <summary>
+        /// ギミックリスト
+        /// </summary>
+        public Dictionary<string, GimmickData> GimmickList { get; set; } = new Dictionary<string, GimmickData>();
+
         #endregion
 
         // RoomContextの定義

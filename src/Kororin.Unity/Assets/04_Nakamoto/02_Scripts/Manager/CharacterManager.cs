@@ -27,11 +27,15 @@ public class CharacterManager : MonoBehaviour
 
     public Dictionary<Guid, GameObject> PlayerObjs { get { return playerObjs; } }
 
-    [SerializeField] private GameObject playerPrefab;   // 生成するプレイヤーオブジェ
+    // 生成するプレイヤーオブジェ
+    [SerializeField] private GameObject playerPrefab;
 
-    [SerializeField] private GameObject playerObjSelf;  // ローカル用に属性付与
+    // 自身のゲームオブジェ
+    [SerializeField] private GameObject playerObjSelf;  
     public GameObject PlayerObjSelf { get { return playerObjSelf; } }
 
+    #region インスタンス
+    
     static CharacterManager instance;
     public static CharacterManager Instance
     {
@@ -41,10 +45,14 @@ public class CharacterManager : MonoBehaviour
         }
     }
 
+    #endregion
+
     //------------
     // 定数
 
-    private const float UPDATE_SEC = 0.1f;  // 通信頻度
+    // 通信頻度
+    private const float UPDATE_SEC = 0.1f;
+    public float UpdateSec { get { return UPDATE_SEC; } }
 
     //-----------------------
     // メソッド
@@ -79,6 +87,7 @@ public class CharacterManager : MonoBehaviour
 
         // 通知処理を登録
         RoomModel.Instance.OnUpdatedCharacter += this.OnUpdateCharacter;
+        RoomModel.Instance.OnUpdatedMasterClient += this.OnUpdateMasterClient;
     }
 
     /// <summary>
@@ -91,6 +100,12 @@ public class CharacterManager : MonoBehaviour
 
         // シーン遷移したときに登録した通知処理を解除
         RoomModel.Instance.OnUpdatedCharacter -= this.OnUpdateCharacter;
+        RoomModel.Instance.OnUpdatedMasterClient -= this.OnUpdateMasterClient;
+    }
+
+    private void OnDestroy()
+    {
+        instance = null;
     }
 
     /// <summary>
@@ -164,11 +179,20 @@ public class CharacterManager : MonoBehaviour
         {
             if (RoomModel.Instance != null && RoomModel.Instance.IsConnect)
             {
-                UpdateCharacterDataRequest();
+                if (RoomModel.Instance.IsMaster)
+                {
+                    UpdateMasterDataRequest();
+                }
+                else
+                {
+                    UpdateCharacterDataRequest();
+                }
             }
             yield return new WaitForSeconds(UPDATE_SEC);
         }
     }
+
+    #region リクエスト関連
 
     /// <summary>
     /// プレイヤーの情報更新
@@ -179,6 +203,21 @@ public class CharacterManager : MonoBehaviour
 
         // プレイヤー情報更新リクエスト
         await RoomModel.Instance.UpdateCharacterAsync(playerData);
+    }
+
+    /// <summary>
+    /// マスタークライアント用の情報更新
+    /// </summary>
+    async void UpdateMasterDataRequest()
+    {
+        var masterClientData = new MasterClientData()
+        {
+            CharacterData = GetCharacterData(),
+            GimmickDatas = GimmickManager.Instance.GetGimmickDatas(),
+        };
+
+        // マスタークライアント情報更新リクエスト
+        await RoomModel.Instance.UpdateMasterClientAsync(masterClientData);
     }
 
     /// <summary>
@@ -204,11 +243,28 @@ public class CharacterManager : MonoBehaviour
         };
     }
 
+    #endregion
+
+    #region 通知関連
+
+    /// <summary>
+    /// キャラ更新通知
+    /// </summary>
+    /// <param name="characterData"></param>
+    public void OnUpdateCharacter(CharacterData characterData)
+    {
+        if (!playerObjs.ContainsKey(characterData.ConnectionID) || !RoomModel.Instance) return;
+
+        // プレイヤーの情報更新
+        var player = PlayerObjs[characterData.ConnectionID];
+        UpdateCharacter(characterData,player);
+    }
+
     /// <summary>
     /// キャラの更新処理
     /// </summary>
     /// <param name="characterData"></param>
-    void UpdateCharacter(CharacterData characterData,GameObject playerObj)
+    void UpdateCharacter(CharacterData characterData, GameObject playerObj)
     {
         // 位置・大きさ・向きの同期
         playerObj.gameObject.transform.DOMove(characterData.Position, UPDATE_SEC).SetEase(Ease.Linear);
@@ -223,19 +279,21 @@ public class CharacterManager : MonoBehaviour
         }
     }
 
-    #region 通知関連
-
     /// <summary>
-    /// キャラ更新通知
+    /// マスタークライアントの更新通知
     /// </summary>
-    /// <param name="characterData"></param>
-    public void OnUpdateCharacter(CharacterData characterData)
+    /// <param name="masterClientData"></param>
+    public void OnUpdateMasterClient(MasterClientData masterClientData)
     {
-        if (!playerObjs.ContainsKey(characterData.ConnectionID) || !RoomModel.Instance) return;
+        if (RoomModel.Instance.IsMaster) return;
+        if (!playerObjs.ContainsKey(masterClientData.CharacterData.ConnectionID) || !RoomModel.Instance) return;
 
         // プレイヤーの情報更新
-        var player = playerObjs[characterData.ConnectionID];
-        UpdateCharacter(characterData,player);
+        var player = PlayerObjs[masterClientData.CharacterData.ConnectionID];
+        UpdateCharacter(masterClientData.CharacterData, player);
+
+        // ギミックの情報更新
+        GimmickManager.Instance.UpdateGimmicks(masterClientData.GimmickDatas);
     }
 
     #endregion

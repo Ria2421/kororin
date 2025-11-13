@@ -83,6 +83,23 @@ namespace Kororin.Shared.Interfaces.StreamingHubs
         /// </summary>
         void OnUpdateCharacter(CharacterData charaData);
 
+        /// <summary>
+        /// マスタークライアントの更新通知
+        /// </summary>
+        /// <param name="masterClientData"></param>
+        void OnUpdateMasterClient(MasterClientData masterClientData);
+
+        #endregion
+
+        #region ギミック
+
+        /// <summary>
+        /// ギミック起動通知
+        /// Author:Nishiura
+        /// </summary>
+        /// <param name="gimID">ギミックID</param>
+        void OnBootGimmick(string uniqueID, bool triggerOnce);
+
         #endregion
 
         #region ゲーム内UI、仕様

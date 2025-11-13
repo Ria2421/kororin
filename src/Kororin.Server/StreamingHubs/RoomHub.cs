@@ -366,96 +366,69 @@ namespace StreamingHubs
             this.roomContext.Group.Except([this.ConnectionId]).OnUpdateCharacter(charaData);
         }
 
-        ///// <summary>
-        ///// マスタークライアントの更新
-        ///// </summary>
-        ///// <param name="masterClientData"></param>
-        ///// <returns></returns>
-        //public async Task UpdateMasterClientAsync(MasterClientData masterClientData)
-        //{
-        //    lock (roomContextRepository) // 排他制御
-        //    {
-        //        // ルームデータから敵のリストを取得し、該当する要素を更新する
-        //        var gottenEnemyDataList = this.roomContext.enemyDataList;
-        //        foreach (var enemyData in masterClientData.EnemyDatas)
-        //        {
-        //            if (gottenEnemyDataList.ContainsKey(enemyData.UniqueId))
-        //            {
-        //                gottenEnemyDataList[enemyData.UniqueId] = enemyData;
-        //            }
-        //        }
+        /// <summary>
+        /// マスタークライアントの更新
+        /// </summary>
+        /// <param name="masterClientData"></param>
+        /// <returns></returns>
+        public async Task UpdateMasterClientAsync(MasterClientData masterClientData)
+        {
+            lock (roomContextRepository) // 排他制御
+            {
+                foreach (var item in masterClientData.GimmickDatas)
+                {
+                    // すでにルームコンテキストにギミックが含まれている場合
+                    if (this.roomContext.GimmickList.ContainsKey(item.UniqueID))
+                    {
+                        // そのギミックを更新する
+                        this.roomContext.GimmickList[item.UniqueID] = item;
+                    }
+                    else // 含まれていない場合
+                    {
+                        // そのギミックを追加する
+                        this.roomContext.GimmickList.Add(item.UniqueID, item);
+                    }
+                }
 
-        //        // ルームデータから端末情報を取得し、アクティブ状態の端末を更新
-        //        if(masterClientData.TerminalDatas != null)
-        //        {
-        //            foreach (var termData in masterClientData.TerminalDatas)
-        //            {
-        //                if(termData.State == TERMINAL_STATE.Active)
-        //                {
-        //                    var data = roomContext.terminalList.FirstOrDefault(t => t.ID == termData.ID);
+                // キャラクターデータリストに自身のデータがない場合
+                if (!this.roomContext.CharacterDataList.ContainsKey(this.ConnectionId))
+                {
+                    // 新たなキャラクターデータを追加
+                    this.roomContext.CharacterDataList.Add(this.ConnectionId, masterClientData.CharacterData);
+                }
+                else // 既に存在している場合
+                {
+                    // キャラクターデータを更新
+                    this.roomContext.CharacterDataList[this.ConnectionId] = masterClientData.CharacterData;
+                }
 
-        //                    if (data != null)
-        //                    {
-        //                        data.Time = termData.Time;
-        //                    }
-        //                }
-        //            }
-        //        }
+                // ルームの自分以外に、マスタークライアントの状態の更新通知を送信
+                this.roomContext.Group.Except([this.ConnectionId]).OnUpdateMasterClient(masterClientData);
+            }
+        }
 
-        //        foreach (var item in masterClientData.GimmickDatas)
-        //        {
-        //            // すでにルームコンテキストにギミックが含まれている場合
-        //            if (this.roomContext.gimmickList.ContainsKey(item.UniqueID))
-        //            {
-        //                // そのギミックを更新する
-        //                this.roomContext.gimmickList[item.UniqueID] = item;
-        //            }
-        //            else // 含まれていない場合
-        //            {
-        //                // そのギミックを追加する
-        //                this.roomContext.gimmickList.Add(item.UniqueID, item);
-        //            }
-        //        }
+        /// <summary>
+        /// ギミック起動同期処理
+        /// </summary>
+        /// <param name="gimID">ギミック識別ID</param>
+        /// <returns></returns>
+        public async Task BootGimmickAsync(string uniqueID, bool triggerOnce)
+        {
+            lock (roomContextRepository)
+            {
+                // 対象ギミックが存在している場合
+                if (this.roomContext.GimmickList.ContainsKey(uniqueID))
+                {
+                    if (triggerOnce)
+                    {
+                        this.roomContext.GimmickList.Remove(uniqueID);
+                    }
 
-        //        // キャラクターデータリストに自身のデータがない場合
-        //        if (!this.roomContext.characterDataList.ContainsKey(this.ConnectionId))
-        //        {
-        //            // 新たなキャラクターデータを追加
-        //            this.roomContext.AddCharacterData(this.ConnectionId, masterClientData.PlayerData);
-        //        }
-        //        else // 既に存在している場合
-        //        {
-        //            // キャラクターデータを更新
-        //            this.roomContext.characterDataList[this.ConnectionId] = masterClientData.PlayerData;
-        //        }
-
-        //        // ルームの自分以外に、マスタークライアントの状態の更新通知を送信
-        //        this.roomContext.Group.Except([this.ConnectionId]).OnUpdateMasterClient(masterClientData);
-        //    }
-        //}
-
-        ///// <summary>
-        ///// ギミック起動同期処理
-        ///// </summary>
-        ///// <param name="gimID">ギミック識別ID</param>
-        ///// <returns></returns>
-        //public async Task BootGimmickAsync(string uniqueID, bool triggerOnce)
-        //{
-        //    lock (roomContextRepository)
-        //    {
-        //        // 対象ギミックが存在している場合
-        //        if (this.roomContext.gimmickList.ContainsKey(uniqueID))
-        //        {
-        //            if (triggerOnce)
-        //            {
-        //                this.roomContext.gimmickList.Remove(uniqueID);
-        //            }
-
-        //            // 参加者全員にギミック情報を通知
-        //            this.roomContext.Group.All.OnBootGimmick(uniqueID, triggerOnce);
-        //        }
-        //    }
-        //}
+                    // 参加者全員にギミック情報を通知
+                    this.roomContext.Group.All.OnBootGimmick(uniqueID, triggerOnce);
+                }
+            }
+        }
 
         ///// <summary>
         ///// オブジェクト生成処理
