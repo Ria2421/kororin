@@ -116,6 +116,9 @@ public class Test : MonoBehaviour
         {
             InputGamepad();//InputGamepad関数呼び出し
         }
+
+        dx = canControl ? Input.GetAxis("Horizontal") : 0;
+        dz = canControl ? Input.GetAxis("Vertical") : 0;
     }
 
     private void FixedUpdate()
@@ -212,8 +215,8 @@ public class Test : MonoBehaviour
         else
         {
             // プレイヤーの入力を取得
-            dx = canControl ? Input.GetAxis("Horizontal") : 0;
-            dz = canControl ? Input.GetAxis("Vertical") : 0;
+            /*dx = canControl ? Input.GetAxis("Horizontal") : 0;
+            dz = canControl ? Input.GetAxis("Vertical") : 0;*/
         }
     }
 
