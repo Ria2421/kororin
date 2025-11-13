@@ -21575,17 +21575,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 25da8da86dc91d048a810dda9d9a945e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Test
-  JoyConManager: {fileID: 0}
-  hedgehog: {fileID: 0}
-  deceleratSpeed: 0
-  applyForce: 0
-  runSpeedThreshold: 0
-  rotationSpeed: 0
-  tiltSensitivity: 0
-  smoothing: 0
-  deadZone: 0
-  stickDeadZone: 0
-  stopThreshold: 0
-  jumpForce: 0
-  jumpThreshold: 0
-  jumpCooldown: 0
+  JoyConManager: {fileID: 7684763748007499222, guid: 3797d0418e55a7b459daa9a711522dca, type: 3}
+  hedgehog: {fileID: 4410218675595479741}
+  deceleratSpeed: 3.2
+  applyForce: 7
+  runSpeedThreshold: 2
+  rotationSpeed: 10
+  tiltSensitivity: 3
+  smoothing: 3
+  deadZone: 0.5
+  stickDeadZone: 0.3
+  stopThreshold: 0.3
+  jumpForce: 7.5
+  jumpThreshold: 0.5
+  jumpCooldown: 1.5
