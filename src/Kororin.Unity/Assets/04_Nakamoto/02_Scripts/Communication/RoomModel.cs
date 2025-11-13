@@ -109,7 +109,7 @@ public class RoomModel : BaseModel, IRoomHubReceiver
     public Action OnChangedMasterClient { get; set; }
 
     ////マスタークライアントの更新通知
-    //public Action<MasterClientData> OnUpdateMasterClientSyn { get; set; }
+    public Action<MasterClientData> OnUpdatedMasterClient { get; set; }
 
     //プレイヤー位置回転通知
     public Action<CharacterData> OnUpdatedCharacter { get; set; }
@@ -322,14 +322,14 @@ public class RoomModel : BaseModel, IRoomHubReceiver
         IsMaster = true;
     }
 
-    ///// <summary>
-    ///// マスタークライアントの更新通知
-    ///// </summary>
-    ///// <param name="masterClientData"></param>
-    //public void OnUpdateMasterClient(MasterClientData masterClientData)
-    //{
-    //    OnUpdateMasterClientSyn(masterClientData);
-    //}
+    /// <summary>
+    /// マスタークライアントの更新通知
+    /// </summary>
+    /// <param name="masterClientData"></param>
+    public void OnUpdateMasterClient(MasterClientData masterClientData)
+    {
+        OnUpdatedMasterClient(masterClientData);
+    }
 
     #endregion
 
@@ -456,29 +456,29 @@ public class RoomModel : BaseModel, IRoomHubReceiver
         await roomHub.UpdateCharacterAsync(charaData);
     }
 
-    ///// <summary>
-    ///// マスタークライアントの更新同期
-    ///// </summary>
-    ///// <param name="masterClient"></param>
-    ///// <returns></returns>
-    //public async UniTask UpdateMasterClientAsync(MasterClientData masterClient)
-    //{
-    //    await roomHub.UpdateMasterClientAsync(masterClient);
-    //}
+    /// <summary>
+    /// マスタークライアントの更新同期
+    /// </summary>
+    /// <param name="masterClient"></param>
+    /// <returns></returns>
+    public async UniTask UpdateMasterClientAsync(MasterClientData masterClient)
+    {
+        await roomHub.UpdateMasterClientAsync(masterClient);
+    }
 
     #endregion
 
     #region ゲーム内UI、仕様関連
 
-    ///// <summary>
-    ///// ギミックの起動同期
-    ///// </summary>
-    ///// <param name="uniqueID"></param>
-    ///// <returns></returns>
-    //public async UniTask BootGimmickAsync(string uniqueID, bool triggerOnce)
-    //{
-    //    await roomHub.BootGimmickAsync(uniqueID, triggerOnce);
-    //}
+    /// <summary>
+    /// ギミックの起動同期
+    /// </summary>
+    /// <param name="uniqueID"></param>
+    /// <returns></returns>
+    public async UniTask BootGimmickAsync(string uniqueID, bool triggerOnce)
+    {
+        await roomHub.BootGimmickAsync(uniqueID, triggerOnce);
+    }
 
     ///// <summary>
     ///// オブジェクト生成リクエスト

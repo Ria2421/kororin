@@ -40,6 +40,13 @@ namespace Kororin.Shared.Interfaces.StreamingHubs
         /// <returns></returns>
         Task UpdateCharacterAsync(CharacterData charaData);
 
+        /// <summary>
+        /// マスタークライアントの更新
+        /// </summary>
+        /// <param name="masterClientData"></param>
+        /// <returns></returns>
+        Task UpdateMasterClientAsync(MasterClientData masterClientData);
+
         #endregion
 
         #region ゲーム内
@@ -70,7 +77,20 @@ namespace Kororin.Shared.Interfaces.StreamingHubs
 
         #endregion
 
+        #region ギミック
+
+        /// <summary>
+        /// ギミック起動
+        /// </summary>
+        /// <param name="uniqueID">ギミック識別ID</param>
+        /// <param name="triggerOnce">一度しか起動できないかどうか</param>
+        /// <returns></returns>
+        Task BootGimmickAsync(string uniqueID, bool triggerOnce);
+
+        #endregion
+
         #region ゲーム内UI、仕様関連
+
         #endregion
 
         #endregion

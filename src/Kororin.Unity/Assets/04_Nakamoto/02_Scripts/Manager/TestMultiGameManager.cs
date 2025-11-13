@@ -1,5 +1,5 @@
 //-------------------------------------------------------------
-// 試験用ゲームマネージャー [ TestGameManager.cs ]
+// 試験用ゲームマネージャー [ TestMultiGameManager.cs ]
 // Author:中本健太
 //-------------------------------------------------------------
 using Shared.Interfaces.StreamingHubs;
@@ -9,7 +9,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class TestGameManager : MonoBehaviour
+public class TestMultiGameManager : MonoBehaviour
 {
     //-------------------
     // フィールド
@@ -26,24 +26,32 @@ public class TestGameManager : MonoBehaviour
     /// </summary>
     async void  Start()
     {
-        // 生成位置の設定
-        CharacterManager.Instance.StartPoints = generatePos;
+        if (RoomModel.Instance)
+        {
+            // 生成位置の設定
+            CharacterManager.Instance.StartPoints = generatePos;
 
-        // キャラ生成
-        CharacterManager.Instance.GenerateAllCharacters();
+            // キャラ生成
+            CharacterManager.Instance.GenerateAllCharacters();
 
-        // 接続フラグオン
-        RoomModel.Instance.IsConnect = true;
+            // 接続フラグオン
+            RoomModel.Instance.IsConnect = true;
 
-        // 通知処理の登録
-        RoomModel.Instance.OnStartedCount += OnStartedCount;
-        RoomModel.Instance.OnOpenedGate += OnOpenGate;
-        RoomModel.Instance.OnLeavedUser += OnLeavedUser;
-        RoomModel.Instance.OnChangedMasterClient += OnChangedMasterClient;
-        RoomModel.Instance.OnResulted += OnResulted;
+            // 通知処理の登録
+            RoomModel.Instance.OnStartedCount += OnStartedCount;
+            RoomModel.Instance.OnOpenedGate += OnOpenGate;
+            RoomModel.Instance.OnLeavedUser += OnLeavedUser;
+            RoomModel.Instance.OnChangedMasterClient += OnChangedMasterClient;
+            RoomModel.Instance.OnResulted += OnResulted;
 
-        // 遷移完了状態を送信
-        await RoomModel.Instance.TransitionInGameAsync();
+            // 遷移完了状態を送信
+            await RoomModel.Instance.TransitionInGameAsync();
+        }
+        else
+        {
+            // カウントコルーチン呼び出し
+            StartCoroutine(StartCountCoroutine());
+        }
     }
 
     /// <summary>
@@ -154,6 +162,7 @@ public class TestGameManager : MonoBehaviour
 
     async private void DisplayStart()
     {
-        await RoomModel.Instance.CountEndAsync();
+        if(RoomModel.Instance) await RoomModel.Instance.CountEndAsync();
+        else Destroy(gateObj);
     }
 }
