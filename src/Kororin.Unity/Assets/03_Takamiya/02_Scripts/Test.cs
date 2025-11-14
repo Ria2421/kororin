@@ -43,6 +43,11 @@ public class Test : MonoBehaviour
     [SerializeField] float jumpThreshold;     // 振り上げを検知するY加速度のしきい値
     [SerializeField] float jumpCooldown;      // 次のジャンプまでの待機時間（秒）
 
+    Vector3 prevAccelL = Vector3.zero;
+    Vector3 prevAccelR = Vector3.zero;
+    bool hasPrevL = false;
+    bool hasPrevR = false;
+
     //==============================
     // 状態管理用変数
     //==============================
@@ -117,8 +122,16 @@ public class Test : MonoBehaviour
             InputGamepad();//InputGamepad関数呼び出し
         }
 
-        dx = canControl ? Input.GetAxis("Horizontal") : 0;
-        dz = canControl ? Input.GetAxis("Vertical") : 0;
+        //Joy-Conが接続されてない場合
+        if (!useJoyCon)
+        {
+            dx = canControl ? Input.GetAxis("Horizontal") : 0;
+            dz = canControl ? Input.GetAxis("Vertical") : 0;
+            if (Input.GetKeyDown(KeyCode.Space) && isGrounded && Time.time - lastJumpTime > jumpCooldown)
+            {
+                Jump();
+            }
+        }
     }
 
     private void FixedUpdate()
@@ -178,46 +191,67 @@ public class Test : MonoBehaviour
     {
         if (!canControl) { dx = dz = 0; return; }
 
-        // Joy-Conが接続されていればJoy-Con入力優先
-        if ((joyconL != null && joyconL.state != null) || (joyconR != null && joyconR.state != null))
+        bool hasL = joyconL != null && joyconL.state != null;
+        bool hasR = joyconR != null && joyconR.state != null;
+
+        // Joy-Conが1つでも接続されていれば優先
+        if (hasL || hasR)
         {
-            // 左右Joy-Conの加速度を取得（存在しない場合はゼロ）
-            Vector3 accelL = joyconL != null ? joyconL.GetAccel() : Vector3.zero;
-            Vector3 accelR = joyconR != null ? joyconR.GetAccel() : Vector3.zero;
+            // --- 加速度取得 ---
+            Vector3 accelL = hasL ? joyconL.GetAccel() : Vector3.zero;
+            Vector3 accelR = hasR ? joyconR.GetAccel() : Vector3.zero;
 
-            // 両方の平均（片方しかない場合はそのまま）
-            Vector3 accel = (accelL + accelR) / ((joyconL != null && joyconR != null) ? 2f : 1f);
+            // 平均（片方だけならそのまま）
+            Vector3 accel = (accelL + accelR) / ((hasL && hasR) ? 2f : 1f);
 
-            // 左右どちらかのJoy-Conがしきい値を超えたらジャンプ
-            bool jumpDetected =
-                (joyconL != null && joyconL.GetAccel().y > jumpThreshold) ||
-                (joyconR != null && -joyconR.GetAccel().y > jumpThreshold);
+            // --- ジャンプ判定（誤爆しにくい「変化量」方式） ---
+            bool jumpDetected = false;
 
-            // ジャンプ条件：振り上げ検知＆地面に接地＆クールタイム経過
+            if (hasL)
+            {
+                if (hasPrevL)
+                {
+                    float delta = (accelL - prevAccelL).magnitude;
+                    if (delta > jumpThreshold) jumpDetected = true;
+                }
+                prevAccelL = accelL;
+                hasPrevL = true;
+            }
+
+            if (hasR)
+            {
+                if (hasPrevR)
+                {
+                    float delta = (accelR - prevAccelR).magnitude;
+                    if (delta > jumpThreshold) jumpDetected = true;
+                }
+                prevAccelR = accelR;
+                hasPrevR = true;
+            }
+
+            // ---- 実際のジャンプ発動 ----
             if (jumpDetected && isGrounded && Time.time - lastJumpTime > jumpCooldown)
             {
+                dx = 0;
+                dz = 0;
+                smoothedInput = Vector3.zero;
                 Jump();
             }
 
-            // デッドゾーン処理（小さな傾きは無視）
+            // --- デッドゾーン ---
             if (Mathf.Abs(accel.x) < deadZone) accel.x = 0;
             if (Mathf.Abs(accel.y) < deadZone) accel.y = 0;
 
-            // 軸変換（Joy-Conを傾けた方向に進む）
+            // --- 軸変換（Joy-Con横持ち想定）---
             Vector3 input = new Vector3(accel.x, 0, -accel.y) * tiltSensitivity;
 
-            // スムージング
+            // --- スムージング ---
             smoothedInput = Vector3.Lerp(smoothedInput, input, Time.deltaTime * smoothing);
 
             dx = smoothedInput.x;
             dz = smoothedInput.z;
         }
-        else
-        {
-            // プレイヤーの入力を取得
-            /*dx = canControl ? Input.GetAxis("Horizontal") : 0;
-            dz = canControl ? Input.GetAxis("Vertical") : 0;*/
-        }
+
     }
 
     /// <summary>
@@ -225,7 +259,6 @@ public class Test : MonoBehaviour
     /// </summary>
     void Jump()
     {
-
         // 下向き速度リセット
         rb.linearVelocity = new Vector3(rb.linearVelocity.x, 0, rb.linearVelocity.z);
 

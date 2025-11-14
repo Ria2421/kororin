@@ -23179,11 +23179,11 @@ PrefabInstance:
       objectReference: {fileID: 1010857047432625347}
     - target: {fileID: 2080862452599195282, guid: 88d929451ddde094d94070adbc686c37, type: 3}
       propertyPath: jumpForce
-      value: 7.5
+      value: 12
       objectReference: {fileID: 0}
     - target: {fileID: 2080862452599195282, guid: 88d929451ddde094d94070adbc686c37, type: 3}
       propertyPath: smoothing
-      value: 3
+      value: 4
       objectReference: {fileID: 0}
     - target: {fileID: 2080862452599195282, guid: 88d929451ddde094d94070adbc686c37, type: 3}
       propertyPath: applyForce
@@ -23219,7 +23219,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2080862452599195282, guid: 88d929451ddde094d94070adbc686c37, type: 3}
       propertyPath: tiltSensitivity
-      value: 3
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 2080862452599195282, guid: 88d929451ddde094d94070adbc686c37, type: 3}
       propertyPath: runSpeedThreshold
