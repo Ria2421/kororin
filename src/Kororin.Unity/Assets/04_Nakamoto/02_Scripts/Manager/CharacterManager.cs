@@ -120,7 +120,7 @@ public class CharacterManager : MonoBehaviour
         var playerObj = Instantiate(playerPrefab, point.position, Quaternion.identity);
         playerObjs.Add(joinedUser.ConnectionId, playerObj);
 
-        playerObj.GetComponent<Player>().enabled = false;
+        playerObj.GetComponent<NakamotoPlayer>().enabled = false;
     }
 
     /// <summary>
@@ -141,7 +141,7 @@ public class CharacterManager : MonoBehaviour
             {
                 playerObjSelf = playerObj;
 
-                playerObj.GetComponent<Player>().IsSelf = true;
+                playerObj.GetComponent<NakamotoPlayer>().IsSelf = true;
 
                 // カメラの追従設定
                 //if (cinemachineTargetGroup)
@@ -164,7 +164,7 @@ public class CharacterManager : MonoBehaviour
             }
             else
             {
-                playerObj.GetComponent<Player>().enabled = false;
+                playerObj.GetComponent<NakamotoPlayer>().enabled = false;
             }
         }
     }
@@ -229,7 +229,7 @@ public class CharacterManager : MonoBehaviour
         if (!playerObjs.ContainsKey(RoomModel.Instance.ConnectionId)) return null;
 
         //++ 完成次第キャラの共通クラスを取得
-        var player = playerObjs[RoomModel.Instance.ConnectionId].GetComponent<Player>();
+        var player = playerObjs[RoomModel.Instance.ConnectionId].GetComponent<NakamotoPlayer>();
 
         return new CharacterData()
         {
@@ -275,7 +275,7 @@ public class CharacterManager : MonoBehaviour
         if (playerObj.tag == "Player")
         {
             // キャラ共通のスクリプトのアニメーションセット関数を呼び出す
-            playerObj.GetComponent<Player>().SetAnimId(characterData.AnimationId);
+            playerObj.GetComponent<NakamotoPlayer>().SetAnimId(characterData.AnimationId);
         }
     }
 
