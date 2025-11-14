@@ -21576,16 +21576,16 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Test
   JoyConManager: {fileID: 7684763748007499222, guid: 3797d0418e55a7b459daa9a711522dca, type: 3}
-  hedgehog: {fileID: 4410218675595479741}
+  hedgehog: {fileID: 0}
   deceleratSpeed: 3.2
   applyForce: 7
   runSpeedThreshold: 2
   rotationSpeed: 10
-  tiltSensitivity: 3
-  smoothing: 3
+  tiltSensitivity: 2
+  smoothing: 4
   deadZone: 0.5
   stickDeadZone: 0.3
   stopThreshold: 0.3
-  jumpForce: 7.5
+  jumpForce: 12
   jumpThreshold: 0.5
   jumpCooldown: 1.5
