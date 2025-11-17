@@ -42,6 +42,7 @@ public class TestMultiGameManager : MonoBehaviour
             RoomModel.Instance.OnOpenedGate += OnOpenGate;
             RoomModel.Instance.OnLeavedUser += OnLeavedUser;
             RoomModel.Instance.OnChangedMasterClient += OnChangedMasterClient;
+            RoomModel.Instance.OnGoaledPlayer += OnGoaledPlayer;
             RoomModel.Instance.OnResulted += OnResulted;
 
             // 遷移完了状態を送信
@@ -67,15 +68,8 @@ public class TestMultiGameManager : MonoBehaviour
         RoomModel.Instance.OnOpenedGate -= OnOpenGate;
         RoomModel.Instance.OnLeavedUser -= OnLeavedUser;
         RoomModel.Instance.OnChangedMasterClient -= OnChangedMasterClient;
+        RoomModel.Instance.OnGoaledPlayer -= OnGoaledPlayer;
         RoomModel.Instance.OnResulted -= OnResulted;
-    }
-
-    /// <summary>
-    /// 更新処理
-    /// </summary>
-    void Update()
-    {
-        
     }
 
     #region 通知処理
@@ -95,6 +89,18 @@ public class TestMultiGameManager : MonoBehaviour
     public void OnOpenGate()
     {
         Destroy(gateObj);
+    }
+
+    /// <summary>
+    /// ゴール通知
+    /// </summary>
+    /// <param name="connectionID"></param>
+    public void OnGoaledPlayer(Guid connectionID)
+    {
+        if (!RoomModel.Instance.joinedUserList.ContainsKey(connectionID)) return;
+
+        //++ ゴールしたプレイヤー名を表示
+        Debug.Log(RoomModel.Instance.joinedUserList[connectionID].UserName);
     }
 
     /// <summary>

@@ -69,6 +69,11 @@ namespace Kororin.Shared.Interfaces.StreamingHubs
         void OnOpenGate();
 
         /// <summary>
+        /// ゴール通知
+        /// </summary>
+        void OnGoalPlayer(Guid connectionID);
+
+        /// <summary>
         /// リザルト通知
         /// </summary>
         /// <param name="joinedUsers"></param>

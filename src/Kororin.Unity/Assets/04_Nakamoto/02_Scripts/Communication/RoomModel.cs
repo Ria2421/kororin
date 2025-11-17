@@ -98,6 +98,9 @@ public class RoomModel : BaseModel, IRoomHubReceiver
     // ゲート開放通知
     public Action OnOpenedGate { get; set; }
 
+    // ゴール通知
+    public Action<Guid> OnGoaledPlayer { get; set; }
+
     // リザルト通知
     public Action<Dictionary<Guid,JoinedUser>> OnResulted {  get; set; }
 
@@ -283,6 +286,15 @@ public class RoomModel : BaseModel, IRoomHubReceiver
     public void OnOpenGate()
     {
         OnOpenedGate();
+    }
+
+    /// <summary>
+    /// ゴール通知
+    /// </summary>
+    /// <param name="connectionID"></param>
+    public void OnGoalPlayer(Guid connectionID)
+    {
+        OnGoaledPlayer(connectionID);
     }
 
     /// <summary>

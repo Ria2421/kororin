@@ -89,6 +89,11 @@ public class NakamotoPlayer : MonoBehaviour
         dx = canControl ? Input.GetAxis("Horizontal") : 0;
         dz = canControl ? Input.GetAxis("Vertical") : 0;
 
+        if (Input.GetKeyDown(KeyCode.Space) && isGrounded && Time.time - lastJumpTime > jumpCooldown)
+        {
+            Jump();
+        }
+
         // 入力がなくても速度に応じてアニメーション更新
         UpdateMovementAnimation();
     }
@@ -274,7 +279,6 @@ public class NakamotoPlayer : MonoBehaviour
         // Rigidbody.velocity.magnitude は全体の速度
         Vector3 horizontalVelocity = new Vector3(rb.linearVelocity.x, 0, rb.linearVelocity.z);
         float currentSpeed = horizontalVelocity.magnitude;
-        Debug.Log(currentSpeed);
 
         // スピードが閾値を超えているか判定
         if (currentSpeed >= runSpeedThreshold * 1.5f)

@@ -288,6 +288,9 @@ namespace StreamingHubs
         {
             lock (roomContextRepository)    // 排他制御
             {
+                // ゴールしたプレイヤーの接続IDを通知
+                this.roomContext.Group.Except([this.ConnectionId]).OnGoalPlayer(this.ConnectionId);
+
                 bool canTransResult = true; // 全員ゴールしたか判別
 
                 int rank = 1;
