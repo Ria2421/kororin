@@ -6,6 +6,8 @@ using System.Collections.Generic;
 /// </summary>
 public class JoyConBallContoroller : MonoBehaviour
 {
+
+    [SerializeField] GameObject JoyConManager;
     Rigidbody rb;
 
     //JoyConリスト(接続されたすべてのJoyCon)
@@ -38,6 +40,19 @@ public class JoyConBallContoroller : MonoBehaviour
     void Start()
     {
         rb = GetComponent<Rigidbody>();
+
+        // すでにシーン内に存在しているなら生成しない
+        if (JoyconManager.Instance == null)
+        {
+            GameObject obj = Instantiate(JoyConManager);
+            obj.name = "JoyconManager";
+            DontDestroyOnLoad(obj);
+            Debug.Log("JoyconManagerのPrefabを自動生成しました");
+        }
+        else
+        {
+            Debug.Log("既にJoyconManagerが存在しています");
+        }
 
         rb.linearVelocity = Vector3.zero;
         rb.angularVelocity = Vector3.zero;

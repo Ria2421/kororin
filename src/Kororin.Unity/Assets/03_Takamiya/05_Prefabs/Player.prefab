@@ -21586,6 +21586,6 @@ MonoBehaviour:
   deadZone: 0.5
   stickDeadZone: 0.3
   stopThreshold: 0.3
-  jumpForce: 12
+  jumpForce: 15
   jumpThreshold: 0.5
   jumpCooldown: 1.5
