@@ -7,6 +7,9 @@ TagManager:
   - Standby
   - Goal
   - Ground
+  - Wall
+  - Gimmick
+  - KnockGimmick
   layers:
   - Default
   - TransparentFX
