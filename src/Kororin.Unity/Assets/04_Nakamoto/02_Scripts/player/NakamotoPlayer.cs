@@ -50,17 +50,15 @@ public class NakamotoPlayer : MonoBehaviour
     bool isSphere;                                  // 球体の状態
     float dx, dz;                                   // 入力方向
     float lastJumpTime = 0f;                        // 最後にジャンプした時間
-    bool canControl = true;                         // 操作可能かどうか
     bool isGrounded = false;                        // 地面に触れているかフラグ
+    private bool isGoal = false;                    // ゴールしたかどうか
 
     // 自身を判別する変数
     private bool isSelf = false;
     public bool IsSelf { get { return isSelf; } set { isSelf = value; } }
 
-    // ゴールしたか判別
-    private bool isGoal = false;
-
     // 操作できるか
+    bool canControl = true;
     public bool CanControl { get { return canControl; } set { canControl = value; } }
 
     #region 初期・更新処理
@@ -144,7 +142,6 @@ public class NakamotoPlayer : MonoBehaviour
             dx = stick.x;
             dz = stick.y;
         }
-
 
         // Aボタンでジャンプ
         if (Gamepad.current.buttonSouth.wasPressedThisFrame && isGrounded && Time.time - lastJumpTime > jumpCooldown)
