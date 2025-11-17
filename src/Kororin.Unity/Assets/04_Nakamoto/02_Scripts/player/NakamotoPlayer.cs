@@ -21,8 +21,6 @@ public class NakamotoPlayer : MonoBehaviour
     [SerializeField] float applyForce;          // 加える力
     [Foldout("移動基礎設定")]
     [SerializeField] float runSpeedThreshold;   // 走るアニメーションに切り替えるスピードの閾値
-    [Foldout("移動基礎設定")]
-    [SerializeField] float rotationSpeed;       // インスペクターで設定
 
     //==============================
     // ゲームパッド関連設定

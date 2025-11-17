@@ -9,9 +9,6 @@ using System.Collections;
 using System.Collections.Generic;
 using Unity.Cinemachine;
 using UnityEngine;
-using UnityEngine.TextCore.Text;
-using UnityEngine.UI;
-using UnityEngine.UIElements;
 
 public class CharacterManager : MonoBehaviour
 {
