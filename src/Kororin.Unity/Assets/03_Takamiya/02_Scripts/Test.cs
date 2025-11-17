@@ -66,6 +66,8 @@ public class Test : MonoBehaviour
     bool canControl = true;                   // 操作可能かどうか
     bool isGrounded = false;                  // 地面に触れているかフラグ
 
+    Vector3 accel;
+
     public bool CanControl { get { return canControl; } set { canControl = value; } }
 
     /// <summary>
@@ -211,28 +213,32 @@ public class Test : MonoBehaviour
             Vector3 accelR = hasR ? joyconR.GetAccel() : Vector3.zero;
 
             // 平均（片方だけならそのまま）
-            Vector3 accel = (accelL + accelR) / ((hasL && hasR) ? 2f : 1f);
+            /*Vector3 accel = accelL;*/
 
             // --- ジャンプ判定（誤爆しにくい「変化量」方式） ---
             bool jumpDetected = false;
 
             if (hasL)
             {
+                accel = accelL;
                 if (hasPrevL)
                 {
-                    float delta = (accelL - prevAccelL).magnitude;
-                    if (delta > jumpThreshold) jumpDetected = true;
+                    float deltaZ = accelL.z - prevAccelL.z;
+
+                    // Z軸だけ見る（横向き・頭装着用）
+                    if (deltaZ > jumpThreshold) jumpDetected = true;
                 }
                 prevAccelL = accelL;
                 hasPrevL = true;
             }
-
-            if (hasR)
+            else if (hasR)
             {
+                accel=accelR;
                 if (hasPrevR)
                 {
-                    float delta = (accelR - prevAccelR).magnitude;
-                    if (delta > jumpThreshold) jumpDetected = true;
+                    float deltaZ = accelR.z - prevAccelR.z;
+
+                    if (deltaZ > jumpThreshold) jumpDetected = true;
                 }
                 prevAccelR = accelR;
                 hasPrevR = true;
