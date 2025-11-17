@@ -1,9 +1,18 @@
+//*********************************************************
+//
+//高宮祐翔
+//Aother：2025/11/17
+//
+//*********************************************************
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using static HedgehogBase;
 
 
+/// <summary>
+/// キャラクターの関連のスクリプト
+/// </summary>
 public class Test : MonoBehaviour
 {
     private Rigidbody rb;
@@ -95,12 +104,12 @@ public class Test : MonoBehaviour
         joycons = JoyconManager.Instance.j;
         if (joycons != null && joycons.Count > 0)
         {
-            joyconL = joycons.Find(c => c.isLeft);
-            joyconR = joycons.Find(c => !c.isLeft);
+            joyconL = joycons.Find(c => c.isLeft);//Joy-ConLの取得
+            joyconR = joycons.Find(c => !c.isLeft);//Joy-ConRの取得
         }
         else
         {
-            Debug.LogWarning("Joy-Conが見つかりませんでした!ゲームパッドで操作してください");
+            Debug.LogWarning("Joy-Conが見つかりませんでした!");
         }
 
     }
@@ -335,7 +344,7 @@ public class Test : MonoBehaviour
         }
 
 
-        // Aボタンでジャンプ
+        // Aボタン&&キャラクターが地面に当たっているとき&&最後にジャンプしてからクールタイムが終わったらジャンプ
         if (Gamepad.current.buttonSouth.wasPressedThisFrame && isGrounded && Time.time - lastJumpTime > jumpCooldown)
         {
             Jump();
@@ -347,6 +356,7 @@ public class Test : MonoBehaviour
     /// </summary>
     private void UpdateMovementAnimation()
     {
+        //地面に当たってないとき
         if (!isGrounded)
         {
             hedgehog.SetAnimId((int)Anim_Id.Run_Ball);
