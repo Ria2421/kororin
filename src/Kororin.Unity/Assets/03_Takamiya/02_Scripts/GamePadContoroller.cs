@@ -1,6 +1,9 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
 
+/// <summary>
+/// ゲームパッドで操作できる用のスクリプト
+/// </summary>
 public class GamePadContoroller : MonoBehaviour
 {
     private Rigidbody rb;

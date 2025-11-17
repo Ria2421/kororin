@@ -6,9 +6,9 @@ public class KeyBoardBallContoroller : MonoBehaviour
 {
     Rigidbody rb;
 
-    [SerializeField] float moveSpeed;// 
-    [SerializeField] float smoothing;// 
-    [SerializeField] float drag;// 
+    [SerializeField] float moveSpeed;// スピード
+    [SerializeField] float smoothing;// 入力のなめらかさ
+    [SerializeField] float drag;// 減衰
 
     Vector3 smoothedInput = Vector3.zero;
 
