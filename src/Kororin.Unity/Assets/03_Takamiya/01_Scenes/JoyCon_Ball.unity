@@ -23303,7 +23303,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 2080862452599195282, guid: 88d929451ddde094d94070adbc686c37, type: 3}
       propertyPath: deadZone
-      value: 0.5
+      value: 0.3
       objectReference: {fileID: 0}
     - target: {fileID: 2080862452599195282, guid: 88d929451ddde094d94070adbc686c37, type: 3}
       propertyPath: hedgehog
@@ -23331,7 +23331,7 @@ PrefabInstance:
       objectReference: {fileID: 7684763748007499222, guid: 3797d0418e55a7b459daa9a711522dca, type: 3}
     - target: {fileID: 2080862452599195282, guid: 88d929451ddde094d94070adbc686c37, type: 3}
       propertyPath: jumpThreshold
-      value: 0.5
+      value: 0.25
       objectReference: {fileID: 0}
     - target: {fileID: 2080862452599195282, guid: 88d929451ddde094d94070adbc686c37, type: 3}
       propertyPath: rotationSpeed
