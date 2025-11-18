@@ -5732,7 +5732,7 @@ GameObject:
   - component: {fileID: 1919970008165392022}
   - component: {fileID: 839748647770270524}
   m_Layer: 3
-  m_Name: Player
+  m_Name: NoSpawnPlayer
   m_TagString: Player
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -5874,8 +5874,16 @@ MonoBehaviour:
   deceleratSpeed: 3
   applyForce: 9
   runSpeedThreshold: 2
-  jumpForce: 5
-  knockbackForce: 0
+  knockbackForce: 10
+  stopThreshold: 0.3
+  jumpForce: 6
+  jumpCooldown: 1.5
+  stickDeadZone: 0.3
+  JoyConManager: {fileID: 7684763748007499222, guid: 3797d0418e55a7b459daa9a711522dca, type: 3}
+  tiltSensitivity: 2
+  smoothing: 4
+  deadZone: 0.3
+  jumpThreshold: 0.3
 --- !u!1 &4753823525393210988
 GameObject:
   m_ObjectHideFlags: 0
@@ -6017,7 +6025,7 @@ MonoBehaviour:
   animator: {fileID: 654069075116251347}
   ballAvatar: {fileID: 9000000, guid: 7bf0359584e966c4aaa8033218fd43ed, type: 3}
   defaultAvatar: {fileID: 9000000, guid: 17acb98811b84fe4bb374ea781666fe8, type: 3}
-  playSpawnAnim: 1
+  playSpawnAnim: 0
   spawnDist: 5
 --- !u!114 &1423694525177672139
 MonoBehaviour:

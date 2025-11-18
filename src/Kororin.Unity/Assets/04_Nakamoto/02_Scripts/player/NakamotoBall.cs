@@ -67,8 +67,13 @@ public class NakamotoBall : MonoBehaviour
 
     #region 動作用フラグ
 
-    private bool isSphere;      // ボール状態かどうか
-    private bool isGrounded;    // 地面との接触判定
+    private bool isSphere;          // ボール状態かどうか
+    private bool isGrounded;        // 地面との接触判定
+    private bool isGoal = false;    // ゴールしたかどうか
+
+    // 自身を判別する変数
+    private bool isSelf = false;
+    public bool IsSelf { get { return isSelf; } set { isSelf = value; } }
 
     // 操作可能かどうか
     private bool canControl = false;
@@ -401,6 +406,8 @@ public class NakamotoBall : MonoBehaviour
         transform.eulerAngles = Vector3.zero;
     }
 
+    #region 当たり判定
+
     /// <summary>
     /// 当たり判定
     /// </summary>
@@ -409,7 +416,9 @@ public class NakamotoBall : MonoBehaviour
     {
         if (collision.gameObject.tag == "Player" || collision.gameObject.tag == "Wall")
         {
-            canControl = false;
+            //canControl = false;
+
+            if (rb == null) return;
 
             rb.constraints |= RigidbodyConstraints.FreezeRotationX;
             rb.constraints |= RigidbodyConstraints.FreezeRotationZ;
@@ -433,13 +442,35 @@ public class NakamotoBall : MonoBehaviour
         }
     }
 
-    private void OnCollisionExit(Collision collision)
+    //private void OnCollisionExit(Collision collision)
+    //{
+    //    if (collision.gameObject.tag == "Player" || collision.gameObject.tag == "Wall")
+    //    {
+    //        canControl = true;
+    //    }
+    //}
+
+    /// <summary>
+    /// トリガー接触判定
+    /// </summary>
+    /// <param name="other"></param>
+    private async void OnTriggerEnter(Collider other)
     {
-        if (collision.gameObject.tag == "Player" || collision.gameObject.tag == "Wall")
+        if (!isSelf) return;
+
+        if (other.tag == "Standby")
         {
-            canControl = true;
+            await RoomModel.Instance.StandbyAsync();
+        }
+
+        if (!isGoal && other.tag == "Goal")
+        {
+            isGoal = true;
+            await RoomModel.Instance.ArrivalGoalAsync();
         }
     }
+
+    #endregion
 
     /// <summary>
     /// 地面との接触確認
@@ -465,5 +496,32 @@ public class NakamotoBall : MonoBehaviour
         {
             isGrounded = false;
         }
+    }
+
+    /// <summary>
+    /// 再生中のアニメーションID取得
+    /// </summary>
+    /// <returns></returns>
+    public int GetAnimId()
+    {
+        return hedgehog.GetAnimId();
+    }
+
+    /// <summary>
+    /// 指定したアニメーションを再生
+    /// </summary>
+    /// <param name="id"></param>
+    public void SetAnimId(int id)
+    {
+        hedgehog.SetAnimId(id);
+    }
+
+    /// <summary>
+    /// スポーン状況の取得
+    /// </summary>
+    /// <returns></returns>
+    public bool GetIsSpawn()
+    {
+        return hedgehog.IsSpawn;
     }
 }

@@ -28,9 +28,6 @@ public class TestMultiGameManager : MonoBehaviour
     {
         if (RoomModel.Instance)
         {
-            // ¶¬ˆÊ’u‚Ìİ’è
-            CharacterManager.Instance.StartPoints = generatePos;
-
             // ƒLƒƒƒ‰¶¬
             CharacterManager.Instance.GenerateAllCharacters();
 

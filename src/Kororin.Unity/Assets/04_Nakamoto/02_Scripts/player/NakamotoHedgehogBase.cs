@@ -49,6 +49,10 @@ public class NakamotoHedgehogBase : MonoBehaviour
     [Foldout("スポーンアニメーション関連")]
     [SerializeField]
     protected float spawnDist = 5;
+
+    // スポーン中かどうか
+    private bool isSpawn = false; 
+    public bool IsSpawn {  get { return isSpawn; } }
     #endregion
 
     private void Start()
@@ -56,6 +60,10 @@ public class NakamotoHedgehogBase : MonoBehaviour
         if (playSpawnAnim)
         {
             PlaySpawnAnim();
+        }
+        else
+        {
+            OnEndLandAnim();
         }
     }
 
@@ -116,6 +124,7 @@ public class NakamotoHedgehogBase : MonoBehaviour
     /// </summary>
     void PlaySpawnAnim()
     {
+        isSpawn = true;
         SetAnimId((int)Anim_Id.Idle_Ball);
         var parent = transform.parent.transform;
         Rigidbody rigidbody = parent.GetComponent<Rigidbody>();
@@ -156,6 +165,7 @@ public class NakamotoHedgehogBase : MonoBehaviour
     /// </summary>
     public void OnEndLandAnim()
     {
+        isSpawn = false;
         ball.CanControl = true;
     }
     #endregion
