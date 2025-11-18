@@ -17,7 +17,7 @@ public class TestTopCollider : MonoBehaviour
         }
         else if(modeType == "Multi")
         {
-            LoadingManager.Instance.StartSceneLoad("03_SampleLobby");
+            LoadingManager.Instance.StartSceneLoad("03_NakamotoMulti");
         }
     }
 }

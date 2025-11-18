@@ -14,11 +14,6 @@ public class TestMultiLobbyManager : MonoBehaviour
     //-------------------
     // フィールド
 
-    // スタンバイフラグ
-    private bool isStandby = false;
-    public bool IsStandby { get { return isStandby; } set { isStandby = value; } }
-
-    [SerializeField] private List<Transform> generatePos = new List<Transform>();   // プレイヤー生成位置
     [SerializeField] private Text rankText; // 順位表示用テキスト
 
     #region インスタンス
@@ -59,9 +54,6 @@ public class TestMultiLobbyManager : MonoBehaviour
     {
         // 順位非表示
         rankText.text = "";
-
-        // 生成位置の設定
-        CharacterManager.Instance.StartPoints = generatePos;
 
         RoomModel.Instance.OnJoinedUser += OnJoinedUser;
         RoomModel.Instance.OnCreatedRoom += OnCreatedRoom;

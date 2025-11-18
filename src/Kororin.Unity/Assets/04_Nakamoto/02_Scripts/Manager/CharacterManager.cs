@@ -16,8 +16,7 @@ public class CharacterManager : MonoBehaviour
     // フィールド
 
     // 各プレイヤーの初期位置
-    private List<Transform> startPoints = new List<Transform>();   
-    public List<Transform> StartPoints {  get { return startPoints; } set { startPoints = value; } }
+    [SerializeField] private List<Transform> startPoints = new List<Transform>();   
 
     // 参加者のプレイヤーオブジェリスト
     private Dictionary<Guid, GameObject> playerObjs = new Dictionary<Guid, GameObject>();
@@ -25,7 +24,8 @@ public class CharacterManager : MonoBehaviour
     public Dictionary<Guid, GameObject> PlayerObjs { get { return playerObjs; } }
 
     // 生成するプレイヤーオブジェ
-    [SerializeField] private GameObject playerPrefab;
+    [SerializeField] private GameObject spawnPrefab;
+    [SerializeField] private GameObject noSpawnPrefab;
 
     // 自身のゲームオブジェ
     [SerializeField] private GameObject playerObjSelf;  
@@ -114,10 +114,11 @@ public class CharacterManager : MonoBehaviour
         // 開始位置の設定
         var point = startPoints[joinedUser.JoinOrder - 1];
 
-        var playerObj = Instantiate(playerPrefab, point.position, Quaternion.identity);
+        var playerObj = Instantiate(spawnPrefab, point.position, point.localRotation);
         playerObjs.Add(joinedUser.ConnectionId, playerObj);
 
-        playerObj.GetComponent<NakamotoPlayer>().enabled = false;
+        //++
+        playerObj.GetComponent<NakamotoBall>().enabled = false;
     }
 
     /// <summary>
@@ -130,15 +131,16 @@ public class CharacterManager : MonoBehaviour
             // 開始位置の設定
             var point = startPoints[joinduser.Value.JoinOrder - 1];
 
-            var playerObj = Instantiate(playerPrefab, point.position, Quaternion.identity);
-            playerObjs.Add(joinduser.Key, playerObj);
-
             // 自身のプレイヤーを生成した場合
             if (joinduser.Key == RoomModel.Instance.ConnectionId)
             {
+                var playerObj = Instantiate(spawnPrefab, point.position, point.localRotation);
+                playerObjs.Add(joinduser.Key, playerObj);
+
                 playerObjSelf = playerObj;
 
-                playerObj.GetComponent<NakamotoPlayer>().IsSelf = true;
+                //++
+                playerObj.GetComponent<NakamotoBall>().IsSelf = true;
 
                 // カメラの追従設定
                 //if (cinemachineTargetGroup)
@@ -161,7 +163,10 @@ public class CharacterManager : MonoBehaviour
             }
             else
             {
-                playerObj.GetComponent<NakamotoPlayer>().enabled = false;
+                var playerObj = Instantiate(noSpawnPrefab, point.position, point.localRotation);
+                playerObjs.Add(joinduser.Key, playerObj);
+                //++
+                playerObj.GetComponent<NakamotoBall>().enabled = false;
             }
         }
     }
@@ -226,7 +231,7 @@ public class CharacterManager : MonoBehaviour
         if (!playerObjs.ContainsKey(RoomModel.Instance.ConnectionId)) return null;
 
         //++ 完成次第キャラの共通クラスを取得
-        var player = playerObjs[RoomModel.Instance.ConnectionId].GetComponent<NakamotoPlayer>();
+        var player = playerObjs[RoomModel.Instance.ConnectionId].GetComponent<NakamotoBall>();
 
         return new CharacterData()
         {
@@ -263,17 +268,20 @@ public class CharacterManager : MonoBehaviour
     /// <param name="characterData"></param>
     void UpdateCharacter(CharacterData characterData, GameObject playerObj)
     {
-        // 位置・大きさ・向きの同期
-        playerObj.gameObject.transform.DOMove(characterData.Position, UPDATE_SEC).SetEase(Ease.Linear);
-        playerObj.gameObject.transform.localScale = characterData.Scale;
-        playerObj.gameObject.transform.DORotateQuaternion(characterData.Rotation, UPDATE_SEC).SetEase(Ease.Linear);
+        // スポーン中は同期しない
+        if (playerObj.GetComponent<NakamotoBall>().GetIsSpawn()) return;
 
         // アニメーション同期
         if (playerObj.tag == "Player")
         {
-            // キャラ共通のスクリプトのアニメーションセット関数を呼び出す
-            playerObj.GetComponent<NakamotoPlayer>().SetAnimId(characterData.AnimationId);
+            //++ キャラ共通のスクリプトのアニメーションセット関数を呼び出す
+            playerObj.GetComponent<NakamotoBall>().SetAnimId(characterData.AnimationId);
         }
+
+        // 位置・大きさ・向きの同期
+        playerObj.gameObject.transform.DOMove(characterData.Position, UPDATE_SEC).SetEase(Ease.Linear);
+        playerObj.gameObject.transform.localScale = characterData.Scale;
+        playerObj.gameObject.transform.DORotateQuaternion(characterData.Rotation, UPDATE_SEC).SetEase(Ease.Linear);
     }
 
     /// <summary>

@@ -323,7 +323,6 @@ public class NakamotoPlayer : MonoBehaviour
 
         if (other.tag == "Standby")
         {
-            TestMultiLobbyManager.Instance.IsStandby = true;
             await RoomModel.Instance.StandbyAsync();
         }
 

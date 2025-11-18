@@ -605,7 +605,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1133e763ce23bcf4b926fe70ba5bca04, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CharacterManager
-  playerPrefab: {fileID: 6374531275081692352, guid: 5642d9380be3adb4589076ad4253fd73, type: 3}
+  startPoints:
+  - {fileID: 937208300}
+  - {fileID: 1128923646}
+  - {fileID: 1812870435}
+  - {fileID: 1144168382}
+  spawnPrefab: {fileID: 4686741377493232112, guid: c0adcd282488c59498bd690d68b13730, type: 3}
+  noSpawnPrefab: {fileID: 4686741377493232112, guid: c5e2eb869aeb3be4896d1d5e694ec728, type: 3}
   playerObjSelf: {fileID: 0}
 --- !u!1 &838426389
 GameObject:
