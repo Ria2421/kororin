@@ -26,7 +26,8 @@ public class Test : MonoBehaviour
     [SerializeField] float deceleratSpeed;      // 減速スピード
     [SerializeField] float applyForce;          // 加える力
     [SerializeField] float runSpeedThreshold;   // 走るアニメーションに切り替えるスピードの閾値
-    [SerializeField] float rotationSpeed;       // インスペクターで設定
+    [SerializeField] float rotationSpeed;       // 回転速度 
+    [SerializeField] float gravity;             // 重力
 
     //==============================
     // Joy-Con関連設定
@@ -140,7 +141,7 @@ public class Test : MonoBehaviour
             dz = canControl ? Input.GetAxis("Vertical") : 0;
             if (Input.GetKeyDown(KeyCode.Space) && isGrounded && Time.time - lastJumpTime > jumpCooldown)
             {
-                Jump();
+                Jump();//ジャンプ関数呼び出し
             }
         }
     }
@@ -165,6 +166,11 @@ public class Test : MonoBehaviour
 
         // 入力がなくても速度に応じてアニメーション更新
         UpdateMovementAnimation();
+
+        if (!isGrounded)
+        {
+            rb.AddForce(Vector3.down * gravity, ForceMode.Acceleration);
+        }
     }
 
     /// <summary>
@@ -200,22 +206,24 @@ public class Test : MonoBehaviour
     /// </summary>
     private void InputJoyCon()
     {
+        //入力できない場合は値を0にして抜ける
         if (!canControl) { dx = dz = 0; return; }
 
         bool hasL = joyconL != null && joyconL.state != null;
         bool hasR = joyconR != null && joyconR.state != null;
 
-        // Joy-Conが1つでも接続されていれば優先
+        // どちらかのJoy-Conが接続されていれば処理開始
         if (hasL || hasR)
         {
             // --- 加速度取得 ---
             Vector3 accelL = hasL ? joyconL.GetAccel() : Vector3.zero;
             Vector3 accelR = hasR ? joyconR.GetAccel() : Vector3.zero;
 
-            // 平均（片方だけならそのまま）
-            /*Vector3 accel = accelL;*/
-
-            // --- ジャンプ判定（誤爆しにくい「変化量」方式） ---
+            // -----------------------------
+            //  ジャンプ判定（誤爆しにくい「変化量」方式）
+            //     - 前フレームとの差分だけを見る
+            //     - 横向きに装着する前提なので Z軸のみ利用
+            // -----------------------------
             bool jumpDetected = false;
 
             if (hasL)
@@ -225,7 +233,7 @@ public class Test : MonoBehaviour
                 {
                     float deltaZ = accelL.z - prevAccelL.z;
 
-                    // Z軸だけ見る（横向き・頭装着用）
+                    // 急激にZ加速度が増えたら「振り上げ」と判断
                     if (deltaZ > jumpThreshold) jumpDetected = true;
                 }
                 prevAccelL = accelL;
@@ -244,9 +252,14 @@ public class Test : MonoBehaviour
                 hasPrevR = true;
             }
 
-            // ---- 実際のジャンプ発動 ----
+            // -----------------------------
+            //  ジャンプ実行
+            //     - 地面にいる
+            //     - クールタイムが終わっている
+            // -----------------------------
             if (jumpDetected && isGrounded && Time.time - lastJumpTime > jumpCooldown)
             {
+                //ジャンプ中に移動できないように入力の値をリセット
                 dx = 0;
                 dz = 0;
                 smoothedInput = Vector3.zero;
@@ -260,9 +273,12 @@ public class Test : MonoBehaviour
             // --- 軸変換（Joy-Con横持ち想定）---
             Vector3 input = new Vector3(accel.x, 0, -accel.y) * tiltSensitivity;
 
-            // --- スムージング ---
+            // -----------------------------
+            //  入力をなめらかにする
+            // -----------------------------
             smoothedInput = Vector3.Lerp(smoothedInput, input, Time.deltaTime * smoothing);
 
+            //実際に移動をdx/dzに代入
             dx = smoothedInput.x;
             dz = smoothedInput.z;
         }
