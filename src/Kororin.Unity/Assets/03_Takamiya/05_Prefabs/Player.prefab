@@ -21453,7 +21453,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0.15268, y: 0, z: -1.17718}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 1.5, y: 1.5, z: 1.5}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 2365328282724575224}
@@ -21546,7 +21546,7 @@ Rigidbody:
   serializedVersion: 5
   m_Mass: 1
   m_LinearDamping: 0
-  m_AngularDamping: 0.05
+  m_AngularDamping: 0
   m_CenterOfMass: {x: 0, y: 0, z: 0}
   m_InertiaTensor: {x: 1, y: 1, z: 1}
   m_InertiaRotation: {x: 0, y: 0, z: 0, w: 1}
@@ -21576,11 +21576,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Test
   JoyConManager: {fileID: 7684763748007499222, guid: 3797d0418e55a7b459daa9a711522dca, type: 3}
-  hedgehog: {fileID: 0}
+  hedgehog: {fileID: 4410218675595479741}
   deceleratSpeed: 3.2
-  applyForce: 7
+  applyForce: 12
   runSpeedThreshold: 2
   rotationSpeed: 10
+  gravity: 6.3
   tiltSensitivity: 2
   smoothing: 4
   deadZone: 0.3
@@ -21588,4 +21589,4 @@ MonoBehaviour:
   stopThreshold: 0.3
   jumpForce: 15
   jumpThreshold: 0.25
-  jumpCooldown: 1.5
+  jumpCooldown: 1
