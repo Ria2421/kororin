@@ -1,14 +1,12 @@
+//------------------------------------------
+// ‰ñ“]ƒgƒQƒMƒ~ƒbƒN [ Thorn.cs ]
+// Author:Souma Ueno
+//------------------------------------------
 using UnityEngine;
 
-public class Thorn : MonoBehaviour
+public class Thorn : GimmickBase
 {
     [SerializeField] float rollY = 200f;
-
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
-    {
-        
-    }
 
     // Update is called once per frame
     void Update()

@@ -1,6 +1,10 @@
+//------------------------------------------
+// スライサーギミック [ Slicer.cs ]
+// Author:Souma Ueno
+//------------------------------------------
 using UnityEngine;
 
-public class Sliser : MonoBehaviour
+public class Slicer : GimmickBase
 {
     [SerializeField] float rollX;
 

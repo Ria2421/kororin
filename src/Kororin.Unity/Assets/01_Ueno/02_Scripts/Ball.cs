@@ -14,7 +14,7 @@ public class Ball : MonoBehaviour
     [SerializeField] float jumpForce;         // ジャンプ力
     [SerializeField] float knockbackForce;
 
-    private bool canMove; // 移動を許可するかどうかのフラグ
+    //private bool canMove; // 移動を許可するかどうかのフラグ
     bool isSphere;        // ボール状態かどうか
     float dx, dz;
     float raycastLength = 1f; // 地面判定用のRayの長さ（Colliderの下端から）
@@ -35,7 +35,7 @@ public class Ball : MonoBehaviour
         rb.linearDamping = deceleratSpeed;
 
         isSphere = false;
-        canMove = true;
+        //canMove = true;
     }
 
     void Update()
@@ -54,7 +54,7 @@ public class Ball : MonoBehaviour
 
     private void FixedUpdate()
     {
-        if (canMove) AddForce();
+        AddForce();
     }
 
     /// <summary>
@@ -180,9 +180,10 @@ public class Ball : MonoBehaviour
     /// <param name="collision"></param>
     private void OnCollisionEnter(Collision collision)
     {
-        if (collision.gameObject.tag == "Player" || collision.gameObject.tag == "Wall")
+        if (collision.gameObject.tag == "Player" || collision.gameObject.tag == "Wall"
+            || collision.gameObject.tag == "KnockGimmic")
         {
-            canMove = false;
+            //canMove = false;
 
             rb.constraints |= RigidbodyConstraints.FreezeRotationX;
             rb.constraints |= RigidbodyConstraints.FreezeRotationZ;
@@ -210,7 +211,7 @@ public class Ball : MonoBehaviour
     {
         if (collision.gameObject.tag == "Player" || collision.gameObject.tag == "Wall")
         {
-            canMove = true;
+            //canMove = true;
         }
     }
 

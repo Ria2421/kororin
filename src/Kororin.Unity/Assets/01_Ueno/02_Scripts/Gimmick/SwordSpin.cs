@@ -1,6 +1,10 @@
+//------------------------------------------
+// “‰ñ“]ƒMƒ~ƒbƒN [ SwordSpin.cs ]
+// Author:Souma Ueno
+//------------------------------------------
 using UnityEngine;
 
-public class SwordSpin : MonoBehaviour
+public class SwordSpin : GimmickBase
 {
     [SerializeField] float rollY = 15f;
 
