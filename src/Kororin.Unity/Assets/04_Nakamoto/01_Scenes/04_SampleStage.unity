@@ -610,7 +610,7 @@ MonoBehaviour:
   - {fileID: 1128923646}
   - {fileID: 1812870435}
   - {fileID: 1144168382}
-  spawnPrefab: {fileID: 4686741377493232112, guid: c0adcd282488c59498bd690d68b13730, type: 3}
+  spawnPrefab: {fileID: 4686741377493232112, guid: c5e2eb869aeb3be4896d1d5e694ec728, type: 3}
   noSpawnPrefab: {fileID: 4686741377493232112, guid: c5e2eb869aeb3be4896d1d5e694ec728, type: 3}
   playerObjSelf: {fileID: 0}
 --- !u!1 &838426389
@@ -1260,6 +1260,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6f51821303aca1145a45e3f7d733c159, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::TestGameManager
+  lobbyScene: 03_NakamotoMulti
   cntTxt: {fileID: 2098818382}
   gateObj: {fileID: 2108467152}
   generatePos:

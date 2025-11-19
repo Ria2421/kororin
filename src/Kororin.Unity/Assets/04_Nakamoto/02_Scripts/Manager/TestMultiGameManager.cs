@@ -14,6 +14,7 @@ public class TestMultiGameManager : MonoBehaviour
     //-------------------
     // フィールド
 
+    [SerializeField] private string lobbyScene;     // ロビーシーン名
     [SerializeField] private Text cntTxt;           // カウントダウン用テキスト
     [SerializeField] private GameObject gateObj;    // スタートゲートオブジェ
     [SerializeField] private List<Transform> generatePos = new List<Transform>();   // プレイヤー生成位置
@@ -105,7 +106,8 @@ public class TestMultiGameManager : MonoBehaviour
     /// </summary>
     public void OnResulted(Dictionary<Guid,JoinedUser> joindUsers)
     {
-        LoadingManager.Instance.StartSceneLoad("03_SampleLobby");
+        LoadingManager.Instance.StartSceneLoad(lobbyScene);
+        RoomModel.Instance.IsConnect = false;
     }
 
     /// <summary>

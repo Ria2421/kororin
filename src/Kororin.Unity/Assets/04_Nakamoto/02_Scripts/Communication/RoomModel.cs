@@ -45,6 +45,14 @@ public class RoomModel : BaseModel, IRoomHubReceiver
     [SerializeField] private string userName = "";
     public string UserName { get { return userName; } set { userName = value; } }
 
+    // 参加順
+    [SerializeField] private int joinOrder;
+    public int JoinOrder { get { return joinOrder; } set { joinOrder = value; } }
+
+    // 抽選されたステージNo
+    private int stageNo;
+    public int StageNo { get { return stageNo; } set { stageNo = value; } }
+
     // 現在の参加者情報
     public Dictionary<Guid, JoinedUser> joinedUserList { get; private set; } = new Dictionary<Guid, JoinedUser>();
 
@@ -352,6 +360,7 @@ public class RoomModel : BaseModel, IRoomHubReceiver
     /// </summary>
     public void OnStartGame(int id)
     {
+        stageNo = id;
         OnStartedGame(id);
     }
 
@@ -392,6 +401,7 @@ public class RoomModel : BaseModel, IRoomHubReceiver
         {
             if (user.Value.UserId == userId)
             {
+                this.joinOrder = user.Value.JoinOrder;
                 this.ConnectionId = user.Value.ConnectionId;
                 this.IsMaster = user.Value.IsMaster;
             }
@@ -399,6 +409,9 @@ public class RoomModel : BaseModel, IRoomHubReceiver
         }
 
         CharacterManager.Instance.GenerateAllCharacters();
+
+        //++ ロビーシーンにて自身の大砲の矢印とコライダーを有効にする
+        TestMultiLobbyManager.Instance.SetMineCannon();
     }
 
     /// <summary>
