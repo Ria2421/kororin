@@ -400,6 +400,8 @@ public class NakamotoBall : MonoBehaviour
     /// </summary>
     public void ResetVelocitys(bool useGravity = true)
     {
+        if(rb == null) return;
+
         rb.linearVelocity = Vector3.zero;
         rb.angularVelocity = Vector3.zero;
         rb.useGravity = useGravity;
@@ -457,11 +459,6 @@ public class NakamotoBall : MonoBehaviour
     private async void OnTriggerEnter(Collider other)
     {
         if (!isSelf) return;
-
-        if (other.tag == "Standby")
-        {
-            await RoomModel.Instance.StandbyAsync();
-        }
 
         if (!isGoal && other.tag == "Goal")
         {

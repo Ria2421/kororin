@@ -14,7 +14,13 @@ public class TestMultiLobbyManager : MonoBehaviour
     //-------------------
     // フィールド
 
-    [SerializeField] private Text rankText; // 順位表示用テキスト
+    [SerializeField] private Text rankText;                     // 順位表示用テキスト
+
+    [SerializeField] private LobbyCannon[] cannons;             // 大砲スクリプト
+
+    [SerializeField] private CapsuleCollider[] cannonCollider;  // 大砲の当たり判定 
+
+    [SerializeField] private GameObject[] cannonArrow;          // 自分の大砲を示す矢印
 
     #region インスタンス
 
@@ -89,6 +95,8 @@ public class TestMultiLobbyManager : MonoBehaviour
             CharacterManager.Instance.GenerateAllCharacters();
             // 接続フラグオン
             RoomModel.Instance.IsConnect = true;
+            // 大砲有効化
+            SetMineCannon();
         }
     }
 
@@ -167,12 +175,22 @@ public class TestMultiLobbyManager : MonoBehaviour
     public void OnStartedGame(int id)
     {
         // インゲームシーンに移動
-        RoomModel.Instance.IsConnect = false;
         Debug.Log("ステージ" + id + "：ゲーム開始");
 
         //++ そのうち引数のidのステージに遷移
+        foreach(var cannon in cannons)
+        {
+            cannon.PlayEnterAnim();
+        }
+    }
 
-        LoadingManager.Instance.StartSceneLoad("04_SampleStage");
+    /// <summary>
+    ///  自身の大砲を有効化
+    /// </summary>
+    public void SetMineCannon()
+    {
+        cannonArrow[RoomModel.Instance.JoinOrder-1].SetActive(true);
+        cannonCollider[RoomModel.Instance.JoinOrder - 1].enabled = true;
     }
 
     #endregion
