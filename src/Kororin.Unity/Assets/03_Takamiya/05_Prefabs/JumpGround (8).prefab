@@ -24,7 +24,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3122642786052984540}
   serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: -7.8531, y: -9.212711, z: 79.40902}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -276,12 +276,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3a4684b2fdefdd5409bdc8b0a4aa5288, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::JumpPad
-  triggerOnce: 0
-  requiresReactivation: 0
   launchForce: 45
-  cooldown: 0.6
-  upTime: 0.1
-  returnTime: 0.5
+  cooldown: 1
+  upTime: 0.15
+  returnTime: 0.1
 --- !u!1 &6097079575281256248
 GameObject:
   m_ObjectHideFlags: 0

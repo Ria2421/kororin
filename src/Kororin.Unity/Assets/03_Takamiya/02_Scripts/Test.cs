@@ -169,6 +169,7 @@ public class Test : MonoBehaviour
 
         if (!isGrounded)
         {
+            //float g = rb.linearVelocity.y > 0 ? gravity : gravity * 3f;
             rb.AddForce(Vector3.down * gravity, ForceMode.Acceleration);
         }
     }

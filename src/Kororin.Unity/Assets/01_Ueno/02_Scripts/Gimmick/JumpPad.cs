@@ -5,7 +5,7 @@
 using DG.Tweening;
 using UnityEngine;
 
-public class JumpPad : GimmickBase
+public class JumpPad : MonoBehaviour
 {
     // ÉWÉÉÉìÉvóÕ
     [SerializeField] float launchForce = 30f;
@@ -18,8 +18,11 @@ public class JumpPad : GimmickBase
 
     private float defaultY;
 
-    private bool iscooldown=false;
+    private bool iscooldown = false;
 
+    private float baseY = -2f;
+
+    private Tween jumpTween;
 
     private void Start()
     {
@@ -29,15 +32,27 @@ public class JumpPad : GimmickBase
     private void OnTriggerEnter(Collider other)
     {
         if (iscooldown) return;
-       
-        if(other.CompareTag("Player"))
+
+        if (other.CompareTag("Player"))
         {
             Rigidbody playerRb = other.GetComponent<Rigidbody>();
 
             iscooldown = true;
             Invoke(nameof(ResetCoolDown), cooldown);
 
-            playerRb.AddForce(Vector3.up * launchForce, ForceMode.Impulse);
+            //++
+            if (other.GetComponent<NakamotoBall>()== null)
+            {
+                
+                playerRb.AddForce(Vector3.up * launchForce, ForceMode.Impulse);
+            }
+            else
+            {
+                playerRb.AddForce(Vector3.up * launchForce, ForceMode.Impulse);
+            }
+
+            //playerRb.AddForce(Vector3.up * launchForce, ForceMode.Impulse);
+
 
             //transform.position = 
             //    new Vector3(transform.position.x, 
@@ -60,7 +75,7 @@ public class JumpPad : GimmickBase
             .OnComplete(() =>
             {
                 // èIÇÌÇ¡ÇΩÇÁ -2 Ç…ñﬂÇ∑
-                transform.DOLocalMoveY(-2f, returnTime)
+                transform.DOLocalMoveY(baseY, returnTime)
                     .SetEase(Ease.OutBack);
             });
     }
