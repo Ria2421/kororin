@@ -6662,6 +6662,14 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 2126339696143145762, guid: 6234d556e8ce71147b42c817b32fc916, type: 3}
+      propertyPath: angle
+      value: 30
+      objectReference: {fileID: 0}
+    - target: {fileID: 2126339696143145762, guid: 6234d556e8ce71147b42c817b32fc916, type: 3}
+      propertyPath: startFromRight
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 3471728497349411060, guid: 6234d556e8ce71147b42c817b32fc916, type: 3}
       propertyPath: m_Name
       value: Props_7 (5)
@@ -10429,6 +10437,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 2126339696143145762, guid: 6234d556e8ce71147b42c817b32fc916, type: 3}
+      propertyPath: angle
+      value: 30
+      objectReference: {fileID: 0}
     - target: {fileID: 3471728497349411060, guid: 6234d556e8ce71147b42c817b32fc916, type: 3}
       propertyPath: m_Name
       value: Props_7 (6)
@@ -12267,6 +12279,14 @@ PrefabInstance:
     - target: {fileID: 3756200970908861, guid: 6234d556e8ce71147b42c817b32fc916, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2126339696143145762, guid: 6234d556e8ce71147b42c817b32fc916, type: 3}
+      propertyPath: angle
+      value: 30
+      objectReference: {fileID: 0}
+    - target: {fileID: 2126339696143145762, guid: 6234d556e8ce71147b42c817b32fc916, type: 3}
+      propertyPath: startFromRight
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 3471728497349411060, guid: 6234d556e8ce71147b42c817b32fc916, type: 3}
       propertyPath: m_Name
@@ -16184,6 +16204,10 @@ PrefabInstance:
     - target: {fileID: 7852619911350486424, guid: 623acac5b578dc0478c31f5fa952222c, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7855312700659404344, guid: 623acac5b578dc0478c31f5fa952222c, type: 3}
+      propertyPath: angle
+      value: 35
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
