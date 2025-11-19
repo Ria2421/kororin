@@ -10,11 +10,9 @@ public class JumpPad : GimmickBase
     // ジャンプ力
     [SerializeField] float launchForce = 30f;
 
-    [SerializeField] float downAmount;      // どれくらい沈むか
-    [SerializeField] float cooldown;        // クールタイム
-    [SerializeField] float upAmount;        // どれくらい飛び出すか
 
-    [SerializeField] float downTime;       // 下がる速さ
+    [SerializeField] float cooldown;        // クールタイム
+
     [SerializeField] float upTime;         // 上に飛び出す速さ
     [SerializeField] float returnTime;      // 元に戻る速さ
 
@@ -56,21 +54,14 @@ public class JumpPad : GimmickBase
     }
 
     private void JumpPadAnimation()
-    {
-        // 一旦、下にへこむ
-        transform.DOLocalMoveY(defaultY - downAmount, downTime)
-        .SetEase(Ease.InQuad)
-        .OnComplete(() =>
-        {
-            // すぐに上に飛び出す
-            transform.DOLocalMoveY(defaultY + upAmount, upTime)
+    {// ジャンプ台を 0 の位置まで飛び出させる
+        transform.DOLocalMoveY(0f, upTime)
             .SetEase(Ease.OutQuad)
             .OnComplete(() =>
             {
-                // 最終的に元の位置へ戻る
-                transform.DOLocalMoveY(defaultY, returnTime)
-                .SetEase(Ease.OutBack);
+                // 終わったら -2 に戻す
+                transform.DOLocalMoveY(-2f, returnTime)
+                    .SetEase(Ease.OutBack);
             });
-        });
     }
 }

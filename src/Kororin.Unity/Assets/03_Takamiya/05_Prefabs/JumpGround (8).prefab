@@ -279,10 +279,7 @@ MonoBehaviour:
   triggerOnce: 0
   requiresReactivation: 0
   launchForce: 45
-  downAmount: 0
   cooldown: 0.6
-  upAmount: 30
-  downTime: 0.1
   upTime: 0.1
   returnTime: 0.5
 --- !u!1 &6097079575281256248
