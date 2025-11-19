@@ -9,19 +9,22 @@ using System.Collections;
 using System.Collections.Generic;
 using Unity.Cinemachine;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class CharacterManager : MonoBehaviour
 {
     //-----------------------
     // フィールド
 
-    // 各プレイヤーの初期位置
-    [SerializeField] private List<Transform> startPoints = new List<Transform>();   
+    // カメラ
+    [SerializeField] GameObject chinemaCamera;
 
     // 参加者のプレイヤーオブジェリスト
     private Dictionary<Guid, GameObject> playerObjs = new Dictionary<Guid, GameObject>();
-
     public Dictionary<Guid, GameObject> PlayerObjs { get { return playerObjs; } }
+
+    // 各プレイヤーの初期位置
+    [SerializeField] private List<Transform> startPoints = new List<Transform>();
 
     // 生成するプレイヤーオブジェ
     [SerializeField] private GameObject spawnPrefab;
@@ -144,6 +147,14 @@ public class CharacterManager : MonoBehaviour
                 playerObj.GetComponent<NakamotoBall>().IsSelf = true;
 
                 // カメラの追従設定
+                if(SceneManager.GetActiveScene().name != "03_NakamotoMulti")
+                {
+                    var target = new CameraTarget();
+                    target.TrackingTarget = playerObjSelf.transform;
+                    target.LookAtTarget = playerObjSelf.transform;
+                    chinemaCamera.GetComponent<CinemachineCamera>().Target.TrackingTarget = playerObjSelf.transform;
+                }
+
                 //if (cinemachineTargetGroup)
                 //{
                 //    var newTarget = new CinemachineTargetGroup.Target

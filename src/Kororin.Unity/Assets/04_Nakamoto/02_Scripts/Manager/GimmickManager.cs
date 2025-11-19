@@ -87,7 +87,7 @@ public class GimmickManager : MonoBehaviour
                 {
                     UniqueID = gimmick.Key,
                     Position = gimmick.Value.transform.position,
-                    Rotation = gimmick.Value.transform.localRotation,
+                    Rotation = gimmick.Value.transform.rotation,
                     Scale = gimmick.Value.transform.localScale,
                 };
 

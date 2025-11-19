@@ -144,20 +144,7 @@ public class RoomModel : BaseModel, IRoomHubReceiver
     #region RoomModelインスタンス生成
 
     private static RoomModel instance;
-    public static RoomModel Instance
-    {
-        get
-        {
-            // GETプロパティを呼ばれたときにインスタンスを作成する(初回のみ)
-            if (instance == null)
-            {
-                GameObject gameObj = new GameObject("RoomModel" + DateTime.Now.ToString());
-                instance = gameObj.AddComponent<RoomModel>();
-                DontDestroyOnLoad(gameObj);
-            }
-            return instance;
-        }
-    }
+    public static RoomModel Instance { get { return instance; } }
 
     #endregion
 

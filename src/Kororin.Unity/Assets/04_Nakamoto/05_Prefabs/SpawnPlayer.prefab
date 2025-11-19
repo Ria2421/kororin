@@ -5841,7 +5841,7 @@ Rigidbody:
   serializedVersion: 5
   m_Mass: 1
   m_LinearDamping: 0
-  m_AngularDamping: 0.05
+  m_AngularDamping: 0
   m_CenterOfMass: {x: 0, y: 0, z: 0}
   m_InertiaTensor: {x: 1, y: 1, z: 1}
   m_InertiaRotation: {x: 0, y: 0, z: 0, w: 1}
@@ -5857,7 +5857,7 @@ Rigidbody:
   m_IsKinematic: 0
   m_Interpolate: 0
   m_Constraints: 32
-  m_CollisionDetection: 0
+  m_CollisionDetection: 1
 --- !u!114 &839748647770270524
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5876,6 +5876,7 @@ MonoBehaviour:
   runSpeedThreshold: 2
   knockbackForce: 10
   stopThreshold: 0.3
+  gravity: 6.3
   jumpForce: 6
   jumpCooldown: 1.5
   stickDeadZone: 0.3

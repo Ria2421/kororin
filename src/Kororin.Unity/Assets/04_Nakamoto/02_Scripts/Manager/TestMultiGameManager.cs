@@ -27,7 +27,7 @@ public class TestMultiGameManager : MonoBehaviour
     /// </summary>
     async void  Start()
     {
-        if (RoomModel.Instance)
+        if (RoomModel.Instance != null)
         {
             // ƒLƒƒƒ‰¶¬
             CharacterManager.Instance.GenerateAllCharacters();

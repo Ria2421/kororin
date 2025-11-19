@@ -36,6 +36,9 @@ EditorBuildSettings:
     path: Assets/04_Nakamoto/01_Scenes/03_NakamotoMulti.unity
     guid: 4047ad68373cc7e4b9b05ebdff1b133a
   - enabled: 1
+    path: Assets/04_Nakamoto/01_Scenes/04_TestStage.unity
+    guid: 86f67c5863c04cb449201b155bda9394
+  - enabled: 1
     path: Assets/04_Nakamoto/01_Scenes/99_SampleLobby.unity
     guid: dab79f3418a70204c9c77d6d18c9665b
   - enabled: 1

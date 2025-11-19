@@ -25,6 +25,9 @@ public class NakamotoBall : MonoBehaviour
     [SerializeField] private float knockbackForce;      // ノックバック力
     [Foldout("基礎設定")]
     [SerializeField] private float stopThreshold;       // 転がってからの速度がどのくらい小さくなったら完全に停止するのか
+    [Foldout("基礎設定")]
+    [SerializeField] private float gravity;             // 重力
+
 
     #endregion
 
@@ -186,6 +189,11 @@ public class NakamotoBall : MonoBehaviour
         else
         {
             ApplyStopCheck(); // 入力がないとき減速チェック
+        }
+
+        if (!isGrounded)
+        {
+            rb.AddForce(Vector3.down * gravity, ForceMode.Acceleration);
         }
     }
 
