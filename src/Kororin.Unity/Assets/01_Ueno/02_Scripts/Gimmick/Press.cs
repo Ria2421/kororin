@@ -28,7 +28,18 @@ public class Press : GimmickBase
     {
         initPosZ = transform.localPosition.z;
 
-        StartPressLoop();
+        // オフライン時
+        if (RoomModel.Instance == null)
+        {
+            StartPressLoop();
+        }
+        else
+        {// オンライン時
+            if (RoomModel.Instance.IsMaster)
+            {
+                StartPressLoop();
+            }
+        }
     }
 
     /// <summary>

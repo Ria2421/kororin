@@ -15,9 +15,17 @@ public class Roll : GimmickBase
     // Update is called once per frame
     void Update()
     {
-        if (RoomModel.Instance.IsMaster)
+        // オフライン時
+        if(RoomModel.Instance == null)
         {
             gameObject.transform.Rotate(new Vector3(0, rollY, 0) * Time.deltaTime);
+        }
+        else
+        {// オンライン時
+            if (RoomModel.Instance.IsMaster)
+            {
+                gameObject.transform.Rotate(new Vector3(0, rollY, 0) * Time.deltaTime);
+            }
         }
     }
 }

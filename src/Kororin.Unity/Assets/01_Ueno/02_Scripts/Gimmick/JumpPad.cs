@@ -10,11 +10,10 @@ public class JumpPad : GimmickBase
     // ジャンプ力
     [SerializeField] float launchForce = 30f;
 
-
-    [SerializeField] float cooldown;        // クールタイム
+    [SerializeField] float cooldown;       // クールタイム
 
     [SerializeField] float upTime;         // 上に飛び出す速さ
-    [SerializeField] float returnTime;      // 元に戻る速さ
+    [SerializeField] float returnTime;     // 元に戻る速さ
 
     private float defaultY;
 
@@ -29,8 +28,8 @@ public class JumpPad : GimmickBase
     private void OnTriggerEnter(Collider other)
     {
         if (iscooldown) return;
-       
-        if(other.CompareTag("Player"))
+
+        if (other.CompareTag("Player"))
         {
             Rigidbody playerRb = other.GetComponent<Rigidbody>();
 

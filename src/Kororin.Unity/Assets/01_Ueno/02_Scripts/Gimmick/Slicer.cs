@@ -2,6 +2,7 @@
 // スライサーギミック [ Slicer.cs ]
 // Author:Souma Ueno
 //------------------------------------------
+using DG.Tweening;
 using UnityEngine;
 
 public class Slicer : GimmickBase
@@ -27,19 +28,43 @@ public class Slicer : GimmickBase
 
     void Update()
     {
-        // Time.time * speed で、時間に速度を掛けた分だけ値が変化
-        float pingPong = Mathf.PingPong(Time.time * speed, maxDistance * 2f);
+        // オフライン時
+        if (RoomModel.Instance == null)
+        {
+            // Time.time * speed で、時間に速度を掛けた分だけ値が変化
+            float pingPong = Mathf.PingPong(Time.time * speed, maxDistance * 2f);
 
-        // 範囲を -maxDistance から +maxDistance にシフト
-        float offsetZ = pingPong - maxDistance;
+            // 範囲を -maxDistance から +maxDistance にシフト
+            float offsetZ = pingPong - maxDistance;
 
-        // 新しいZ座標を計算し、位置を更新
-        transform.localPosition = new Vector3(
-            startX,
-            transform.localPosition.y,
-            startZ + offsetZ
-        );
+            // 新しいZ座標を計算し、位置を更新
+            transform.localPosition = new Vector3(
+                startX,
+                transform.localPosition.y,
+                startZ + offsetZ
+            );
 
-        gameObject.transform.Rotate(new Vector3(-rollX, 0, 0) * Time.deltaTime);
+            gameObject.transform.Rotate(new Vector3(-rollX, 0, 0) * Time.deltaTime);
+        }
+        else
+        {// オンライン時
+            if (RoomModel.Instance.IsMaster)
+            {
+                // Time.time * speed で、時間に速度を掛けた分だけ値が変化
+                float pingPong = Mathf.PingPong(Time.time * speed, maxDistance * 2f);
+
+                // 範囲を -maxDistance から +maxDistance にシフト
+                float offsetZ = pingPong - maxDistance;
+
+                // 新しいZ座標を計算し、位置を更新
+                transform.localPosition = new Vector3(
+                    startX,
+                    transform.localPosition.y,
+                    startZ + offsetZ
+                );
+
+                gameObject.transform.Rotate(new Vector3(-rollX, 0, 0) * Time.deltaTime);
+            }
+        }
     }
 }

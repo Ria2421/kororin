@@ -11,6 +11,17 @@ public class Thorn : GimmickBase
     // Update is called once per frame
     void Update()
     {
-        gameObject.transform.Rotate(new Vector3(0, -rollY, 0) * Time.deltaTime);
+        // オフライン時
+        if (RoomModel.Instance == null)
+        {
+            gameObject.transform.Rotate(new Vector3(0, -rollY, 0) * Time.deltaTime);
+        }
+        else
+        {// オンライン時
+            if (RoomModel.Instance.IsMaster)
+            {
+                gameObject.transform.Rotate(new Vector3(0, -rollY, 0) * Time.deltaTime);
+            }
+        }
     }
 }
