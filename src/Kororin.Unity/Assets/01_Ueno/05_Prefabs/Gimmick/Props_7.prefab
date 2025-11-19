@@ -132,7 +132,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Gimmck
   triggerOnce: 0
   requiresReactivation: 0
-  angle: 30
+  angle: 35
   duration: 1.5
   startFromRight: 0
 --- !u!1 &5795918803357195226
