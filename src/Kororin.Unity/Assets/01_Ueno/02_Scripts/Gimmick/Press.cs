@@ -6,7 +6,7 @@
 using DG.Tweening;
 using UnityEngine;
 
-public class Press : MonoBehaviour
+public class Press : GimmickBase
 {
     [Header("ˆÚ“®ŠÔ")]
     [SerializeField] float moveTime;      // ƒvƒŒƒX‚É‚©‚©‚éŠÔ
