@@ -72,7 +72,7 @@ public class NakamotoBall : MonoBehaviour
     private bool isGoal = false;    // ƒS[ƒ‹‚µ‚½‚©‚Ç‚¤‚©
 
     // ©g‚ğ”»•Ê‚·‚é•Ï”
-    private bool isSelf = false;
+    private bool isSelf = true;
     public bool IsSelf { get { return isSelf; } set { isSelf = value; } }
 
     // ‘€ì‰Â”\‚©‚Ç‚¤‚©

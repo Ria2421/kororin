@@ -119,6 +119,7 @@ public class CharacterManager : MonoBehaviour
 
         //++
         playerObj.GetComponent<NakamotoBall>().enabled = false;
+        playerObj.GetComponent<NakamotoBall>().IsSelf = false;
     }
 
     /// <summary>
@@ -167,6 +168,7 @@ public class CharacterManager : MonoBehaviour
                 playerObjs.Add(joinduser.Key, playerObj);
                 //++
                 playerObj.GetComponent<NakamotoBall>().enabled = false;
+                playerObj.GetComponent<NakamotoBall>().IsSelf = false;
             }
         }
     }
