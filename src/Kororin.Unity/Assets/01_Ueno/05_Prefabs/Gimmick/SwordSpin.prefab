@@ -113,8 +113,8 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 2.4448264, y: 0.3718277, z: 0.6369999}
-  m_Center: {x: 0.9582833, y: 0, z: -0.013031271}
+  m_Size: {x: 2.4448264, y: 0.8020716, z: 0.6369999}
+  m_Center: {x: 0.9582833, y: -0.21512339, z: -0.013031271}
 --- !u!114 &2662606394587125368
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -127,6 +127,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d57d0ba39bd52ff49b4f728108c58b0b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::SwordSpin
+  triggerOnce: 0
+  requiresReactivation: 0
   rollY: 500
 --- !u!1 &8646552126065220603
 GameObject:

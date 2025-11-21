@@ -79,6 +79,7 @@ public class Test : MonoBehaviour
     float lastJumpTime = 0f;                  // 最後にジャンプした時間
     bool canControl = true;                   // 操作可能かどうか
     bool isGrounded = false;                  // 地面に触れているかフラグ
+    bool isIdel;
 
     Vector3 accel;
 
@@ -115,6 +116,8 @@ public class Test : MonoBehaviour
         rb.linearDamping = deceleratSpeed;
 
         isSphere = false;
+
+        /*hedgehog.SetAnimId((int)Anim_Id.Idle);*/
 
         // Joy-Con初期化
         joycons = JoyconManager.Instance.j;
@@ -172,9 +175,9 @@ public class Test : MonoBehaviour
         }
 
         // 角速度の制限
-        if (rb.angularVelocity.magnitude > 10f)
+        if (rb.angularVelocity.magnitude > 8f)
         {
-            rb.angularVelocity = rb.angularVelocity.normalized * 10f;
+            rb.angularVelocity = rb.angularVelocity.normalized * 8f;
         }
 
         // 入力がなくても速度に応じてアニメーション更新
@@ -211,6 +214,8 @@ public class Test : MonoBehaviour
                 rb.linearVelocity = new Vector3(0, rb.linearVelocity.y, 0);
                 rb.angularVelocity = Vector3.zero;
                 hedgehog.SetAnimId((int)Anim_Id.Idle);
+
+                isIdel = true;
             }
         }
     }
@@ -392,12 +397,20 @@ public class Test : MonoBehaviour
     /// </summary>
     private void UpdateMovementAnimation()
     {
+        if (isIdel)
+        {
+            hedgehog.SetAnimId((int)Anim_Id.Idle);
+            isSphere = false;
+            isIdel = false;
+            return;
+        }
         //地面に当たってないとき
         if (!isGrounded)
         {
             hedgehog.SetAnimId((int)Anim_Id.Run_Ball);
             return;
         }
+        
 
         // Y軸方向の速度を除外し、平面での移動速度（ベクトルの大きさ）を取得
         // Rigidbody.velocity.magnitude は全体の速度
