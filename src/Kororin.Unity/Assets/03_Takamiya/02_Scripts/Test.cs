@@ -23,10 +23,15 @@ public class Test : MonoBehaviour
     // 移動の設定
     //==============================
     [SerializeField] HedgehogBase hedgehog;
+    [Header("減速スピード")]
     [SerializeField] float deceleratSpeed;      // 減速スピード
+    [Header("加える力")]
     [SerializeField] float applyForce;          // 加える力
+    [Header("アニメーションの切り替えるスピード")]
     [SerializeField] float runSpeedThreshold;   // 走るアニメーションに切り替えるスピードの閾値
+    [Header("回転速度")]
     [SerializeField] float rotationSpeed;       // 回転速度 
+    [Header("重力")]
     [SerializeField] float gravity;             // 重力
 
     //==============================
@@ -35,22 +40,30 @@ public class Test : MonoBehaviour
     List<Joycon> joycons;
     Joycon joyconL;
     Joycon joyconR;
+    [Header("傾き感度")]
     [SerializeField] float tiltSensitivity;   // 傾き感度
+    [Header("入力のなめらかさ")]
     [SerializeField] float smoothing;         // 入力のなめらかさ
+    [Header("Joy-Conのデッドゾーン")]
     [SerializeField] float deadZone;          // デッドゾーン（小さな傾き無視）
     Vector3 smoothedInput = Vector3.zero;
 
     //==============================
     // ゲームパッド関連設定
     //==============================
+    [Header("ゲートパッドのデッドゾーン")]
     [SerializeField] float stickDeadZone;     // デッドゾーン
+    [Header("どのくらい速度が小さくなったら停止するか")]
     [SerializeField] float stopThreshold;     // 転がってからの速度がどのくらい小さくなったら完全に停止するのか
 
     //==============================
     // ジャンプ関連設定
     //==============================
+    [Header("ジャンプ力")]
     [SerializeField] float jumpForce;         // ジャンプ力
-    [SerializeField] float jumpThreshold;     // 振り上げを検知するY加速度のしきい値
+    [Header("振り上げを検知するZの加速度のしきい値")]
+    [SerializeField] float jumpThreshold;     // 振り上げを検知するZの加速度のしきい値
+    [Header("次のジャンプまでの待機時間")]
     [SerializeField] float jumpCooldown;      // 次のジャンプまでの待機時間（秒）
 
     Vector3 prevAccelL = Vector3.zero;
