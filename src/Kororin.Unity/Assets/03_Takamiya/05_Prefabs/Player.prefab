@@ -21578,10 +21578,10 @@ MonoBehaviour:
   JoyConManager: {fileID: 7684763748007499222, guid: 3797d0418e55a7b459daa9a711522dca, type: 3}
   hedgehog: {fileID: 4410218675595479741}
   deceleratSpeed: 3.2
-  applyForce: 20.5
+  applyForce: 19
   runSpeedThreshold: 2
   rotationSpeed: 10
-  gravity: 28.5
+  gravity: 21
   tiltSensitivity: 2
   smoothing: 4
   deadZone: 0.3
